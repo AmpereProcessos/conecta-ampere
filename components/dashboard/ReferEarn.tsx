@@ -6,6 +6,7 @@ import type { TSaleCategoryEnum } from "@/schemas/enums.schema";
 import { useQueryClient } from "@tanstack/react-query";
 import type { TAuthSession } from "@/lib/authentication/types";
 import { ReferEarnOptions } from "@/configs/constants";
+import NewIndication from "../indications/modals/NewIndication";
 
 type NewIndicationMenuState = {
 	isOpen: boolean;
@@ -77,7 +78,7 @@ function ReferEarn({ sessionUser }: ReferEarnProps) {
 					</button>
 				))}
 			</div>
-			{/* {newIndicationMenu.isOpen && newIndicationMenu.projectType ? (
+			{newIndicationMenu.isOpen && newIndicationMenu.projectType ? (
 				<NewIndication
 					projectType={newIndicationMenu.projectType}
 					sessionUser={sessionUser}
@@ -89,7 +90,7 @@ function ReferEarn({ sessionUser }: ReferEarnProps) {
 						onSettled: handleNewIndicationOnSettled,
 					}}
 				/>
-			) : null} */}
+			) : null}
 		</div>
 	);
 }
