@@ -32,7 +32,7 @@ import {
 } from "@/configs/states_cities";
 import SelectInput from "@/components/inputs/SelectInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LoadingButton } from "@/components/loading-button";
+import { LoadingButton } from "@/components/buttons/loading-button";
 import { useMutation } from "@tanstack/react-query";
 import { createIndication } from "@/lib/mutations/indications";
 import { getErrorMessage } from "@/lib/methods/errors";
