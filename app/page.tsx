@@ -12,7 +12,7 @@ import { redirect } from "next/navigation";
 
 export default async function Home() {
 	const { session, user } = await getCurrentSession();
-
+	console.log("SESSION", session?.usuarioId);
 	if (!session) return redirect("/login");
 	return (
 		<FullScreenWrapper>
