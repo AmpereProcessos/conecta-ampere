@@ -52,7 +52,7 @@ async function VerifyWaitingPage({
 							Enviamos um email com um link de acesso para:{" "}
 							<strong>{token?.usuarioEmail}</strong>
 						</p>
-						<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">
+						<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">
 							O link expira em:{" "}
 							<strong>{expiresInMinutes.toFixed(0)} minutos.</strong>
 						</p>

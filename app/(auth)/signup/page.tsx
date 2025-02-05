@@ -126,6 +126,17 @@ function SignUp() {
 								}
 								resetOptionText="NÃO DEFINIDO"
 							/>
+							<div className="w-full flex flex-col">
+								<p className="text-xs font-medium text-primary w-full">
+									Ao realizar o cadastro você concorda com nossos{" "}
+									<Link
+										href={"/legal"}
+										className="underline-offset-4 hover:underline"
+									>
+										termos e política de privacidade.
+									</Link>
+								</p>
+							</div>
 
 							<div className="flex flex-wrap justify-between">
 								<Button variant={"link"} size={"sm"} className="p-0" asChild>
