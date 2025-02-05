@@ -1,6 +1,7 @@
 "use client";
 
 import { SubmitButton } from "@/components/buttons/submit-button";
+import TextInput from "@/components/inputs/TextInput";
 import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +14,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/authentication/actions";
+import type { TLoginSchema } from "@/lib/authentication/types";
 import Link from "next/link";
-import React, { useActionState } from "react";
+import React, { useActionState, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 
 function Login() {
-	const [state, action] = useActionState(login, {});
+	const [loginHolder, setLoginHolder] = useState<TLoginSchema>({
+		username: "",
+	});
+	const [actionResult, actionMethod] = useActionState(login, {});
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
@@ -43,31 +48,19 @@ function Login() {
 							<div className="mx-2 text-muted-foreground">ou</div>
 							<div className="flex-grow border-t border-muted" />
 						</div>
-						<form action={action} className="grid gap-4">
-							<div className="space-y-2">
-								<Label htmlFor="username">Usuário</Label>
-								<Input
-									required
-									id="username"
-									placeholder="meuusername"
-									autoComplete="username"
-									name="username"
-									type="text"
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="password">Senha</Label>
-								<Input
-									required
-									id="password"
-									placeholder="******"
-									autoComplete="password"
-									name="password"
-									type="password"
-								/>
-							</div>
-
+						<form
+							action={async () => await actionMethod(loginHolder)}
+							className="grid gap-4"
+						>
+							<TextInput
+								identifier="username"
+								labelText="Usuário"
+								placeholderText="meuusuario"
+								value={loginHolder.username}
+								handleChange={(value) =>
+									setLoginHolder((prev) => ({ ...prev, username: value }))
+								}
+							/>
 							<div className="flex flex-wrap justify-between">
 								<Button variant={"link"} size={"sm"} className="p-0" asChild>
 									<Link href={"/signup"}>
@@ -79,17 +72,17 @@ function Login() {
 								</Button>
 							</div>
 
-							{state?.fieldError ? (
+							{actionResult?.fieldError ? (
 								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-									{Object.values(state.fieldError).map((err) => (
+									{Object.values(actionResult.fieldError).map((err) => (
 										<li className="ml-4" key={err}>
 											{err}
 										</li>
 									))}
 								</ul>
-							) : state?.formError ? (
+							) : actionResult?.formError ? (
 								<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-									{state?.formError}
+									{actionResult?.formError}
 								</p>
 							) : null}
 							<SubmitButton className="w-full" aria-label="submit-btn">

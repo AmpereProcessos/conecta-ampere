@@ -1,73 +1,371 @@
 "use server";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
-import { LoginSchema } from "./types";
+import {
+	LoginSchema,
+	ResendVerificationTokenSchema,
+	SignUpSchema,
+	type TResendVerificationTokenSchema,
+	type TLoginSchema,
+	type TSignUpSchema,
+} from "./types";
 import type { TClient } from "@/schemas/client.schema";
 import {
 	createSession,
 	generateSessionToken,
 	setSetSessionCookie,
 } from "@/lib/authentication/session";
-import { verifyPasswordHash } from "@/lib/authentication/passwords";
 import { redirect } from "next/navigation";
+import { ObjectId, type Collection, type Filter } from "mongodb";
+import {
+	CONECTA_AMPERE_CRM_USER_DATA,
+	DATABASE_COLLECTION_NAMES,
+	MATRIX_COMPANY_PARTNER_ID,
+} from "@/configs/app-definitions";
+import type { TOpportunity } from "@/schemas/opportunity.schema";
+import { ReferEarnOptions } from "@/configs/constants";
+import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
+import { sendEmailWithResend, EmailTemplate } from "../email";
+import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
+import { randomBytes } from "node:crypto";
+import dayjs from "dayjs";
 
 type TLoginResult = {
 	formError?: string;
 	fieldError?: {
-		username?: string;
-		password?: string;
+		[key in keyof TLoginSchema]?: string;
 	};
 };
 export async function login(
 	_: TLoginResult,
-	formData: FormData,
+	data: TLoginSchema,
 ): Promise<TLoginResult> {
-	const information = Object.fromEntries(formData.entries());
-
-	const validationParsed = LoginSchema.safeParse(information);
+	const validationParsed = LoginSchema.safeParse(data);
 	if (!validationParsed.success) {
 		const err = validationParsed.error.flatten();
 		return {
 			fieldError: {
 				username: err.fieldErrors.username?.[0],
-				password: err.fieldErrors.password?.[0],
 			},
 		};
 	}
 
-	const { username, password } = validationParsed.data;
+	const { username } = validationParsed.data;
 
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>("clients");
+	const clientsCollection = crmDb.collection<TClient>(
+		DATABASE_COLLECTION_NAMES.CLIENTS,
+	);
+	const authVerificationTokensCollection =
+		crmDb.collection<TAuthVerificationToken>(
+			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
+		);
 
 	const user = await clientsCollection.findOne(
 		{ "conecta.usuario": username },
 		{ projection: { conecta: 1 } },
 	);
-	if (!user || !user.conecta) {
+	if (!user || !user.conecta || !user.conecta.email) {
 		return {
-			formError: "Usuário ou senha incorretos.",
+			formError: "Usuário incorreto.",
 		};
 	}
 
-	const isValidPassword = await verifyPasswordHash(
-		user.conecta.senha,
-		password,
+	const verificationToken = randomBytes(32).toString("hex");
+	const verificationTokenExpiresInMinutes = 30;
+	const newVerificationToken: TAuthVerificationToken = {
+		token: verificationToken,
+		usuarioId: user._id.toString(),
+		usuarioEmail: user.conecta.email,
+		dataExpiracao: dayjs()
+			.add(verificationTokenExpiresInMinutes, "minute")
+			.toISOString(),
+		dataInsercao: new Date().toISOString(),
+	};
+	const insertAuthVerificationTokenResponse =
+		await authVerificationTokensCollection.insertOne(newVerificationToken);
+	if (!insertAuthVerificationTokenResponse.acknowledged)
+		return {
+			formError: "Oops, um erro desconhecido ocorreu, tente novamente.",
+		};
+
+	const insertedAuthVerificationTokenId =
+		insertAuthVerificationTokenResponse.insertedId.toString();
+
+	await sendEmailWithResend(user.conecta?.email, EmailTemplate.AuthMagicLink, {
+		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+		expiresInMinutes: verificationTokenExpiresInMinutes,
+	});
+
+	return redirect(`/magic-link/verify?id=${insertedAuthVerificationTokenId}`);
+}
+
+type TSignResult = {
+	formError?: string;
+	fieldError?: {
+		[key in keyof TSignUpSchema]?: string;
+	};
+};
+export async function signUp(
+	_: TSignResult,
+	data: TSignUpSchema,
+): Promise<TSignResult> {
+	const validationParsed = SignUpSchema.safeParse(data);
+
+	if (!validationParsed.success) {
+		const err = validationParsed.error.flatten();
+		return {
+			fieldError: {
+				name: err.fieldErrors.name?.[0],
+				email: err.fieldErrors.email?.[0],
+				phone: err.fieldErrors.name?.[0],
+				uf: err.fieldErrors.uf?.[0],
+				city: err.fieldErrors.city?.[0],
+			},
+		};
+	}
+
+	const { name, email, phone, uf, city } = validationParsed.data;
+
+	const crmDb = await connectToCRMDatabase();
+	const clientsCollection = crmDb.collection<TClient>(
+		DATABASE_COLLECTION_NAMES.CLIENTS,
 	);
-	if (!isValidPassword) {
+	const opportunitiesCollection = crmDb.collection<TOpportunity>(
+		DATABASE_COLLECTION_NAMES.OPPORTUNITIES,
+	);
+	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(
+		DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES,
+	);
+	let clientId: string | null = null;
+	let clientCpfCnpj: string | null = null;
+	let clientAcquisitionChannel: string | null = null;
+	// First, checking for possible existing client in db
+	const query: Filter<TClient> = {
+		$or: [{ email: email }, { telefonePrimario: phone }],
+	};
+	const existingClientInDb = await clientsCollection.findOne({ ...query });
+	if (existingClientInDb) {
+		console.log(
+			"CLIENT FOUND",
+			existingClientInDb._id,
+			existingClientInDb.nome,
+		);
+		// In case there is an existing client in db
+		clientId = existingClientInDb._id.toString();
+		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
+		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
+	} else {
+		console.log("CLIENT NOT FOUND, CREATING CLIENT");
+		// In case there is no existing client in db
+		const newClient: TClient = {
+			nome: name,
+			idParceiro: MATRIX_COMPANY_PARTNER_ID,
+			telefonePrimario: phone,
+			uf: uf,
+			cidade: city,
+			canalAquisicao: "CONECTA AMPÈRE",
+			indicador: {},
+			conecta: {
+				usuario: phone,
+				email: email,
+				senha: "",
+			},
+			autor: CONECTA_AMPERE_CRM_USER_DATA,
+			dataInsercao: new Date().toISOString(),
+		};
+		try {
+			const insertClientResponse = await clientsCollection.insertOne(newClient);
+			if (!insertClientResponse.acknowledged)
+				return {
+					formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				};
+			const insertedClientId = insertClientResponse.insertedId.toString();
+			clientId = insertedClientId;
+		} catch (error) {
+			console.log("INSERT CLIENT ERROR", error);
+			return {
+				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+			};
+		}
+	}
+
+	// Handling the CRM opportunity automation for new registers on Conecta Ampère
+	let newOpportunityIdentifier: string | null = null;
+	try {
+		newOpportunityIdentifier = await getNewOpportunityIdentifier(
+			opportunitiesCollection,
+		);
+
+		let opportunityId: string | null = null;
+		const newOpportunity: TOpportunity = {
+			nome: name,
+			idParceiro: MATRIX_COMPANY_PARTNER_ID,
+			tipo: {
+				id: ReferEarnOptions[0].projectTypeId,
+				titulo: ReferEarnOptions[0].projectType,
+			},
+			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
+			descricao: "",
+			identificador: newOpportunityIdentifier,
+			responsaveis: [
+				{
+					id: "6463ccaa8c5e3e227af54d89",
+					nome: "LUCAS FERNANDES",
+					papel: "VENDEDOR",
+					avatar_url:
+						"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
+					dataInsercao: new Date().toISOString(),
+				},
+			],
+			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
+			idCliente: clientId as string,
+			cliente: {
+				nome: name,
+				cpfCnpj: clientCpfCnpj,
+				telefonePrimario: phone,
+				email: email,
+				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
+			},
+			localizacao: {
+				uf: uf,
+				cidade: city,
+			},
+			ganho: {},
+			perda: {},
+			instalacao: {},
+			autor: CONECTA_AMPERE_CRM_USER_DATA,
+			dataExclusao: null,
+			dataInsercao: new Date().toISOString(),
+		};
+		const insertOpportunityResponse =
+			await opportunitiesCollection.insertOne(newOpportunity);
+		if (!insertOpportunityResponse.acknowledged)
+			return {
+				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+			};
+		opportunityId = insertOpportunityResponse.insertedId.toString();
+
+		const newFunnelReference: TFunnelReference = {
+			idParceiro: "65454ba15cf3e3ecf534b308",
+			idOportunidade: opportunityId,
+			idFunil: "661eb0996dd818643c5334f5",
+			idEstagioFunil: "1",
+			estagios: {
+				"1": { entrada: new Date().toISOString() },
+			},
+			dataInsercao: new Date().toISOString(),
+		};
+		await funnelReferencesCollection.insertOne(newFunnelReference);
+
+		// In case the opportunity creation succedded, redirecting the user
+		const sessionToken = await generateSessionToken();
+		const session = await createSession({
+			token: sessionToken,
+			userId: clientId,
+		});
+		setSetSessionCookie({
+			token: sessionToken,
+			expiresAt: session.dataExpiracao,
+		});
+		return redirect("/");
+	} catch (error) {
+		console.log("Error during opportunity automation of signup", error);
+		// In case the opportunity creation failed, just redirecting the user
+		const sessionToken = await generateSessionToken();
+		const session = await createSession({
+			token: sessionToken,
+			userId: clientId,
+		});
+		setSetSessionCookie({
+			token: sessionToken,
+			expiresAt: session.dataExpiracao,
+		});
+		return redirect("/");
+	}
+}
+async function getNewOpportunityIdentifier(
+	collection: Collection<TOpportunity>,
+) {
+	const lastInsertedIdentificator = await collection
+		.aggregate([
+			{ $project: { identificador: 1 } },
+			{ $sort: { _id: -1 } },
+			{ $limit: 1 },
+		])
+		.toArray();
+	const lastIdentifierNumber = lastInsertedIdentificator[0]
+		? Number(lastInsertedIdentificator[0].identificador.split("-")[1])
+		: 0;
+	const newIdentifierNumber = lastIdentifierNumber + 1;
+	const newIdentifier = `CRM-${newIdentifierNumber}`;
+
+	return newIdentifier;
+}
+
+type TResendVerificationTokenResult = {
+	actionError?: string;
+};
+
+export async function resendVerificationToken(
+	_: TResendVerificationTokenResult,
+	data: TResendVerificationTokenSchema,
+): Promise<TResendVerificationTokenResult> {
+	const validationParsed = ResendVerificationTokenSchema.safeParse(data);
+
+	if (!validationParsed.success) {
+		const err = validationParsed.error.flatten();
 		return {
-			formError: "Usuário ou senha incorretos.",
+			actionError: err.fieldErrors.userId?.[0],
 		};
 	}
 
-	console.log("USER", user);
-	const sessionToken = await generateSessionToken();
-	const session = await createSession({
-		token: sessionToken,
-		userId: user._id.toString(),
-	});
-	setSetSessionCookie({
-		token: sessionToken,
-		expiresAt: session.dataExpiracao,
-	});
-	return redirect("/dashboard");
+	const { userId } = validationParsed.data;
+	const crmDb = await connectToCRMDatabase();
+	const clientsCollection = crmDb.collection<TClient>(
+		DATABASE_COLLECTION_NAMES.CLIENTS,
+	);
+	const authVerificationTokensCollection =
+		crmDb.collection<TAuthVerificationToken>(
+			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
+		);
+
+	const client = await clientsCollection.findOne({ _id: new ObjectId(userId) });
+	if (!client || !client.conecta?.email)
+		return {
+			actionError: "Usuário não encontrado.",
+		};
+
+	await authVerificationTokensCollection.deleteMany({ usuarioId: userId });
+
+	const verificationToken = randomBytes(32).toString("hex");
+	const verificationTokenExpiresInMinutes = 30;
+	const newVerificationToken: TAuthVerificationToken = {
+		token: verificationToken,
+		usuarioId: client._id.toString(),
+		usuarioEmail: client.conecta.email,
+		dataExpiracao: dayjs()
+			.add(verificationTokenExpiresInMinutes, "minute")
+			.toISOString(),
+		dataInsercao: new Date().toISOString(),
+	};
+	const insertAuthVerificationTokenResponse =
+		await authVerificationTokensCollection.insertOne(newVerificationToken);
+	if (!insertAuthVerificationTokenResponse.acknowledged)
+		return {
+			actionError: "Oops, um erro desconhecido ocorreu, tente novamente.",
+		};
+
+	const insertedAuthVerificationTokenId =
+		insertAuthVerificationTokenResponse.insertedId.toString();
+
+	await sendEmailWithResend(
+		client.conecta?.email,
+		EmailTemplate.AuthMagicLink,
+		{
+			magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+			expiresInMinutes: verificationTokenExpiresInMinutes,
+		},
+	);
+
+	return redirect(`/magic-link/verify?id=${insertedAuthVerificationTokenId}`);
 }

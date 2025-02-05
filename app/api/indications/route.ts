@@ -51,10 +51,7 @@ async function handleCreateIndication(req: NextRequestType) {
 
 	let clientId: string | null = null;
 	const client = await clientsCollection.findOne({
-		$or: [
-			{ telefonePrimario: indication.telefone },
-			{ telefonePrimario: { $regex: indication.telefone, $options: "i" } },
-		],
+		telefonePrimario: indication.telefone,
 	});
 	if (!client) {
 		// If the client does not exist, we create it

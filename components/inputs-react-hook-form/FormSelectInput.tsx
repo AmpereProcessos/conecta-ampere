@@ -17,17 +17,11 @@ import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
 import {
 	FormControl,
 	FormDescription,
-	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 } from "../ui/form";
-import {
-	useFormContext,
-	ControllerProps,
-	type FieldValues,
-	type FieldPath,
-} from "react-hook-form";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 type SelectOption = {
 	id: string | number;
@@ -36,11 +30,8 @@ type SelectOption = {
 	value: string;
 };
 
-type FormSelectInputProps<
-	TFieldValues extends FieldValues = FieldValues,
-	TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-	name: TName;
+type FormSelectInputProps<TFieldValues extends FieldValues = FieldValues> = {
+	field: ControllerRenderProps<TFieldValues>;
 	labelText: string;
 	placeholderText: string;
 	resetOptionText: string;
@@ -54,9 +45,8 @@ type FormSelectInputProps<
 
 export function FormSelectInput<
 	TFieldValues extends FieldValues = FieldValues,
-	TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-	name,
+	field,
 	labelText,
 	placeholderText,
 	resetOptionText,
@@ -66,46 +56,37 @@ export function FormSelectInput<
 	optionsStartContent,
 	wrapperClassName,
 	labelClassName,
-}: FormSelectInputProps<TFieldValues, TName>) {
-	const form = useFormContext<TFieldValues>();
+}: FormSelectInputProps<TFieldValues>) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	return (
-		<FormField
-			control={form.control}
-			name={name}
-			render={({ field }) => (
-				<FormItem
-					className={cn("flex flex-col w-full gap-1", wrapperClassName)}
-				>
-					<FormLabel
-						className={cn(
-							"text-sm font-medium tracking-tight text-primary/80",
-							labelClassName,
-						)}
-					>
-						{labelText}
-					</FormLabel>
-					<SelectContent
-						field={field}
-						isDesktop={isDesktop}
-						editable={editable}
-						placeholder={placeholderText}
-						resetOptionText={resetOptionText}
-						options={options}
-						optionsStartContent={optionsStartContent}
-					/>
-					{description && <FormDescription>{description}</FormDescription>}
-					<FormMessage />
-				</FormItem>
-			)}
-		/>
+		<FormItem className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
+			<FormLabel
+				className={cn(
+					"text-sm font-medium tracking-tight text-primary/80",
+					labelClassName,
+				)}
+			>
+				{labelText}
+			</FormLabel>
+			<SelectContent
+				field={field}
+				isDesktop={isDesktop}
+				editable={editable}
+				placeholder={placeholderText}
+				resetOptionText={resetOptionText}
+				options={options}
+				optionsStartContent={optionsStartContent}
+			/>
+			{description && <FormDescription>{description}</FormDescription>}
+			<FormMessage />
+		</FormItem>
 	);
 }
 
-// Separated the select content into its own component for clarity
-type SelectContentProps = {
-	field: any;
+export default FormSelectInput;
+type SelectContentProps<TFieldValues extends FieldValues = FieldValues> = {
+	field: ControllerRenderProps<TFieldValues>;
 	isDesktop: boolean;
 	editable: boolean;
 	placeholder: string;
@@ -114,7 +95,7 @@ type SelectContentProps = {
 	optionsStartContent?: ReactNode;
 };
 
-function SelectContent({
+function SelectContent<TFieldValues extends FieldValues = FieldValues>({
 	field,
 	isDesktop,
 	editable,
@@ -122,7 +103,7 @@ function SelectContent({
 	resetOptionText,
 	options,
 	optionsStartContent,
-}: SelectContentProps) {
+}: SelectContentProps<TFieldValues>) {
 	const [isOpen, setIsOpen] = React.useState(false);
 
 	const SelectWrapper = isDesktop ? Popover : Drawer;

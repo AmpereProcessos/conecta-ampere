@@ -10,41 +10,32 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { login } from "@/lib/authentication/actions";
-import Link from "next/link";
-import React, { useActionState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SignUpSchema } from "@/lib/authentication/types";
-import type { z } from "zod";
-import {
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
-import { formatToPhone } from "@/lib/methods/formatting";
-import { FormSelectInput } from "@/components/inputs-form-only/FormSelectInput";
-import { BrazilianStatesOptions } from "@/configs/states_cities";
-import FormSelectInput2 from "@/components/inputs-form-only/FormSelectInput2";
-function SignUp() {
-	const form = useForm<z.infer<typeof SignUpSchema>>({
-		resolver: zodResolver(SignUpSchema),
-		defaultValues: {
-			name: "",
-			phone: "",
-			uf: "MG",
-			city: "ITUIUTABA",
-		},
-	});
-	const [state, action] = useActionState(login, {});
 
-	console.log(form.watch("uf"));
+import { login, signUp } from "@/lib/authentication/actions";
+import Link from "next/link";
+import React, { useActionState, useState } from "react";
+import { FaGoogle } from "react-icons/fa";
+import type { TSignUpSchema } from "@/lib/authentication/types";
+
+import { formatToPhone } from "@/lib/methods/formatting";
+import {
+	BrazilianCitiesOptionsFromUF,
+	BrazilianStatesOptions,
+} from "@/configs/states_cities";
+
+import TextInput from "@/components/inputs/TextInput";
+import SelectInput from "@/components/inputs/SelectInput";
+function SignUp() {
+	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
+		name: "",
+		email: "",
+		city: "",
+		uf: "",
+		phone: "",
+	});
+
+	const [actionResult, actionMethod] = useActionState(signUp, {});
+
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
@@ -67,123 +58,103 @@ function SignUp() {
 							<div className="mx-2 text-muted-foreground">ou</div>
 							<div className="flex-grow border-t border-muted" />
 						</div>
-						<FormProvider {...form}>
-							<form action={action} className="grid gap-4">
-								<FormField
-									control={form.control}
-									name="name"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Nome</FormLabel>
-											<FormControl>
-												<Input placeholder="João das Neves" {...field} />
-											</FormControl>
-											<FormDescription>Seu nome e sobrenome.</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="phone"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Telefone</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="(34) 99999-9999"
-													{...field}
-													onChange={(e) =>
-														field.onChange(formatToPhone(e.target.value))
-													}
-												/>
-											</FormControl>
-											<FormDescription>
-												Seu telefone de contato.
-											</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="email"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Email</FormLabel>
-											<FormControl>
-												<Input placeholder="seuemail@email.com" {...field} />
-											</FormControl>
-											<FormDescription>Seu melhor email.</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="email"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Email</FormLabel>
-											<FormControl>
-												<Input placeholder="seuemail@email.com" {...field} />
-											</FormControl>
-											<FormDescription>Seu melhor email.</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormSelectInput
-									name="uf"
-									labelText="ESTADO(UF) DA PESSOA INDICADA"
-									placeholderText="Preencha aqui o estado federativo da pessoa indicada..."
-									options={BrazilianStatesOptions}
-									resetOptionText="NÃO DEFINIDO"
-								/>
-								<FormField
-									control={form.control}
-									name="uf"
-									render={({ field }) => (
-										<FormSelectInput2
-											field={field}
-											labelText="ESTADO(UF) DA PESSOA INDICADA"
-											placeholderText="Preencha aqui o estado federativo da pessoa indicada..."
-											options={BrazilianStatesOptions}
-											resetOptionText="NÃO DEFINIDO"
-											description="Seu estado."
-										/>
-									)}
-								/>
+						<form
+							action={async () => await actionMethod(signUpHolder)}
+							className="grid gap-4"
+						>
+							<TextInput
+								identifier="name"
+								labelText="Nome"
+								placeholderText="Preencha aqui seu nome..."
+								value={signUpHolder.name}
+								handleChange={(value) =>
+									setSignUpHolder((prev) => ({ ...prev, name: value }))
+								}
+							/>
+							<TextInput
+								identifier="phone"
+								labelText="Telefone"
+								placeholderText="Preencha aqui seu telefone..."
+								value={signUpHolder.phone}
+								handleChange={(value) =>
+									setSignUpHolder((prev) => ({
+										...prev,
+										phone: formatToPhone(value),
+									}))
+								}
+							/>
+							<TextInput
+								labelText="Email"
+								placeholderText="Preencha aqui seu melhor email..."
+								value={signUpHolder.email}
+								handleChange={(value) =>
+									setSignUpHolder((prev) => ({ ...prev, email: value }))
+								}
+							/>
 
-								<div className="flex flex-wrap justify-between">
-									<Button variant={"link"} size={"sm"} className="p-0" asChild>
-										<Link href={"/login"}>
-											Já possui uma conta, clique aqui para acessar.
-										</Link>
-									</Button>
-								</div>
+							<SelectInput
+								labelText="Estado (UF)"
+								placeholderText="Preencha aqui o seu estado federativo..."
+								value={signUpHolder.uf}
+								options={BrazilianStatesOptions}
+								handleChange={(value) =>
+									setSignUpHolder((prev) => ({
+										...prev,
+										uf: value,
+										city: BrazilianCitiesOptionsFromUF(value)[0]?.value,
+									}))
+								}
+								handleReset={() =>
+									setSignUpHolder((prev) => ({
+										...prev,
+										uf: "MG",
+										cidade: "ITUIUTABA",
+									}))
+								}
+								resetOptionText="NÃO DEFINIDO"
+							/>
+							<SelectInput
+								labelText="Cidade"
+								placeholderText="Preencha aqui a sua cidade..."
+								value={signUpHolder.city}
+								options={BrazilianCitiesOptionsFromUF(signUpHolder.uf)}
+								handleChange={(value) =>
+									setSignUpHolder((prev) => ({ ...prev, city: value }))
+								}
+								handleReset={() =>
+									setSignUpHolder((prev) => ({ ...prev, city: "ITUIUTABA" }))
+								}
+								resetOptionText="NÃO DEFINIDO"
+							/>
 
-								{state?.fieldError ? (
-									<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-										{Object.values(state.fieldError).map((err) => (
-											<li className="ml-4" key={err}>
-												{err}
-											</li>
-										))}
-									</ul>
-								) : state?.formError ? (
-									<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-										{state?.formError}
-									</p>
-								) : null}
-								<SubmitButton className="w-full" aria-label="submit-btn">
-									Acessar
-								</SubmitButton>
-								<Button variant="outline" className="w-full" asChild>
-									<Link href="/">Cancelar</Link>
+							<div className="flex flex-wrap justify-between">
+								<Button variant={"link"} size={"sm"} className="p-0" asChild>
+									<Link href={"/login"}>
+										Já possui uma conta, clique aqui para acessar.
+									</Link>
 								</Button>
-							</form>
-						</FormProvider>
+							</div>
+
+							{actionResult?.fieldError ? (
+								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+									{Object.values(actionResult.fieldError).map((err) => (
+										<li className="ml-4" key={err}>
+											{err}
+										</li>
+									))}
+								</ul>
+							) : actionResult?.formError ? (
+								<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+									{actionResult?.formError}
+								</p>
+							) : null}
+							<SubmitButton className="w-full" aria-label="submit-btn">
+								Acessar
+							</SubmitButton>
+							<Button variant="outline" className="w-full" asChild>
+								<Link href="/">Cancelar</Link>
+							</Button>
+						</form>
 					</CardContent>
 				</Card>
 			</div>

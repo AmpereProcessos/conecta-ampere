@@ -18,10 +18,6 @@ export const LoginSchema = z.object({
 		required_error: "Usuário não informado.",
 		invalid_type_error: "Tipo não válido para o usuário.",
 	}),
-	password: z.string({
-		required_error: "Senha não informada.",
-		invalid_type_error: "Tipo não válido para a senha.",
-	}),
 });
 export type TLoginSchema = z.infer<typeof LoginSchema>;
 
@@ -50,3 +46,13 @@ export const SignUpSchema = z.object({
 	}),
 });
 export type TSignUpSchema = z.infer<typeof SignUpSchema>;
+
+export const ResendVerificationTokenSchema = z.object({
+	userId: z.string({
+		required_error: "Referência do usuário não informada.",
+		invalid_type_error: "Tipo não válido para referência do usuário.",
+	}),
+});
+export type TResendVerificationTokenSchema = z.infer<
+	typeof ResendVerificationTokenSchema
+>;
