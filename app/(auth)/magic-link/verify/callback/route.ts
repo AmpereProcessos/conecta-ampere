@@ -19,10 +19,13 @@ export async function GET(request: NextRequest) {
 		const error = "Token inválido.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/magic-link/verify?error=${error}` },
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(error)}`,
+			},
 		});
 	}
 
+	console.log(token);
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(
 		DATABASE_COLLECTION_NAMES.CLIENTS,
@@ -36,25 +39,33 @@ export async function GET(request: NextRequest) {
 		token: token,
 	});
 	if (!authVerificationToken) {
+		console.log("NO AUTH VERIFICATION FOUND");
 		const error = "Token inválido.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/magic-link/verify?error=${error}` },
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(error)}`,
+			},
 		});
 	}
+	console.log("AUTH VERIFICATION TOKEN FOUND", authVerificationToken);
 
 	const client = await clientsCollection.findOne({
 		_id: new ObjectId(authVerificationToken.usuarioId),
 	});
 
 	if (!client) {
+		console.log("CLIENT NOT FOUND");
 		const error = "Token inválido.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/magic-link/verify?error=${error}` },
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(error)}`,
+			},
 		});
 	}
 
+	console.log("CLIENT FOUND", client);
 	await authVerificationTokensCollection.deleteOne({
 		_id: new ObjectId(authVerificationToken._id),
 	});
@@ -66,10 +77,24 @@ export async function GET(request: NextRequest) {
 		token: sessionToken,
 		userId: client?._id.toString(),
 	});
-	setSetSessionCookie({
-		token: sessionToken,
-		expiresAt: session.dataExpiracao,
-	});
+	console.log("SESSION CREATED", session);
+	try {
+		setSetSessionCookie({
+			token: sessionToken,
+			expiresAt: session.dataExpiracao,
+		});
+	} catch (error) {
+		console.log("ERROR", error);
+		const errorMsg = "Um erro desconhecido ocorreu.";
+		return new Response(null, {
+			status: 400,
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(errorMsg)}`,
+			},
+		});
+	}
+
+	console.log("SESSION SET");
 	return redirect("/");
 	// query is "hello" for /api/search?query=hello
 }

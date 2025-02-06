@@ -17,7 +17,9 @@ export async function GET(request: NextRequest) {
 		const error = "Parâmetros inválidos.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/magic-link/verify?error=${error}` },
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(error)}`,
+			},
 		});
 	}
 
@@ -36,7 +38,9 @@ export async function GET(request: NextRequest) {
 		const error = "Parâmetros inválidos.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/magic-link/verify?error=${error}` },
+			headers: {
+				Location: `/magic-link/verify?error=${encodeURIComponent(error)}`,
+			},
 		});
 	}
 
@@ -58,7 +62,7 @@ export async function GET(request: NextRequest) {
 		const error = "Oops, um erro desconhecido ocorreu, tente novamente.";
 		return new Response(null, {
 			status: 400,
-			headers: { Location: `/login?error=${error}` },
+			headers: { Location: `/login?error=${encodeURIComponent(error)}` },
 		});
 	}
 
@@ -86,7 +90,7 @@ export async function GET(request: NextRequest) {
 		deleteAuthVerificationTokensCount > 0
 			? "Um novo link de acesso foi enviado !"
 			: null;
-	const redirectUrl = `${process.env.NEXT_PUBLIC_URL}/magic-link/verify?id=${insertedAuthVerificationTokenId}${detailsMsg ? `&details=${detailsMsg}` : ""}`;
+	const redirectUrl = `${process.env.NEXT_PUBLIC_URL}/magic-link/verify?id=${insertedAuthVerificationTokenId}${detailsMsg ? `&details=${encodeURIComponent(detailsMsg)}` : ""}`;
 	return new Response(null, {
 		status: 302,
 		headers: {

@@ -16,6 +16,7 @@ import type { TClient } from "@/schemas/client.schema";
 import { ObjectId } from "mongodb";
 import type { TAuthSession } from "./types";
 import { cache } from "react";
+import { env } from "node:process";
 
 export async function generateSessionToken(): Promise<string> {
 	const tokenBytes = new Uint8Array(20);
@@ -70,7 +71,12 @@ export async function validateSession(token: string) {
 	const user = await clientsCollection.findOne({
 		_id: new ObjectId(session.usuarioId),
 	});
-	if (!user) return { session: null, user: null };
+	if (!user) {
+		console.log("No user found running --validateSession-- method.");
+		// // Deleting the session token cookie
+		// await deleteSessionTokenCookie();
+		return { session: null, user: null };
+	}
 
 	const authSession: TAuthSession = {
 		session: {
@@ -87,10 +93,14 @@ export async function validateSession(token: string) {
 	};
 	// Checking if the session is expired
 	if (Date.now() > new Date(session.dataExpiracao).getTime()) {
+		console.log("Session expired running --validateSession--");
 		// If so, deleting the session
 		await crmDb
 			.collection<TSession>("conecta-sessions")
 			.deleteOne({ sessaoId: session.sessaoId });
+
+		// // Deleting the session token cookie
+		// await deleteSessionTokenCookie();
 		return { session: null, user: null };
 	}
 	// Checking if session expires in less 15 days
@@ -109,6 +119,7 @@ export const getCurrentSession = cache(async () => {
 	const cookieStore = await cookies();
 
 	const token = cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null;
+	console.log("Token get from --getCurrentSession--", token);
 	if (token === null) return { session: null, user: null };
 
 	const sessionResult = await validateSession(token);
@@ -133,12 +144,41 @@ export async function setSetSessionCookie({
 	token,
 	expiresAt,
 }: SetSessionCookieParams) {
+	try {
+		console.log("Got into --setSessionCookie-- method", token, expiresAt);
+		const cookiesStore = await cookies();
+		const resp = cookiesStore.set(SESSION_COOKIE_NAME, token, {
+			httpOnly: true,
+			path: "/",
+			secure: env.NODE_ENV === "production",
+			sameSite: "lax",
+			expires: new Date(expiresAt),
+		});
+		console.log("Response from setting cookies", resp);
+	} catch (error) {
+		console.log("ERROR SETTING THE COOKIE", error);
+		throw error;
+	}
+}
+
+export async function deleteSession(sessionId: string) {
+	const crmDb = await connectToCRMDatabase();
+	const sessionsCollection = crmDb.collection<TSession>(
+		DATABASE_COLLECTION_NAMES.SESSIONS,
+	);
+
+	return await sessionsCollection.deleteOne({ sessaoId: sessionId });
+}
+
+export async function deleteSessionTokenCookie() {
 	const cookiesStore = await cookies();
-	cookiesStore.set(SESSION_COOKIE_NAME, token, {
+
+	cookiesStore.set(SESSION_COOKIE_NAME, "", {
 		httpOnly: true,
 		path: "/",
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "lax",
-		expires: new Date(expiresAt),
 	});
+
+	return;
 }
