@@ -27,7 +27,8 @@ import { geolocation } from "@vercel/functions";
 import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest): Promise<Response> {
-	// const userRequestLocation = geolocation(request);
+	const userRequestLocation = geolocation(request);
+	console.log("CALLBACK", userRequestLocation);
 	const cookieStore = await cookies();
 
 	const url = new URL(request.url);
