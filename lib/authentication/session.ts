@@ -16,7 +16,6 @@ import type { TClient } from "@/schemas/client.schema";
 import { ObjectId } from "mongodb";
 import type { TAuthSession } from "./types";
 import { cache } from "react";
-import { env } from "node:process";
 
 export async function generateSessionToken(): Promise<string> {
 	const tokenBytes = new Uint8Array(20);
@@ -150,7 +149,7 @@ export async function setSetSessionCookie({
 		const resp = cookiesStore.set(SESSION_COOKIE_NAME, token, {
 			httpOnly: true,
 			path: "/",
-			secure: env.NODE_ENV === "production",
+			secure: process.env.NODE_ENV === "production",
 			sameSite: "lax",
 			expires: new Date(expiresAt),
 		});

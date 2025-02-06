@@ -1,10 +1,10 @@
 import { Google } from "arctic";
-import { env } from "node:process";
+
 import { absoluteUrl } from "../utils";
 
 export const google = new Google(
-	env.GOOGLE_CLIENT_ID as string,
-	env.GOOGLE_CLIENT_SECRET_KEY as string,
+	process.env.GOOGLE_CLIENT_ID as string,
+	process.env.GOOGLE_CLIENT_SECRET_KEY as string,
 	absoluteUrl("/google/callback"),
 );
 
