@@ -26,6 +26,7 @@ export type TCreateIndicationRouteInput = z.infer<
 	typeof CreateIndicationRouteInput
 >;
 async function handleCreateIndication(req: NextRequestType) {
+	const session = await getCurrentSessionUncached();
 	const payload = await req.json();
 	const indication = CreateIndicationRouteInput.parse(payload);
 

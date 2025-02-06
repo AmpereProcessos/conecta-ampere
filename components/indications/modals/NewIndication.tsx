@@ -119,12 +119,14 @@ function NewIndication({
 					<DialogClose asChild>
 						<Button variant="outline">FECHAR</Button>
 					</DialogClose>
-					<LoadingButton
-						onClick={() => mutateCreateIndication(infoHolder)}
-						loading={isPending}
-					>
-						INDICAR
-					</LoadingButton>
+					{infoHolder.tipo.id ? (
+						<LoadingButton
+							onClick={() => mutateCreateIndication(infoHolder)}
+							loading={isPending}
+						>
+							INDICAR
+						</LoadingButton>
+					) : null}
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
@@ -142,12 +144,14 @@ function NewIndication({
 					updateInfoHolder={updateInfoHolder}
 				/>
 				<DrawerFooter className="pt-2">
-					<LoadingButton
-						onClick={() => mutateCreateIndication(infoHolder)}
-						loading={isPending}
-					>
-						INDICAR
-					</LoadingButton>
+					{infoHolder.tipo?.id ? (
+						<LoadingButton
+							onClick={() => mutateCreateIndication(infoHolder)}
+							loading={isPending}
+						>
+							INDICAR
+						</LoadingButton>
+					) : null}
 					<DrawerClose asChild>
 						<Button variant="outline">FECHAR</Button>
 					</DrawerClose>

@@ -4,6 +4,7 @@ import { z } from "zod";
 export type TSessionUser = {
 	id: string;
 	nome: string;
+	cpfCnpj?: string | null;
 	email?: string | null;
 	avatar_url?: string | null;
 };

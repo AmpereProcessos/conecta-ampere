@@ -16,6 +16,7 @@ import type { TClient } from "@/schemas/client.schema";
 import { ObjectId } from "mongodb";
 import type { TAuthSession } from "./types";
 import { cache } from "react";
+import createHttpError from "http-errors";
 
 export async function generateSessionToken(): Promise<string> {
 	const tokenBytes = new Uint8Array(20);
@@ -86,6 +87,7 @@ export async function validateSession(token: string) {
 		user: {
 			id: session.usuarioId,
 			nome: user.nome,
+			cpfCnpj: user.cpfCnpj,
 			avatar_url: user.conecta?.avatar_url,
 			email: user.conecta?.email,
 		},
@@ -132,6 +134,21 @@ export const getCurrentSessionUncached = async () => {
 	if (token === null) return { session: null, user: null };
 
 	const sessionResult = await validateSession(token);
+	return sessionResult;
+};
+
+export const getValidCurrentSessionUncached = async () => {
+	const cookieStore = await cookies();
+
+	const token = cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null;
+	if (token === null)
+		throw new createHttpError.Unauthorized("Você não está autenticado.");
+
+	const sessionResult = await validateSession(token);
+
+	if (!sessionResult.session || !sessionResult.user)
+		throw new createHttpError.Unauthorized("Você não está autenticado.");
+
 	return sessionResult;
 };
 
