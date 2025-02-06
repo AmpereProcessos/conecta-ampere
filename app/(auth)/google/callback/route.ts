@@ -23,8 +23,11 @@ import type { TSession } from "@/schemas/session.schema";
 import { OAuth2RequestError } from "arctic";
 import { type Collection, ObjectId } from "mongodb";
 import { cookies } from "next/headers";
+import { geolocation } from "@vercel/functions";
+import type { NextRequest } from "next/server";
 
-export async function GET(request: Request): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
+	// const userRequestLocation = geolocation(request);
 	const cookieStore = await cookies();
 
 	const url = new URL(request.url);
@@ -52,13 +55,13 @@ export async function GET(request: Request): Promise<Response> {
 	try {
 		const tokens = await google.validateAuthorizationCode(code, codeVerifier);
 
-		console.log("GOOGLE OAUTH TOKENS", tokens);
+		// console.log("GOOGLE OAUTH TOKENS", tokens);
 		const accessToken = tokens.accessToken();
 		const refreshToken = tokens.hasRefreshToken()
 			? tokens.refreshToken()
 			: null;
-		console.log("GOOGLE OAUTH ACCESS TOKEN", accessToken);
-		console.log("GOOGLE OAUTH REFRESH TOKEN", refreshToken);
+		// console.log("GOOGLE OAUTH ACCESS TOKEN", accessToken);
+		// console.log("GOOGLE OAUTH REFRESH TOKEN", refreshToken);
 		const googleOpenIdConnectResponse = await fetch(
 			"https://openidconnect.googleapis.com/v1/userinfo",
 			{
@@ -71,7 +74,7 @@ export async function GET(request: Request): Promise<Response> {
 		const googleUser: GoogleUserOpenIDConnect =
 			await googleOpenIdConnectResponse.json();
 
-		console.log("GOOGLE USER", googleUser);
+		// console.log("GOOGLE USER", googleUser);
 
 		if (!googleUser.email || !googleUser.email_verified) {
 			return new Response(

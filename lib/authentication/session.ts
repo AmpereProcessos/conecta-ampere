@@ -144,7 +144,6 @@ export async function setSetSessionCookie({
 	expiresAt,
 }: SetSessionCookieParams) {
 	try {
-		console.log("Got into --setSessionCookie-- method", token, expiresAt);
 		const cookiesStore = await cookies();
 		const resp = cookiesStore.set(SESSION_COOKIE_NAME, token, {
 			httpOnly: true,
@@ -153,7 +152,6 @@ export async function setSetSessionCookie({
 			sameSite: "lax",
 			expires: new Date(expiresAt),
 		});
-		console.log("Response from setting cookies", resp);
 	} catch (error) {
 		console.log("ERROR SETTING THE COOKIE", error);
 		throw error;
