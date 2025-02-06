@@ -3,7 +3,10 @@ import {
 	MATRIX_COMPANY_PARTNER_ID,
 } from "@/configs/app-definitions";
 import { apiHandler, type UnwrapNextResponse } from "@/lib/api/handler";
-import { getCurrentSessionUncached } from "@/lib/authentication/session";
+import {
+	getCurrentSessionUncached,
+	getValidCurrentSessionUncached,
+} from "@/lib/authentication/session";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
 import type { TClient } from "@/schemas/client.schema";
 import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
@@ -195,10 +198,7 @@ export type TCreateIndicationRouteOutput = UnwrapNextResponse<
 export const POST = apiHandler({ POST: handleCreateIndication });
 
 async function handleGetIndications(req: NextRequestType) {
-	const { session, user } = await getCurrentSessionUncached();
-
-	if (!session || !user)
-		throw new createHttpError.Unauthorized("Você não está autenticado.");
+	const { session, user } = await getValidCurrentSessionUncached();
 
 	console.log(session, user);
 	const crmDb = await connectToCRMDatabase();

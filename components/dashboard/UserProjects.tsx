@@ -21,7 +21,7 @@ function UserProjects() {
 					href="google.com"
 					className="py-2 px-4 w-fit flex rounded-lg items-center gap-1 bg-[#15599a] text-white hover:bg-blue-800 dark:bg-blue-400 dark:hover:bg-blue-500"
 				>
-					<BsWhatsapp size={12} />
+					<BsWhatsapp size={15} />
 					<p className="text-[0.45rem] lg:text-xs font-extrabold">
 						CONTATAR CONSULTOR DE VENDAS
 					</p>
