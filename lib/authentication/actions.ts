@@ -161,6 +161,7 @@ export async function signUp(
 			nome: name,
 			idParceiro: MATRIX_COMPANY_PARTNER_ID,
 			telefonePrimario: phone,
+			email: email,
 			uf: uf,
 			cidade: city,
 			canalAquisicao: "CONECTA AMPÈRE",
@@ -190,9 +191,8 @@ export async function signUp(
 	}
 
 	// Handling the CRM opportunity automation for new registers on Conecta Ampère
-	let newOpportunityIdentifier: string | null = null;
 	try {
-		newOpportunityIdentifier = await getNewOpportunityIdentifier(
+		const newOpportunityIdentifier = await getNewOpportunityIdentifier(
 			opportunitiesCollection,
 		);
 

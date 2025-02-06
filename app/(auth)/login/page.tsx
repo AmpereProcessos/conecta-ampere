@@ -37,7 +37,7 @@ function Login() {
 					<CardContent>
 						<div className="flex w-full flex-col gap-2">
 							<Button variant="outline" className="w-full" asChild>
-								<Link href="/login/google" prefetch={false}>
+								<Link href="/google" prefetch={false}>
 									<FaGoogle className="mr-2 h-5 w-5" />
 									Acesso com Google
 								</Link>

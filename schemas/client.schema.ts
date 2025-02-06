@@ -141,6 +141,20 @@ export const ClientSchema = z.object({
 				})
 				.optional()
 				.nullable(),
+
+			googleId: z
+				.string({
+					invalid_type_error: "Tipo não válido para o ID google do cliente.",
+				})
+				.optional()
+				.nullable(),
+			googleRefreshToken: z
+				.string({
+					invalid_type_error:
+						"Tipo não válido para o token de revalidações google do cliente.",
+				})
+				.optional()
+				.nullable(),
 		})
 		.optional()
 		.nullable(),
