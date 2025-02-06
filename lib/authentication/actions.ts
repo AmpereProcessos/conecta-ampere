@@ -120,12 +120,21 @@ export async function signUp(
 				phone: err.fieldErrors.name?.[0],
 				uf: err.fieldErrors.uf?.[0],
 				city: err.fieldErrors.city?.[0],
+				termsAndPrivacyPolicyAcceptanceDate:
+					err.fieldErrors.termsAndPrivacyPolicyAcceptanceDate?.[0],
 			},
 		};
 	}
 
-	const { name, email, phone, uf, city } = validationParsed.data;
+	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate } =
+		validationParsed.data;
 
+	if (!termsAndPrivacyPolicyAcceptanceDate) {
+		return {
+			formError:
+				"Para criar sua conta, é necessário aceitar os Termos de Uso e a Política de Privacidade.",
+		};
+	}
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(
 		DATABASE_COLLECTION_NAMES.CLIENTS,

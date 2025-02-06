@@ -25,6 +25,7 @@ import {
 
 import TextInput from "@/components/inputs/TextInput";
 import SelectInput from "@/components/inputs/SelectInput";
+import { Checkbox } from "@/components/ui/checkbox";
 function SignUp() {
 	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
 		name: "",
@@ -32,6 +33,7 @@ function SignUp() {
 		city: "",
 		uf: "",
 		phone: "",
+		termsAndPrivacyPolicyAcceptanceDate: null,
 	});
 
 	const [actionResult, actionMethod] = useActionState(signUp, {});
@@ -126,9 +128,19 @@ function SignUp() {
 								}
 								resetOptionText="NÃO DEFINIDO"
 							/>
-							<div className="w-full flex flex-col">
+							<div className="w-full flex items-center gap-1.5">
+								<Checkbox
+									checked={!!signUpHolder.termsAndPrivacyPolicyAcceptanceDate}
+									onCheckedChange={(v) =>
+										setSignUpHolder((prev) => ({
+											...prev,
+											termsAndPrivacyPolicyAcceptanceDate:
+												v === true ? new Date().toISOString() : null,
+										}))
+									}
+								/>
 								<p className="text-xs font-medium text-primary w-full">
-									Ao realizar o cadastro você concorda com nossos{" "}
+									Li e concordo com os{" "}
 									<Link
 										href={"/legal"}
 										className="underline-offset-4 hover:underline"

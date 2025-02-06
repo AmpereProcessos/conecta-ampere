@@ -45,6 +45,15 @@ export const SignUpSchema = z.object({
 		required_error: "Cidade não informada.",
 		invalid_type_error: "Tipo não válido para cidade.",
 	}),
+	termsAndPrivacyPolicyAcceptanceDate: z
+		.string({
+			required_error:
+				"Data de aceitação dos termos de uso e política de privacidade não informada.",
+			invalid_type_error:
+				"Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
+		})
+		.optional()
+		.nullable(),
 });
 export type TSignUpSchema = z.infer<typeof SignUpSchema>;
 

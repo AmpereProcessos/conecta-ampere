@@ -21,7 +21,7 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 			</div>
 			<div className="w-full flex items-end justify-between gap-1.5">
 				<div className="flex items-center gap-1.5 text-[#FB2E9F]">
-					<h1 className="font-black text-4xl">{data?.balance}</h1>
+					<h1 className="font-black text-4xl">{data?.balance || 0}</h1>
 					<FaBolt size={22} />
 				</div>
 				{/* <button
