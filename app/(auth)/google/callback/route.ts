@@ -113,8 +113,8 @@ export async function GET(request: NextRequest): Promise<Response> {
 				nome: googleUser.name,
 				idParceiro: MATRIX_COMPANY_PARTNER_ID,
 				telefonePrimario: "",
-				uf: "",
-				cidade: "",
+				uf: userRequestLocation.countryRegion || "",
+				cidade: userRequestLocation.city?.toUpperCase() || "",
 				email: googleUser.email,
 				canalAquisicao: "CONECTA AMPÈRE",
 				indicador: {},
@@ -176,8 +176,8 @@ export async function GET(request: NextRequest): Promise<Response> {
 					canalAquisicao: "CONECTA AMPÈRE",
 				},
 				localizacao: {
-					uf: "",
-					cidade: "",
+					uf: userRequestLocation.countryRegion || "",
+					cidade: userRequestLocation.city?.toUpperCase() || "",
 				},
 				ganho: {},
 				perda: {},
@@ -211,6 +211,12 @@ export async function GET(request: NextRequest): Promise<Response> {
 				},
 				{
 					$set: {
+						uf: existingUser.uf
+							? existingUser.uf
+							: userRequestLocation.countryRegion || "",
+						cidade: existingUser.cidade
+							? existingUser.cidade
+							: userRequestLocation.city?.toUpperCase() || "",
 						"conecta.usuario":
 							existingUser.conecta?.usuario || googleUser.email,
 						"conecta.avatar_url":
