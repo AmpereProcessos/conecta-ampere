@@ -32,7 +32,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 				<div className="flex items-center gap-1.5">
 					<ThemeModeToggle />
 					<Button variant="ghost" asChild>
-						<Link href={"/logout"}>
+						<Link href={"/logout"} prefetch={false}>
 							<LogOut className="h-[1.2rem] w-[1.2rem]" />
 						</Link>
 					</Button>
