@@ -20,6 +20,7 @@ function CreditRedemptionRequests({ sessionUser }: CreditRedemptionRequestsProps
 	const [newRequestMenuIsOpen, setNewRequestMenuIsOpen] = useState<boolean>(false);
 	const { data: requests, isLoading, isError, isSuccess, error } = useCreditRedemptionRequestsQuery();
 
+	console.log("REQUESTS", requests);
 	const handleNewRequestOnMutate = async () =>
 		await queryClient.cancelQueries({
 			queryKey: ["credit-redemption-requests"],

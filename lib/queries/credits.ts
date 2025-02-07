@@ -22,7 +22,7 @@ export function useUserCreditsBalanceQuery() {
 
 export async function fetchCreditRedemptionRequests() {
 	try {
-		const { data }: { data: TGetCreditRedemptionRequestsRouteOutput } = await axios.get("/api/indications");
+		const { data }: { data: TGetCreditRedemptionRequestsRouteOutput } = await axios.get("/api/credits");
 		const requests = data.data.default;
 		if (!requests) throw new Error("Oops, houve um erro desconhecido ao buscar as indicações.");
 		return requests;

@@ -114,6 +114,7 @@ async function handleGetCreditRedemptionRequests(req: NextRequestType) {
 
 	const creditRedemptionRequests = await creditRedemptionRequestsCollection.find({ "requerente.id": user.id }).toArray();
 
+	console.log(creditRedemptionRequests);
 	return NextResponse.json(
 		{
 			data: {
