@@ -95,8 +95,9 @@ function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardPro
 					<h1 className="font-semibold leading-none tracking-tight text-[0.625rem] lg:text-xs">{request.recompensaResgatada.nome}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<div className="rounded-full bg-[#FB2E9F]/30 text-[#FB2E9F] font-extrabold text-[0.5rem] p-1 flex items-center gap-1">
-						<FaBolt size={4} />
+					<div className="rounded-full bg-[#FB2E9F]/30 text-[#FB2E9F] font-extrabold text-[0.5rem] px-2 p-1 flex items-center gap-1">
+						<FaBolt className="w-2.5 h-2.5 lg:w-2.5 lg:h-2.5 min-w-2 min-h-2" />
+						<p className="text-[0.5rem]">-{request.creditosResgatados} CRÉDITOS</p>
 					</div>
 					{getCreditRedemptionRequestStatus({ request })}
 				</div>
