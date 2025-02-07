@@ -1,8 +1,4 @@
-import type {
-	TCreateIndicationRouteInput,
-	TCreateIndicationRouteOutput,
-} from "@/app/api/indications/route";
-import { TIndication } from "@/schemas/indication.schema";
+import type { TCreateIndicationRouteInput, TCreateIndicationRouteOutput } from "@/app/api/indications/route";
 import axios from "axios";
 
 export async function createIndication(info: TCreateIndicationRouteInput) {

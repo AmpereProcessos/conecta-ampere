@@ -1,30 +1,16 @@
+import { AxiosError } from "axios";
+import createHttpError from "http-errors";
 import { ZodError } from "zod";
 
-export function getErrorMessage(error: unknown): string {
-  console.log("Tipo do erro:", Object.prototype.toString.call(error));
-  console.log("Erro completo:", error);
-
-  // Caso 1: É um ZodError
-  if (error instanceof ZodError) {
-    console.log("ERRO NO CASO 1");
-
-    return error.errors[0]?.message || "Oops, um erro desconhecido ocorreu.";
-  }
-
-  // Caso 3: É um objeto com uma propriedade 'message' que pode ser um JSON string
-  if (typeof error === "object" && error !== null && "message" in error) {
-    console.log("ERRO NO CASO 3");
-    const messageError = (error as { message: unknown }).message;
-    if (typeof messageError === "string") {
-      return messageError;
-    }
-  }
-
-  // Caso 4: É um Error padrão
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  // Caso 5: Qualquer outro tipo de erro
-  return "Oops, um erro desconhecido ocorreu.";
+export function getErrorMessage(error: any) {
+	const isDefaultError = !!error.response && !!error.response.data && !!error.response.data.message;
+	if (isDefaultError) return error.response.data.message as string;
+	if (createHttpError.isHttpError(error) && error.expose) return error.message as string;
+	if (error instanceof AxiosError) {
+		const personalizedHttpError = error?.response?.data.error;
+		if (personalizedHttpError) return personalizedHttpError.message as string;
+		return error.message;
+	}
+	if (error instanceof ZodError) return error.errors[0].message;
+	return "Houve um erro desconhecido, por favor, comunique o setor de tecnologia.";
 }

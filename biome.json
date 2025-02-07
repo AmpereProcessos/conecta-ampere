@@ -11,5 +11,11 @@
 				"useTemplate": "warn"
 			}
 		}
+	},
+	"formatter": {
+		"indentStyle": "tab",
+		"indentWidth": 1,
+		"lineWidth": 180,
+		"lineEnding": "lf"
 	}
 }

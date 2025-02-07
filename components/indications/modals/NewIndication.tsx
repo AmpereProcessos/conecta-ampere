@@ -1,22 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-} from "@/components/ui/drawer";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import type { TSessionUser } from "@/lib/authentication/types";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import type { TSaleCategoryEnum } from "@/schemas/enums.schema";
@@ -25,11 +9,7 @@ import React, { useState } from "react";
 import ProjectTypeSelection from "./blocks/ProjectTypeSelection";
 import TextInput from "@/components/inputs/TextInput";
 import { formatToPhone } from "@/lib/methods/formatting";
-import {
-	BrazilianCitiesOptionsFromUF,
-	BrazilianStatesOptions,
-	BrazilStatesAndCities,
-} from "@/configs/states_cities";
+import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions, BrazilStatesAndCities } from "@/configs/states_cities";
 import SelectInput from "@/components/inputs/SelectInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LoadingButton } from "@/components/buttons/loading-button";
@@ -48,12 +28,7 @@ type NewIndicationProps = {
 		onSettled?: () => void;
 	};
 };
-function NewIndication({
-	sessionUser,
-	projectType,
-	closeModal,
-	callbacks,
-}: NewIndicationProps) {
+function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewIndicationProps) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	const initialHolderState: TIndication = {
@@ -90,7 +65,7 @@ function NewIndication({
 			if (callbacks?.onMutate) callbacks.onMutate();
 		},
 		onSuccess: (data) => {
-			toast.success("Nova indicação criada com sucesso.");
+			toast.success(data.message);
 			if (callbacks?.onSuccess) callbacks.onSuccess();
 			setInfoHolder(initialHolderState);
 		},
@@ -107,23 +82,15 @@ function NewIndication({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>NOVA INDICAÇÃO</DialogTitle>
-					<DialogDescription>
-						Preencha alguns dados sobre a sua indicação.
-					</DialogDescription>
+					<DialogDescription>Preencha alguns dados sobre a sua indicação.</DialogDescription>
 				</DialogHeader>
-				<IndicationData
-					infoHolder={infoHolder}
-					updateInfoHolder={updateInfoHolder}
-				/>
+				<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				<DialogFooter>
 					<DialogClose asChild>
 						<Button variant="outline">FECHAR</Button>
 					</DialogClose>
 					{infoHolder.tipo.id ? (
-						<LoadingButton
-							onClick={() => mutateCreateIndication(infoHolder)}
-							loading={isPending}
-						>
+						<LoadingButton onClick={() => mutateCreateIndication(infoHolder)} loading={isPending}>
 							INDICAR
 						</LoadingButton>
 					) : null}
@@ -135,20 +102,12 @@ function NewIndication({
 			<DrawerContent>
 				<DrawerHeader className="text-left">
 					<DrawerTitle>NOVA INDICAÇÃO</DrawerTitle>
-					<DrawerDescription>
-						Preencha alguns dados sobre a sua indicação.
-					</DrawerDescription>
+					<DrawerDescription>Preencha alguns dados sobre a sua indicação.</DrawerDescription>
 				</DrawerHeader>
-				<IndicationData
-					infoHolder={infoHolder}
-					updateInfoHolder={updateInfoHolder}
-				/>
+				<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				<DrawerFooter className="pt-2">
 					{infoHolder.tipo?.id ? (
-						<LoadingButton
-							onClick={() => mutateCreateIndication(infoHolder)}
-							loading={isPending}
-						>
+						<LoadingButton onClick={() => mutateCreateIndication(infoHolder)} loading={isPending}>
 							INDICAR
 						</LoadingButton>
 					) : null}
@@ -200,9 +159,7 @@ function IndicationData({ infoHolder, updateInfoHolder }: IndicationDataProps) {
 						labelText="TELEFONE DA PESSOA INDICADA"
 						placeholderText="Preencha aqui o telefone da pessoa que está indicando..."
 						value={infoHolder.telefone}
-						handleChange={(value) =>
-							updateInfoHolder({ telefone: formatToPhone(value) })
-						}
+						handleChange={(value) => updateInfoHolder({ telefone: formatToPhone(value) })}
 					/>
 					<SelectInput
 						labelText="ESTADO(UF) DA PESSOA INDICADA"
@@ -214,9 +171,7 @@ function IndicationData({ infoHolder, updateInfoHolder }: IndicationDataProps) {
 								cidade: BrazilianCitiesOptionsFromUF(value)[0]?.value,
 							})
 						}
-						handleReset={() =>
-							updateInfoHolder({ uf: "MG", cidade: "ITUIUTABA" })
-						}
+						handleReset={() => updateInfoHolder({ uf: "MG", cidade: "ITUIUTABA" })}
 						options={BrazilianStatesOptions}
 						resetOptionText="NÃO DEFINIDO"
 					/>

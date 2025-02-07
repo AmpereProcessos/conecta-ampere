@@ -1,54 +1,31 @@
-import {
-	DATABASE_COLLECTION_NAMES,
-	MATRIX_COMPANY_PARTNER_ID,
-} from "@/configs/app-definitions";
+import { DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from "@/configs/app-definitions";
 import { apiHandler, type UnwrapNextResponse } from "@/lib/api/handler";
-import {
-	getCurrentSessionUncached,
-	getValidCurrentSessionUncached,
-} from "@/lib/authentication/session";
+import { getCurrentSessionUncached, getValidCurrentSessionUncached } from "@/lib/authentication/session";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
 import type { TClient } from "@/schemas/client.schema";
 import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
-import {
-	IndicationSchema,
-	type TIndication,
-} from "@/schemas/indication.schema";
+import { IndicationSchema, type TIndication } from "@/schemas/indication.schema";
 import type { TOpportunity } from "@/schemas/opportunity.schema";
 import createHttpError from "http-errors";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import type { z } from "zod";
-import type {
-	NextRequest as NextRequestType,
-	NextResponse as NextResponseType,
-} from "next/server";
+import type { NextRequest as NextRequestType, NextResponse as NextResponseType } from "next/server";
 
 export const CreateIndicationRouteInput = IndicationSchema;
-export type TCreateIndicationRouteInput = z.infer<
-	typeof CreateIndicationRouteInput
->;
+export type TCreateIndicationRouteInput = z.infer<typeof CreateIndicationRouteInput>;
 async function handleCreateIndication(req: NextRequestType) {
-	const session = await getCurrentSessionUncached();
+	const { session, user } = await getValidCurrentSessionUncached();
 	const payload = await req.json();
 	const indication = CreateIndicationRouteInput.parse(payload);
 
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const opportunitiesCollection = crmDb.collection<TOpportunity>(
-		DATABASE_COLLECTION_NAMES.OPPORTUNITIES,
-	);
-	const indicationsCollection = crmDb.collection<TIndication>(
-		DATABASE_COLLECTION_NAMES.INDICATIONS,
-	);
-	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(
-		DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES,
-	);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
+	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
+	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
 	// First, inserting the indication
-	const insertIndicationResponse =
-		await indicationsCollection.insertOne(indication);
+	const insertIndicationResponse = await indicationsCollection.insertOne(indication);
 	const indicationId = insertIndicationResponse.insertedId.toString();
 
 	// Then, checking the existence of the same client
@@ -81,9 +58,7 @@ async function handleCreateIndication(req: NextRequestType) {
 		});
 		if (!insertClientResponse.acknowledged) {
 			console.error("Error inserting client");
-			throw new createHttpError.InternalServerError(
-				"Oops, um erro desconhecido ocorreu ao criar a indicação.",
-			);
+			throw new createHttpError.InternalServerError("Oops, um erro desconhecido ocorreu ao criar a indicação.");
 		}
 		const insertedClientId = insertClientResponse.insertedId.toString();
 		clientId = insertedClientId;
@@ -92,16 +67,8 @@ async function handleCreateIndication(req: NextRequestType) {
 		clientId = client._id.toString();
 	}
 
-	const lastInsertedIdentificator = await opportunitiesCollection
-		.aggregate([
-			{ $project: { identificador: 1 } },
-			{ $sort: { _id: -1 } },
-			{ $limit: 1 },
-		])
-		.toArray();
-	const lastIdentifierNumber = lastInsertedIdentificator[0]
-		? Number(lastInsertedIdentificator[0].identificador.split("-")[1])
-		: 0;
+	const lastInsertedIdentificator = await opportunitiesCollection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
+	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
 	const newIdentifier = `CRM-${newIdentifierNumber}`;
 
@@ -150,13 +117,10 @@ async function handleCreateIndication(req: NextRequestType) {
 		dataExclusao: null,
 		dataInsercao: new Date().toISOString(),
 	};
-	const insertOpportunityResponse =
-		await opportunitiesCollection.insertOne(opportunityToInsert);
+	const insertOpportunityResponse = await opportunitiesCollection.insertOne(opportunityToInsert);
 	if (!insertOpportunityResponse.acknowledged) {
 		console.error("Error inserting opportunity");
-		throw new createHttpError.InternalServerError(
-			"Oops, um erro desconhecido ocorreu ao criar a indicação.",
-		);
+		throw new createHttpError.InternalServerError("Oops, um erro desconhecido ocorreu ao criar a indicação.");
 	}
 	const insertedOpportunityId = insertOpportunityResponse.insertedId.toString();
 
@@ -191,9 +155,7 @@ async function handleCreateIndication(req: NextRequestType) {
 		{ status: 201 },
 	);
 }
-export type TCreateIndicationRouteOutput = UnwrapNextResponse<
-	Awaited<ReturnType<typeof handleCreateIndication>>
->;
+export type TCreateIndicationRouteOutput = UnwrapNextResponse<Awaited<ReturnType<typeof handleCreateIndication>>>;
 
 export const POST = apiHandler({ POST: handleCreateIndication });
 
@@ -202,24 +164,20 @@ async function handleGetIndications(req: NextRequestType) {
 
 	console.log(session, user);
 	const crmDb = await connectToCRMDatabase();
-	const indicationsCollection = crmDb.collection<TIndication>(
-		DATABASE_COLLECTION_NAMES.INDICATIONS,
-	);
+	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 
 	const searchParams = req.nextUrl.searchParams;
 	const id = searchParams.get("id");
 
 	if (id) {
-		if (typeof id !== "string" || !ObjectId.isValid(id))
-			throw new createHttpError.BadRequest("ID inválido.");
+		if (typeof id !== "string" || !ObjectId.isValid(id)) throw new createHttpError.BadRequest("ID inválido.");
 
 		// Fetching the indication by id and the session user
 		const indication = await indicationsCollection.findOne({
 			_id: new ObjectId(id),
 			"autor.id": user.id,
 		});
-		if (!indication)
-			throw new createHttpError.NotFound("Indicação não encontrada.");
+		if (!indication) throw new createHttpError.NotFound("Indicação não encontrada.");
 		return NextResponse.json(
 			{
 				data: {
@@ -233,9 +191,7 @@ async function handleGetIndications(req: NextRequestType) {
 	}
 
 	// Fetching all indications by the session user
-	const indications = await indicationsCollection
-		.find({ "autor.id": user.id })
-		.toArray();
+	const indications = await indicationsCollection.find({ "autor.id": user.id }).toArray();
 	return NextResponse.json(
 		{
 			data: {
@@ -250,16 +206,8 @@ async function handleGetIndications(req: NextRequestType) {
 		{ status: 200 },
 	);
 }
-export type TGetIndicationsRouteOutput = UnwrapNextResponse<
-	Awaited<ReturnType<typeof handleGetIndications>>
->;
-export type TGetIndicationsRouteOutputDataById = Exclude<
-	TGetIndicationsRouteOutput["data"]["byId"],
-	undefined
->;
-export type TGetIndicationsRouteOutputDataDefault = Exclude<
-	TGetIndicationsRouteOutput["data"]["default"],
-	undefined
->;
+export type TGetIndicationsRouteOutput = UnwrapNextResponse<Awaited<ReturnType<typeof handleGetIndications>>>;
+export type TGetIndicationsRouteOutputDataById = Exclude<TGetIndicationsRouteOutput["data"]["byId"], undefined>;
+export type TGetIndicationsRouteOutputDataDefault = Exclude<TGetIndicationsRouteOutput["data"]["default"], undefined>;
 
 export const GET = apiHandler({ GET: handleGetIndications });

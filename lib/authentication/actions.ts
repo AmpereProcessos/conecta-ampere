@@ -1,26 +1,11 @@
 "use server";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
-import {
-	LoginSchema,
-	ResendVerificationTokenSchema,
-	SignUpSchema,
-	type TResendVerificationTokenSchema,
-	type TLoginSchema,
-	type TSignUpSchema,
-} from "./types";
+import { LoginSchema, ResendVerificationTokenSchema, SignUpSchema, type TResendVerificationTokenSchema, type TLoginSchema, type TSignUpSchema } from "./types";
 import type { TClient } from "@/schemas/client.schema";
-import {
-	createSession,
-	generateSessionToken,
-	setSetSessionCookie,
-} from "@/lib/authentication/session";
+import { createSession, generateSessionToken, setSetSessionCookie } from "@/lib/authentication/session";
 import { redirect } from "next/navigation";
 import { ObjectId, type Collection, type Filter } from "mongodb";
-import {
-	CONECTA_AMPERE_CRM_USER_DATA,
-	DATABASE_COLLECTION_NAMES,
-	MATRIX_COMPANY_PARTNER_ID,
-} from "@/configs/app-definitions";
+import { CONECTA_AMPERE_CRM_USER_DATA, DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from "@/configs/app-definitions";
 import type { TOpportunity } from "@/schemas/opportunity.schema";
 import { ReferEarnOptions } from "@/configs/constants";
 import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
@@ -35,10 +20,7 @@ type TLoginResult = {
 		[key in keyof TLoginSchema]?: string;
 	};
 };
-export async function login(
-	_: TLoginResult,
-	data: TLoginSchema,
-): Promise<TLoginResult> {
+export async function login(_: TLoginResult, data: TLoginSchema): Promise<TLoginResult> {
 	const validationParsed = LoginSchema.safeParse(data);
 	if (!validationParsed.success) {
 		const err = validationParsed.error.flatten();
@@ -52,18 +34,10 @@ export async function login(
 	const { username } = validationParsed.data;
 
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const authVerificationTokensCollection =
-		crmDb.collection<TAuthVerificationToken>(
-			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
-		);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
-	const user = await clientsCollection.findOne(
-		{ "conecta.usuario": username },
-		{ projection: { conecta: 1 } },
-	);
+	const user = await clientsCollection.findOne({ "conecta.usuario": username }, { projection: { conecta: 1 } });
 	if (!user || !user.conecta || !user.conecta.email) {
 		return {
 			formError: "Usuário incorreto.",
@@ -76,20 +50,16 @@ export async function login(
 		token: verificationToken,
 		usuarioId: user._id.toString(),
 		usuarioEmail: user.conecta.email,
-		dataExpiracao: dayjs()
-			.add(verificationTokenExpiresInMinutes, "minute")
-			.toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
-	const insertAuthVerificationTokenResponse =
-		await authVerificationTokensCollection.insertOne(newVerificationToken);
+	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 	if (!insertAuthVerificationTokenResponse.acknowledged)
 		return {
 			formError: "Oops, um erro desconhecido ocorreu, tente novamente.",
 		};
 
-	const insertedAuthVerificationTokenId =
-		insertAuthVerificationTokenResponse.insertedId.toString();
+	const insertedAuthVerificationTokenId = insertAuthVerificationTokenResponse.insertedId.toString();
 
 	await sendEmailWithResend(user.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
@@ -105,10 +75,7 @@ type TSignResult = {
 		[key in keyof TSignUpSchema]?: string;
 	};
 };
-export async function signUp(
-	_: TSignResult,
-	data: TSignUpSchema,
-): Promise<TSignResult> {
+export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSignResult> {
 	const validationParsed = SignUpSchema.safeParse(data);
 
 	if (!validationParsed.success) {
@@ -120,31 +87,22 @@ export async function signUp(
 				phone: err.fieldErrors.name?.[0],
 				uf: err.fieldErrors.uf?.[0],
 				city: err.fieldErrors.city?.[0],
-				termsAndPrivacyPolicyAcceptanceDate:
-					err.fieldErrors.termsAndPrivacyPolicyAcceptanceDate?.[0],
+				termsAndPrivacyPolicyAcceptanceDate: err.fieldErrors.termsAndPrivacyPolicyAcceptanceDate?.[0],
 			},
 		};
 	}
 
-	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate } =
-		validationParsed.data;
+	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate } = validationParsed.data;
 
 	if (!termsAndPrivacyPolicyAcceptanceDate) {
 		return {
-			formError:
-				"Para criar sua conta, é necessário aceitar os Termos de Uso e a Política de Privacidade.",
+			formError: "Para criar sua conta, é necessário aceitar os Termos de Uso e a Política de Privacidade.",
 		};
 	}
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const opportunitiesCollection = crmDb.collection<TOpportunity>(
-		DATABASE_COLLECTION_NAMES.OPPORTUNITIES,
-	);
-	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(
-		DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES,
-	);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
+	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
 	let clientId: string | null = null;
 	let clientCpfCnpj: string | null = null;
 	let clientAcquisitionChannel: string | null = null;
@@ -154,11 +112,7 @@ export async function signUp(
 	};
 	const existingClientInDb = await clientsCollection.findOne({ ...query });
 	if (existingClientInDb) {
-		console.log(
-			"CLIENT FOUND",
-			existingClientInDb._id,
-			existingClientInDb.nome,
-		);
+		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
@@ -201,9 +155,7 @@ export async function signUp(
 
 	// Handling the CRM opportunity automation for new registers on Conecta Ampère
 	try {
-		const newOpportunityIdentifier = await getNewOpportunityIdentifier(
-			opportunitiesCollection,
-		);
+		const newOpportunityIdentifier = await getNewOpportunityIdentifier(opportunitiesCollection);
 
 		let opportunityId: string | null = null;
 		const newOpportunity: TOpportunity = {
@@ -246,8 +198,7 @@ export async function signUp(
 			dataExclusao: null,
 			dataInsercao: new Date().toISOString(),
 		};
-		const insertOpportunityResponse =
-			await opportunitiesCollection.insertOne(newOpportunity);
+		const insertOpportunityResponse = await opportunitiesCollection.insertOne(newOpportunity);
 		if (!insertOpportunityResponse.acknowledged)
 			return {
 				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
@@ -292,19 +243,9 @@ export async function signUp(
 		return redirect("/");
 	}
 }
-async function getNewOpportunityIdentifier(
-	collection: Collection<TOpportunity>,
-) {
-	const lastInsertedIdentificator = await collection
-		.aggregate([
-			{ $project: { identificador: 1 } },
-			{ $sort: { _id: -1 } },
-			{ $limit: 1 },
-		])
-		.toArray();
-	const lastIdentifierNumber = lastInsertedIdentificator[0]
-		? Number(lastInsertedIdentificator[0].identificador.split("-")[1])
-		: 0;
+async function getNewOpportunityIdentifier(collection: Collection<TOpportunity>) {
+	const lastInsertedIdentificator = await collection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
+	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
 	const newIdentifier = `CRM-${newIdentifierNumber}`;
 
@@ -315,10 +256,7 @@ type TResendVerificationTokenResult = {
 	actionError?: string;
 };
 
-export async function resendVerificationToken(
-	_: TResendVerificationTokenResult,
-	data: TResendVerificationTokenSchema,
-): Promise<TResendVerificationTokenResult> {
+export async function resendVerificationToken(_: TResendVerificationTokenResult, data: TResendVerificationTokenSchema): Promise<TResendVerificationTokenResult> {
 	const validationParsed = ResendVerificationTokenSchema.safeParse(data);
 
 	if (!validationParsed.success) {
@@ -330,13 +268,8 @@ export async function resendVerificationToken(
 
 	const { userId } = validationParsed.data;
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const authVerificationTokensCollection =
-		crmDb.collection<TAuthVerificationToken>(
-			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
-		);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
 	const client = await clientsCollection.findOne({ _id: new ObjectId(userId) });
 	if (!client || !client.conecta?.email)
@@ -352,29 +285,21 @@ export async function resendVerificationToken(
 		token: verificationToken,
 		usuarioId: client._id.toString(),
 		usuarioEmail: client.conecta.email,
-		dataExpiracao: dayjs()
-			.add(verificationTokenExpiresInMinutes, "minute")
-			.toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
-	const insertAuthVerificationTokenResponse =
-		await authVerificationTokensCollection.insertOne(newVerificationToken);
+	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 	if (!insertAuthVerificationTokenResponse.acknowledged)
 		return {
 			actionError: "Oops, um erro desconhecido ocorreu, tente novamente.",
 		};
 
-	const insertedAuthVerificationTokenId =
-		insertAuthVerificationTokenResponse.insertedId.toString();
+	const insertedAuthVerificationTokenId = insertAuthVerificationTokenResponse.insertedId.toString();
 
-	await sendEmailWithResend(
-		client.conecta?.email,
-		EmailTemplate.AuthMagicLink,
-		{
-			magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
-			expiresInMinutes: verificationTokenExpiresInMinutes,
-		},
-	);
+	await sendEmailWithResend(client.conecta?.email, EmailTemplate.AuthMagicLink, {
+		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+		expiresInMinutes: verificationTokenExpiresInMinutes,
+	});
 
 	return redirect(`/magic-link/verify?id=${insertedAuthVerificationTokenId}`);
 }
