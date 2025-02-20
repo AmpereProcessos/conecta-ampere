@@ -2,6 +2,8 @@ import { MdDarkMode, MdSunny } from "react-icons/md";
 import { BsRobot } from "react-icons/bs";
 import type { IconType } from "react-icons/lib";
 import type { TSaleCategoryEnum } from "@/schemas/enums.schema";
+import { BsFiletypeCsv, BsFiletypeDocx, BsFiletypePdf, BsFiletypeXlsx, BsFiletypeXml, BsFillPlayBtnFill, BsImage, BsPeopleFill } from "react-icons/bs";
+
 export const Themes = [
 	{
 		label: "Sistema",
@@ -81,3 +83,68 @@ export const EarnRewardsOptions = [
 		requiredCredits: 500,
 	},
 ];
+
+type FileTypes = {
+	[contentType: string]: {
+		title: string;
+		extension: string;
+		icon: IconType;
+	};
+};
+export const FILE_TYPES: FileTypes = {
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+		title: "WORD",
+		extension: ".docx",
+		icon: BsFiletypeDocx,
+	},
+	"image/png": {
+		title: "IMAGEM (.PNG)",
+		extension: ".png",
+		icon: BsImage,
+	},
+	"image/jpeg": {
+		title: "IMAGEM(.JPEG)",
+		extension: ".jpeg",
+		icon: BsImage,
+	},
+	"image/tiff": {
+		title: "IMAGEM(.TIFF)",
+		extension: ".tiff",
+		icon: BsImage,
+	},
+	"application/pdf": {
+		title: "PDF",
+		extension: ".pdf",
+		icon: BsFiletypePdf,
+	},
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+		title: "EXCEL",
+		extension: ".xlsx",
+		icon: BsFiletypeXlsx,
+	},
+	"text/xml": {
+		title: "XML",
+		extension: ".xml",
+		icon: BsFiletypeXml,
+	},
+	"video/mp4": {
+		title: "MP4",
+		extension: ".mp4",
+		icon: BsFillPlayBtnFill,
+	},
+	"application/vnd.sealed.tiff": {
+		title: "IMAGEM(.TIFF)",
+		extension: ".tiff",
+		icon: BsImage,
+	},
+	"image/vnd.sealedmedia.softseal.jpg": {
+		title: "IMAGEM(.JPG)",
+		extension: ".jpg",
+		icon: BsImage,
+	},
+	"text/csv": {
+		title: "CSV(.CSV)",
+		extension: ".csv",
+		icon: BsFiletypeCsv,
+	},
+};

@@ -1,19 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState, ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-	Bell,
-	Calendar,
-	Grid,
-	House,
-	LayoutDashboard,
-	Settings,
-	TicketCheck,
-	User,
-	UserRoundPlus,
-	Users,
-	UsersRound,
-} from "lucide-react";
+import { Bell, Calendar, Grid, House, LayoutDashboard, Settings, TicketCheck, User, UserRoundPlus, Users, UsersRound } from "lucide-react";
 
 import type { TAuthSession } from "@/lib/authentication/types";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,10 +20,8 @@ function NavegationMenu({ sessionUser }: NavegationMenuProps) {
 	const [isVisible, setIsVisible] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
 
-	const handleNewIndicationOnMutate = async () =>
-		await queryClient.cancelQueries({ queryKey: ["indications"] });
-	const handleNewIndicationOnSettled = async () =>
-		await queryClient.invalidateQueries({ queryKey: ["indications"] });
+	const handleNewIndicationOnMutate = async () => await queryClient.cancelQueries({ queryKey: ["indications"] });
+	const handleNewIndicationOnSettled = async () => await queryClient.invalidateQueries({ queryKey: ["indications"] });
 	useEffect(() => {
 		const handleScroll = () => {
 			const currentScrollY = window.scrollY;
@@ -90,55 +76,38 @@ function NavegationMenu({ sessionUser }: NavegationMenuProps) {
 							>
 								<House className="w-3 h-3 lg:w-4 lg:h-4" />
 								<div className="flex flex-col items-center">
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										MENU
-									</span>
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										PRINCIPAL
-									</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">MENU</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">PRINCIPAL</span>
 								</div>
 							</Link>
 							<Link
-								href="/configurations"
+								href="/profile"
 								className={cn(
 									"flex flex-col items-center justify-center gap-1 rounded-full text-primary/60 aspect-square hover:text-blue-600 transition-all",
-									pathname.startsWith("/configurations") &&
-										"text-blue-500 font-black",
+									pathname.startsWith("/profile") && "text-blue-500 font-black",
 								)}
 							>
 								<Settings className="w-3 h-3 lg:w-4 lg:h-4" />
 								<div className="flex flex-col items-center">
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										MEU
-									</span>
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										PERFIL
-									</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">MEU</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">PERFIL</span>
 								</div>
 							</Link>
 
 							{/* Center Button */}
-							<NewIndicationButton
-								sessionUser={sessionUser}
-								openNewIndicationMenu={() => setNewIndicationMenuIsOpen(true)}
-							/>
+							<NewIndicationButton sessionUser={sessionUser} openNewIndicationMenu={() => setNewIndicationMenuIsOpen(true)} />
 							{/* End of Center Button */}
 							<Link
 								href="/indications"
 								className={cn(
 									"flex flex-col items-center justify-center gap-1 rounded-full text-primary/60 aspect-square hover:text-blue-600 transition-all",
-									pathname.startsWith("/indications") &&
-										"text-blue-500 font-black",
+									pathname.startsWith("/indications") && "text-blue-500 font-black",
 								)}
 							>
 								<UsersRound className="w-3 h-3 lg:w-4 lg:h-4" />
 								<div className="flex flex-col items-center">
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										MINHAS
-									</span>
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										INDICAÇÕES
-									</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">MINHAS</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">INDICAÇÕES</span>
 								</div>
 							</Link>
 							<Link
@@ -150,12 +119,8 @@ function NavegationMenu({ sessionUser }: NavegationMenuProps) {
 							>
 								<TicketCheck className="w-3 h-3 lg:w-4 lg:h-4" />
 								<div className="flex flex-col items-center">
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										MEUS
-									</span>
-									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">
-										RESGATES
-									</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">MEUS</span>
+									<span className="text-[0.4rem] lg:text-[0.5rem] font-bold antialiased">RESGATES</span>
 								</div>
 							</Link>
 
@@ -185,10 +150,7 @@ type NewIndicationProps = {
 	sessionUser: TAuthSession["user"];
 	openNewIndicationMenu: () => void;
 };
-function NewIndicationButton({
-	sessionUser,
-	openNewIndicationMenu,
-}: NewIndicationProps) {
+function NewIndicationButton({ sessionUser, openNewIndicationMenu }: NewIndicationProps) {
 	return (
 		<>
 			<button
@@ -198,12 +160,8 @@ function NewIndicationButton({
 			>
 				<UserRoundPlus className="w-3 h-3 lg:w-5 lg:h-5" />
 				<div className="flex flex-col items-center -mt-1">
-					<span className="text-[0.35rem] lg:text-[0.45rem] font-bold antialiased">
-						NOVA
-					</span>
-					<span className="text-[0.35rem] lg:text-[0.45rem] font-bold antialiased">
-						INDICAÇÃO
-					</span>
+					<span className="text-[0.35rem] lg:text-[0.45rem] font-bold antialiased">NOVA</span>
+					<span className="text-[0.35rem] lg:text-[0.45rem] font-bold antialiased">INDICAÇÃO</span>
 				</div>
 			</button>
 		</>
