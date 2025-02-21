@@ -50,8 +50,8 @@ function IndicationsDatabase({ sessionUser }: IndicationsDatabaseProps) {
 					queryLoading={isLoading}
 					selectPage={(page) => updateParams({ page })}
 					totalPages={totalPages || 0}
-					itemsMatchedText={indicationsMatched > 0 ? `${indicationsMatched} ordens de serviço encontradas.` : `${indicationsMatched} ordem de serviço encontrada.`}
-					itemsShowingText={indicationsShowing > 0 ? `Mostrando ${indicationsShowing} ordens de serviço.` : `Mostrando ${indicationsShowing} ordem de serviço.`}
+					itemsMatchedText={indicationsMatched > 0 ? `${indicationsMatched} indicações encontradas.` : `${indicationsMatched} indicação encontrada.`}
+					itemsShowingText={indicationsShowing > 0 ? `Mostrando ${indicationsShowing} indicações.` : `Mostrando ${indicationsShowing} indicação.`}
 				/>
 				{isLoading ? <h3 className="text-xs lg:text-base font-semibold tracking-tight animate-pulse">Buscando indicações...</h3> : null}
 				{isError ? <ErrorComponent msg={getErrorMessage(error)} /> : null}
@@ -111,7 +111,9 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 					{indication.creditosRecebidos ? (
 						<div className="rounded-full bg-[#FB2E9F]/30 text-[#FB2E9F] font-extrabold text-[0.5rem] px-2 p-1 flex items-center gap-1">
 							<FaBolt className="w-2.5 h-2.5 lg:w-2.5 lg:h-2.5 min-w-2 min-h-2" />
-							<p className="text-[0.5rem]">+{indication.creditosRecebidos} CRÉDITOS</p>
+							<p className="text-[0.5rem]">
+								+{indication.creditosRecebidos} <span className="hidden lg:inline">CRÉDITOS</span>
+							</p>
 						</div>
 					) : null}
 
