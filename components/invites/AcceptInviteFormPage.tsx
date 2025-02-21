@@ -1,23 +1,25 @@
 "use client";
-
-import { SubmitButton } from "@/components/buttons/submit-button";
-import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { login, signUp } from "@/lib/authentication/actions";
-import Link from "next/link";
+import type { TGetValidInviteById } from "@/lib/authentication/invites";
 import React, { useActionState, useState } from "react";
+import FullScreenWrapper from "../layout/FullScreenWrapper";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
+import { signUp } from "@/lib/authentication/actions";
 import type { TSignUpSchema } from "@/lib/authentication/types";
-
-import { formatToPhone } from "@/lib/methods/formatting";
+import TextInput from "../inputs/TextInput";
+import { formatNameAsInitials, formatToPhone } from "@/lib/methods/formatting";
+import SelectInput from "../inputs/SelectInput";
 import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/states_cities";
+import { Checkbox } from "../ui/checkbox";
+import { SubmitButton } from "../buttons/submit-button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-import TextInput from "@/components/inputs/TextInput";
-import SelectInput from "@/components/inputs/SelectInput";
-import { Checkbox } from "@/components/ui/checkbox";
-function SignUp() {
+type AcceptInviteFormPageProps = {
+	inviteById: TGetValidInviteById;
+};
+function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
 		name: "",
 		email: "",
@@ -25,8 +27,8 @@ function SignUp() {
 		uf: "",
 		phone: "",
 		termsAndPrivacyPolicyAcceptanceDate: null,
+		inviteId: inviteById.id,
 	});
-
 	const [actionResult, actionMethod] = useActionState(signUp, {});
 
 	return (
@@ -34,23 +36,38 @@ function SignUp() {
 			<div className="w-full flex items-center justify-center h-full">
 				<Card className="w-full max-w-md">
 					<CardHeader className="text-center">
-						<CardTitle>Cadastro ao Conecta Ampère</CardTitle>
-						<CardDescription>Crie já sua conta Conecta Ampère</CardDescription>
+						<CardTitle>Bem vindo ao Conecta Ampère !</CardTitle>
+						<CardDescription>Você recebeu um convite para nossa plataforma.</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="flex w-full flex-col gap-2">
+						{/* <div className="flex w-full flex-col gap-2">
 							<Button variant="outline" className="w-full" asChild>
 								<Link href="/google" prefetch={false}>
 									<FaGoogle className="mr-2 h-5 w-5" />
 									Acesso com Google
 								</Link>
 							</Button>
-						</div>
-						<div className="my-2 flex items-center">
+						</div> */}
+						{/* <div className="my-2 flex items-center">
 							<div className="flex-grow border-t border-muted" />
 							<div className="mx-2 text-muted-foreground">ou</div>
 							<div className="flex-grow border-t border-muted" />
+						</div> */}
+						<div className="w-full flex items-center gap-2 flex-col mb-4">
+							<p className="w-full text-sm tracking-tight text-primary/80 text-center font-bold">Você recebeu um convite de: </p>
+							<div className="w-full flex items-center justify-center gap-1">
+								<Avatar className="w-6 h-6">
+									<AvatarImage src={inviteById?.promotor?.avatar_url || undefined} alt="Logo" />
+									<AvatarFallback>{formatNameAsInitials(inviteById?.promotor.nome)}</AvatarFallback>
+								</Avatar>
+								<p className="text-sm tracking-tight text-primary/80 text-center font-bold">{inviteById.promotor.nome}</p>
+							</div>
 						</div>
+						<div className="flex flex-col my-2">
+							<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">Estamos muitos felizes de receber você.</p>
+							<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">Preencha as informações abaixo para efetivar seu acesso.</p>
+						</div>
+
 						<form action={async () => await actionMethod(signUpHolder)} className="grid gap-4">
 							<TextInput
 								identifier="name"
@@ -125,13 +142,6 @@ function SignUp() {
 									</Link>
 								</p>
 							</div>
-
-							<div className="flex flex-wrap justify-between">
-								<Button variant={"link"} size={"sm"} className="p-0" asChild>
-									<Link href={"/login"}>Já possui uma conta, clique aqui para acessar.</Link>
-								</Button>
-							</div>
-
 							{actionResult?.fieldError ? (
 								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
 									{Object.values(actionResult.fieldError).map((err) => (
@@ -144,11 +154,8 @@ function SignUp() {
 								<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">{actionResult?.formError}</p>
 							) : null}
 							<SubmitButton className="w-full" aria-label="submit-btn">
-								Acessar
+								EFETIVAR ACESSO
 							</SubmitButton>
-							<Button variant="outline" className="w-full" asChild>
-								<Link href="/">Cancelar</Link>
-							</Button>
 						</form>
 					</CardContent>
 				</Card>
@@ -157,4 +164,4 @@ function SignUp() {
 	);
 }
 
-export default SignUp;
+export default AcceptInviteFormPage;

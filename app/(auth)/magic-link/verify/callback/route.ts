@@ -1,9 +1,5 @@
 import { DATABASE_COLLECTION_NAMES } from "@/configs/app-definitions";
-import {
-	createSession,
-	generateSessionToken,
-	setSetSessionCookie,
-} from "@/lib/authentication/session";
+import { createSession, generateSessionToken, setSetSessionCookie } from "@/lib/authentication/session";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
 import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
 import type { TClient } from "@/schemas/client.schema";
@@ -27,13 +23,8 @@ export async function GET(request: NextRequest) {
 
 	console.log(token);
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const authVerificationTokensCollection =
-		crmDb.collection<TAuthVerificationToken>(
-			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
-		);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
 	const authVerificationToken = await authVerificationTokensCollection.findOne({
 		token: token,

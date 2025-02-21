@@ -7,19 +7,14 @@ import { ObjectId } from "mongodb";
 export async function getVerificationTokenById(id: string) {
 	try {
 		const crmDb = await connectToCRMDatabase();
-		const verificationTokensCollection =
-			crmDb.collection<TAuthVerificationToken>(
-				DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
-			);
+		const verificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
 		const verificationToken = await verificationTokensCollection.findOne({
 			_id: new ObjectId(id),
 		});
 		if (!verificationToken) return null;
 
-		const isExpired =
-			new Date().getTime() >
-			new Date(verificationToken.dataExpiracao).getTime();
+		const isExpired = new Date().getTime() > new Date(verificationToken.dataExpiracao).getTime();
 
 		if (isExpired) return null;
 

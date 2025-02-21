@@ -8,6 +8,7 @@ export const DATABASE_COLLECTION_NAMES = {
 	INDICATIONS: "conecta-indications",
 	VERIFICATION_TOKENS: "conecta-verification-tokens",
 	CREDIT_REDEMPTION_REQUESTS: "conecta-credit-redemption-requests",
+	INVITES: "conecta-invites",
 };
 
 export const MATRIX_COMPANY_PARTNER_ID = "65454ba15cf3e3ecf534b308";

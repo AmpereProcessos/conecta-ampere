@@ -110,6 +110,7 @@ export const ClientSchema = z.object({
 				})
 				.optional()
 				.nullable(),
+			codigoIndicacaoVendedor: z.string({ invalid_type_error: "Tipo não válido para código de indicação do vendedor." }).optional().nullable(),
 			creditos: z
 				.number({
 					invalid_type_error: "Tipo não válido para o número de créditos do usuário.",

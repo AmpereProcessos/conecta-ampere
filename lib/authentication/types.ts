@@ -45,12 +45,16 @@ export const SignUpSchema = z.object({
 		required_error: "Cidade não informada.",
 		invalid_type_error: "Tipo não válido para cidade.",
 	}),
+	inviteId: z
+		.string({
+			invalid_type_error: "Tipo não válido para referência do convite.",
+		})
+		.optional()
+		.nullable(),
 	termsAndPrivacyPolicyAcceptanceDate: z
 		.string({
-			required_error:
-				"Data de aceitação dos termos de uso e política de privacidade não informada.",
-			invalid_type_error:
-				"Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
+			required_error: "Data de aceitação dos termos de uso e política de privacidade não informada.",
+			invalid_type_error: "Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
 		})
 		.optional()
 		.nullable(),
@@ -63,6 +67,4 @@ export const ResendVerificationTokenSchema = z.object({
 		invalid_type_error: "Tipo não válido para referência do usuário.",
 	}),
 });
-export type TResendVerificationTokenSchema = z.infer<
-	typeof ResendVerificationTokenSchema
->;
+export type TResendVerificationTokenSchema = z.infer<typeof ResendVerificationTokenSchema>;

@@ -13,6 +13,7 @@ import { sendEmailWithResend, EmailTemplate } from "../email";
 import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
 import { randomBytes } from "node:crypto";
 import dayjs from "dayjs";
+import type { TInvite } from "@/schemas/invites.schema";
 
 type TLoginResult = {
 	formError?: string;
@@ -92,7 +93,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		};
 	}
 
-	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate } = validationParsed.data;
+	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate, inviteId } = validationParsed.data;
 
 	if (!termsAndPrivacyPolicyAcceptanceDate) {
 		return {
@@ -101,6 +102,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 	}
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const invitesCollection = crmDb.collection<TInvite>(DATABASE_COLLECTION_NAMES.INVITES);
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
 	let clientId: string | null = null;
@@ -111,8 +113,20 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		$or: [{ email: email }, { telefonePrimario: phone }],
 	};
 	const existingClientInDb = await clientsCollection.findOne({ ...query });
+
+	let invite: TInvite | null = null;
+	if (inviteId) invite = await invitesCollection.findOne({ _id: new ObjectId(inviteId) });
+	const invitePromoterSellerCode = invite && invite.promotor.tipo === "VENDEDOR" ? invite.promotor.codigoIndicacao : null;
 	if (existingClientInDb) {
 		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
+		await clientsCollection.updateOne(
+			{ _id: new ObjectId(existingClientInDb._id) },
+			{
+				$set: {
+					"conecta.codigoIndicacaoVendedor": invitePromoterSellerCode,
+				},
+			},
+		);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
@@ -133,6 +147,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 				usuario: phone,
 				email: email,
 				senha: "",
+				codigoIndicacaoVendedor: invitePromoterSellerCode,
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),
@@ -217,6 +232,25 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
+		// Updating the invite if it exists
+		if (inviteId)
+			await invitesCollection.updateOne(
+				{ _id: new ObjectId(inviteId) },
+				{
+					$set: {
+						convidado: {
+							id: clientId,
+							nome: name,
+							telefone: phone,
+							email: email,
+							uf: uf,
+							cidade: city,
+						},
+						dataInformacoesDefinidas: new Date().toISOString(),
+						dataAceite: new Date().toISOString(),
+					},
+				},
+			);
 		// In case the opportunity creation succedded, redirecting the user
 		const sessionToken = await generateSessionToken();
 		const session = await createSession({
