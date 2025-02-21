@@ -3,9 +3,10 @@ import { LoadingButton } from "@/components/buttons/loading-button";
 import SelectInput from "@/components/inputs/SelectInput";
 import TextInput from "@/components/inputs/TextInput";
 import { Button } from "@/components/ui/button";
-import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/states_cities";
+import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions, BrazilStatesAndCities } from "@/configs/states_cities";
 import { getErrorMessage } from "@/lib/methods/errors";
-import { formatLocation } from "@/lib/methods/formatting";
+import { formatLocation, formatToCEP } from "@/lib/methods/formatting";
+import { getCEPInfo } from "@/lib/methods/utils";
 import { updateProfile } from "@/lib/mutations/profile";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
@@ -30,6 +31,26 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 		setHolder((prev) => ({ ...prev, ...changes }));
 	}
 
+	async function setAddressDataByCEP(cep: string) {
+		const addressInfo = await getCEPInfo(cep);
+		const toastID = toast.loading("Buscando informações sobre o CEP...", {
+			duration: 2000,
+		});
+		setTimeout(() => {
+			if (addressInfo) {
+				toast.dismiss(toastID);
+				toast.success("Dados do CEP buscados com sucesso.", {
+					duration: 1000,
+				});
+				updateHolder({
+					endereco: addressInfo.logradouro,
+					bairro: addressInfo.bairro,
+					uf: addressInfo.uf,
+					cidade: addressInfo.localidade.toUpperCase(),
+				});
+			}
+		}, 1000);
+	}
 	const profileLocation = {
 		cep: profile.cep,
 		uf: profile.uf,
@@ -114,7 +135,22 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 						className="w-full flex flex-col gap-1.5"
 					>
 						<div className="w-full flex flex-col lg:flex-row items-center gap-1.5">
-							<div className="w-full lg:w-1/2">
+							<div className="w-full lg:w-1/3">
+								<TextInput
+									labelText="CEP"
+									placeholderText="Preencha aqui o seu CEP..."
+									value={holder.cep || ""}
+									handleChange={(value) => {
+										if (value.length === 9) {
+											setAddressDataByCEP(value);
+										}
+										updateHolder({
+											cep: formatToCEP(value),
+										});
+									}}
+								/>
+							</div>
+							<div className="w-full lg:w-1/3">
 								<SelectInput
 									labelText="ESTADO(UF)"
 									placeholderText="Preencha aqui o seu estado federativo..."
@@ -130,7 +166,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 									resetOptionText="NÃO DEFINIDO"
 								/>
 							</div>
-							<div className="w-full lg:w-1/2">
+							<div className="w-full lg:w-1/3">
 								<SelectInput
 									labelText="CIDADE"
 									placeholderText="Preencha aqui a sua cidade..."
@@ -160,8 +196,8 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<TextInput
 									labelText="NÚMERO/IDENTIFICADOR"
 									placeholderText="Preencha aqui o número ou identificador da sua residência..."
-									value={holder.bairro || ""}
-									handleChange={(value) => updateHolder({ bairro: value })}
+									value={holder.numeroOuIdentificador || ""}
+									handleChange={(value) => updateHolder({ numeroOuIdentificador: value })}
 								/>
 							</div>
 							<div className="w-full lg:w-1/2">
