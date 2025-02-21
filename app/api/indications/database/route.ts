@@ -1,9 +1,6 @@
 import { DATABASE_COLLECTION_NAMES } from "@/configs/app-definitions";
 import { apiHandler, type UnwrapNextResponse } from "@/lib/api/handler";
-import {
-	getCurrentSessionUncached,
-	getValidCurrentSessionUncached,
-} from "@/lib/authentication/session";
+import { getCurrentSessionUncached, getValidCurrentSessionUncached } from "@/lib/authentication/session";
 import { isValidNumber } from "@/lib/methods/validation";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
 import type { TIndication } from "@/schemas/indication.schema";
@@ -19,14 +16,9 @@ async function getIndicationsDatabase(request: NextRequest) {
 	const page = searchParams.get("page");
 
 	console.log("PAGE NUMBER", Number(page));
-	if (!isValidNumber(Number(page)) || Number(page) < 0)
-		throw new createHttpError.BadRequest(
-			"Parâmetro de paginação não informado ou inválido.",
-		);
+	if (!isValidNumber(Number(page)) || Number(page) < 0) throw new createHttpError.BadRequest("Parâmetro de paginação não informado ou inválido.");
 	const crmDb = await connectToCRMDatabase();
-	const indicationsCollection = crmDb.collection<TIndication>(
-		DATABASE_COLLECTION_NAMES.INDICATIONS,
-	);
+	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 
 	const skip = PAGE_SIZE * (Number(page) - 1);
 	const limit = PAGE_SIZE;
@@ -64,7 +56,5 @@ async function getIndicationsDatabase(request: NextRequest) {
 		},
 	);
 }
-export type TGetIndicationsDatabaseRouteOutput = UnwrapNextResponse<
-	Awaited<ReturnType<typeof getIndicationsDatabase>>
->;
+export type TGetIndicationsDatabaseRouteOutput = UnwrapNextResponse<Awaited<ReturnType<typeof getIndicationsDatabase>>>;
 export const GET = apiHandler({ GET: getIndicationsDatabase });

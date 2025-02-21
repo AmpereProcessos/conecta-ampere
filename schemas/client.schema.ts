@@ -1,5 +1,70 @@
 import { z } from "zod";
 
+export const ClientIndicatorSchema = z.object({
+	id: z
+		.string({
+			invalid_type_error: "Tipo não válido para o ID do indicador.",
+		})
+		.optional()
+		.nullable(),
+	nome: z
+		.string({
+			invalid_type_error: "Tipo não válido para o nome do indicador.",
+		})
+		.optional()
+		.nullable(),
+	contato: z
+		.string({
+			invalid_type_error: "Tipo não válido para o contato do indicador.",
+		})
+		.optional()
+		.nullable(),
+});
+
+export const ClientConectaSchema = z.object({
+	usuario: z.string({
+		required_error: "Usuário não informado.",
+		invalid_type_error: "Tipo não válido para o usuário.",
+	}),
+	senha: z.string({
+		required_error: "Senha não informada.",
+		invalid_type_error: "Tipo não válido para a senha.",
+	}),
+	email: z
+		.string({
+			invalid_type_error: "Tipo não válido para o email do usuário.",
+		})
+		.optional()
+		.nullable(),
+	avatar_url: z
+		.string({
+			invalid_type_error: "Tipo não válido para avatar do usuário.",
+		})
+		.optional()
+		.nullable(),
+	conviteId: z.string({ invalid_type_error: "Tipo não válido para ID do convite." }).optional().nullable(),
+	conviteDataAceite: z.string({ invalid_type_error: "Tipo não válido para data de aceite do convite." }).optional().nullable(),
+	codigoIndicacaoVendedor: z.string({ invalid_type_error: "Tipo não válido para código de indicação do vendedor." }).optional().nullable(),
+	creditos: z
+		.number({
+			invalid_type_error: "Tipo não válido para o número de créditos do usuário.",
+		})
+		.optional()
+		.nullable(),
+	googleId: z
+		.string({
+			invalid_type_error: "Tipo não válido para o ID google do cliente.",
+		})
+		.optional()
+		.nullable(),
+	googleRefreshToken: z
+		.string({
+			invalid_type_error: "Tipo não válido para o token de revalidações google do cliente.",
+		})
+		.optional()
+		.nullable(),
+});
+
 export const ClientSchema = z.object({
 	nome: z
 		.string({
@@ -81,62 +146,35 @@ export const ClientSchema = z.object({
 			invalid_type_error: "Tipo não válido para data de inserção.",
 		})
 		.datetime({ message: "Formato inválido para data de inserção." }),
-	idIndicacao: z.string().optional().nullable(),
-	idMarketing: z.string().optional().nullable(),
-	indicador: z.object({
-		id: z.string().optional().nullable(),
-		nome: z.string().optional().nullable(),
-		contato: z.string().optional().nullable(),
-	}),
-	conecta: z
-		.object({
-			usuario: z.string({
-				required_error: "Usuário não informado.",
-				invalid_type_error: "Tipo não válido para o usuário.",
-			}),
-			senha: z.string({
-				required_error: "Senha não informada.",
-				invalid_type_error: "Tipo não válido para a senha.",
-			}),
-			email: z
-				.string({
-					invalid_type_error: "Tipo não válido para o email do usuário.",
-				})
-				.optional()
-				.nullable(),
-			avatar_url: z
-				.string({
-					invalid_type_error: "Tipo não válido para avatar do usuário.",
-				})
-				.optional()
-				.nullable(),
-			codigoIndicacaoVendedor: z.string({ invalid_type_error: "Tipo não válido para código de indicação do vendedor." }).optional().nullable(),
-			creditos: z
-				.number({
-					invalid_type_error: "Tipo não válido para o número de créditos do usuário.",
-				})
-				.optional()
-				.nullable(),
-
-			googleId: z
-				.string({
-					invalid_type_error: "Tipo não válido para o ID google do cliente.",
-				})
-				.optional()
-				.nullable(),
-			googleRefreshToken: z
-				.string({
-					invalid_type_error: "Tipo não válido para o token de revalidações google do cliente.",
-				})
-				.optional()
-				.nullable(),
+	idIndicacao: z
+		.string({
+			invalid_type_error: "Tipo não válido para o ID da indicação.",
 		})
 		.optional()
 		.nullable(),
+	idMarketing: z
+		.string({
+			invalid_type_error: "Tipo não válido para o ID de marketing do cliente.",
+		})
+		.optional()
+		.nullable(),
+	indicador: ClientIndicatorSchema,
+	conecta: ClientConectaSchema.optional().nullable(),
 	autor: z.object({
-		id: z.string(),
-		nome: z.string(),
-		avatar_url: z.string().optional().nullable(),
+		id: z.string({
+			required_error: "ID do autor não informado.",
+			invalid_type_error: "Tipo não válido para ID do autor.",
+		}),
+		nome: z.string({
+			required_error: "Nome do autor não informado.",
+			invalid_type_error: "Tipo não válido para nome do autor.",
+		}),
+		avatar_url: z
+			.string({
+				invalid_type_error: "Tipo não válido para avatar do autor.",
+			})
+			.optional()
+			.nullable(),
 	}),
 });
 
