@@ -90,15 +90,15 @@ type UserIndicationCardProps = {
 function UserIndicationCard({ indication }: UserIndicationCardProps) {
 	function getIndicationStatusTag(indication: TGetIndicationsDatabaseRouteOutput["data"]["indications"][number]) {
 		if (indication.oportunidade.dataGanho) {
-			return <h1 className="rounded-full bg-green-500 text-white font-extrabold text-[0.5rem] p-1">VENDA CONCLÚIDA</h1>;
+			return <h1 className="rounded-full bg-green-500 text-white font-extrabold text-[0.45rem] lg:text-[0.5rem] p-1 text-center">VENDA CONCLÚIDA</h1>;
 		}
 		if (indication.oportunidade.dataPerda) {
-			return <h1 className="rounded-full bg-red-500 text-white font-extrabold text-[0.5rem] p-1">VENDA PERDIDA</h1>;
+			return <h1 className="rounded-full bg-red-500 text-white font-extrabold text-[0.45rem] lg:text-[0.5rem] p-1 text-center">VENDA PERDIDA</h1>;
 		}
 		if (indication.oportunidade.dataInteracao) {
-			return <h1 className="rounded-full bg-blue-500 text-white font-extrabold text-[0.5rem] p-1">EM ANDAMENTO</h1>;
+			return <h1 className="rounded-full bg-blue-500 text-white font-extrabold text-[0.45rem] lg:text-[0.5rem] p-1 text-center">EM ANDAMENTO</h1>;
 		}
-		return <h1 className="rounded-full bg-[#F97316] text-white font-extrabold text-[0.5rem] p-1">PENDENTE</h1>;
+		return <h1 className="rounded-full bg-[#F97316] text-white font-extrabold text-[0.45rem] lg:text-[0.5rem] p-1 text-center">PENDENTE</h1>;
 	}
 	return (
 		<div className="bg-[#fff] dark:bg-[#121212] w-full flex p-2.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-md">
