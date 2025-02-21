@@ -2,7 +2,8 @@
 	"linter": {
 		"rules": {
 			"suspicious": {
-				"noExplicitAny": "warn"
+				"noExplicitAny": "warn",
+				"noMisleadingCharacterClass": "warn"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "warn"

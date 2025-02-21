@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Settings, UserRound } from "lucide-react";
 import UserAvatarConfig from "./UserAvatarConfig";
 import UserGeneralInfoConfig from "./UserGeneralInfoConfig";
+import UserLocationInfoConfig from "./UserLocationInfoConfig";
 
 type UserProfileConfigProps = {
 	sessionUser: TAuthSession["user"];
@@ -45,7 +46,20 @@ function UserProfileConfig({ sessionUser }: UserProfileConfigProps) {
 								onSettled: handleOnSettled,
 							}}
 						/>
-						<UserGeneralInfoConfig profile={profile} />
+						<UserGeneralInfoConfig
+							profile={profile}
+							callbacks={{
+								onMutate: handleOnMutate,
+								onSettled: handleOnSettled,
+							}}
+						/>
+						<UserLocationInfoConfig
+							profile={profile}
+							callbacks={{
+								onMutate: handleOnMutate,
+								onSettled: handleOnSettled,
+							}}
+						/>
 					</>
 				) : null}
 			</div>

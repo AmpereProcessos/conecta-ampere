@@ -3,21 +3,50 @@ import { Button } from "@/components/ui/button";
 import { getAgeFromBirthdayDate } from "@/lib/methods/dates";
 import { formatDateAsLocale, formatDateForInput, formatDateInputChange, formatToCPForCNPJ, formatToPhone } from "@/lib/methods/formatting";
 import { cn } from "@/lib/utils";
-import { BriefcaseBusiness, Building2, Cake, ChevronsDownUp, Contact, Gem, IdCard, Mail, Phone, VenusAndMars } from "lucide-react";
+import { BriefcaseBusiness, Building, Building2, Cake, ChevronsDownUp, Contact, Gem, IdCard, Mail, Phone, VenusAndMars } from "lucide-react";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TextInput from "@/components/inputs/TextInput";
 import SelectInput from "@/components/inputs/SelectInput";
 import DateInput from "@/components/inputs/DateInput";
+import { LoadingButton } from "@/components/buttons/loading-button";
+import { useMutation } from "@tanstack/react-query";
+import { updateProfile } from "@/lib/mutations/profile";
+import { getErrorMessage } from "@/lib/methods/errors";
+import { toast } from "sonner";
 type UserGeneralInfoConfigProps = {
 	profile: TGetUserProfileRouteOutput["data"];
+	callbacks?: {
+		onMutate?: () => void;
+		onSuccess?: () => void;
+		onSettled?: () => void;
+	};
 };
-function UserGeneralInfoConfig({ profile }: UserGeneralInfoConfigProps) {
+function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProps) {
 	const [holder, setHolder] = useState(profile);
 	const [editInformationMenuIsOpen, setEditInformationMenuIsOpen] = useState(false);
 	function updateHolder(changes: Partial<TGetUserProfileRouteOutput["data"]>) {
 		setHolder((prev) => ({ ...prev, ...changes }));
 	}
+
+	const { mutate: mutationUpdateProfile, isPending } = useMutation({
+		mutationKey: ["update-profile", profile.id],
+		mutationFn: updateProfile,
+		onMutate: () => {
+			if (callbacks?.onMutate) callbacks.onMutate();
+		},
+		onSuccess: (data) => {
+			toast.success(data.message);
+			if (callbacks?.onSuccess) callbacks.onSuccess();
+		},
+		onSettled: () => {
+			if (callbacks?.onSettled) callbacks.onSettled();
+		},
+		onError: (error) => {
+			const msg = getErrorMessage(error);
+			toast.error(msg);
+		},
+	});
 	return (
 		<div className="w-full flex flex-col items-center gap-1.5">
 			<div className="w-full flex items-center justify-between gap-1.5">
@@ -65,17 +94,17 @@ function UserGeneralInfoConfig({ profile }: UserGeneralInfoConfigProps) {
 							<Mail className="w-4 h-4" />
 							<h3 className={cn("text-xs font-semibold tracking-tight", !profile.email && "text-destructive")}>{profile.email || "Email não informado."}</h3>
 						</div>
-						<div className="w-full flex items-center gap-1.5">
+						{/* <div className="w-full flex items-center gap-1.5">
 							<Gem className="w-4 h-4" />
 							<h3 className={cn("text-xs font-semibold tracking-tight", !profile.estadoCivil && "text-destructive")}>{profile.estadoCivil || "Estado civil não informado."}</h3>
-						</div>
+						</div> */}
 						<div className="w-full flex items-center gap-1.5">
 							<BriefcaseBusiness className="w-4 h-4" />
 							<h3 className={cn("text-xs font-semibold tracking-tight", !profile.profissao && "text-destructive")}>{profile.profissao || "Profissão não informado."}</h3>
 						</div>
 						<div className="w-full flex items-center gap-1.5">
-							<Building2 className="w-4 h-4" />
-							<h3 className={cn("text-xs font-semibold tracking-tight", !profile.ondeTrabalha && "text-destructive")}>{profile.ondeTrabalha || "Empresa não informad."}</h3>
+							<Building className="w-4 h-4" />
+							<h3 className={cn("text-xs font-semibold tracking-tight", !profile.ondeTrabalha && "text-destructive")}>{profile.ondeTrabalha || "Empresa não informada."}</h3>
 						</div>
 					</motion.div>
 				) : (
@@ -139,7 +168,6 @@ function UserGeneralInfoConfig({ profile }: UserGeneralInfoConfigProps) {
 								/>
 							</div>
 						</div>
-
 						<div className="w-full flex flex-col lg:flex-row items-center gap-1.5">
 							<div className="w-full lg:w-1/2">
 								<DateInput
@@ -163,6 +191,37 @@ function UserGeneralInfoConfig({ profile }: UserGeneralInfoConfigProps) {
 									resetOptionText="NÃO DEFINIDO"
 								/>
 							</div>
+						</div>
+						<div className="w-full flex flex-col lg:flex-row items-center gap-1.5">
+							<div className="w-full lg:w-1/2">
+								<TextInput
+									labelText="PROFISSÃO"
+									placeholderText="Preencha aqui a sua profissão..."
+									value={holder.profissao || ""}
+									handleChange={(value) =>
+										updateHolder({
+											profissao: value,
+										})
+									}
+								/>
+							</div>
+							<div className="w-full lg:w-1/2">
+								<TextInput
+									labelText="EMPRESA"
+									placeholderText="Preencha aqui o nome da empresa onde você trabalha..."
+									value={holder.ondeTrabalha || ""}
+									handleChange={(value) =>
+										updateHolder({
+											ondeTrabalha: value,
+										})
+									}
+								/>
+							</div>
+						</div>
+						<div className="w-full flex items-center justify-end">
+							<LoadingButton onClick={() => mutationUpdateProfile(holder)} loading={isPending}>
+								ATUALIZAR PERFIL
+							</LoadingButton>
 						</div>
 					</motion.div>
 				)}

@@ -108,7 +108,10 @@ async function handleUpdateProfile(req: NextRequest) {
 
 	const clientChanges: UpdateFilter<TClient>["$set"] = Object.entries({
 		nome: changes.nome,
+		"conecta.avatar_url": changes.avatar,
 		cpfCnpj: changes.cpfCnpj,
+		dataNascimento: changes.dataNascimento,
+		sexo: changes.sexo,
 		rg: changes.rg,
 		email: changes.email,
 		telefonePrimario: changes.telefone,
@@ -117,7 +120,6 @@ async function handleUpdateProfile(req: NextRequest) {
 		cidade: changes.cidade,
 		bairro: changes.bairro,
 		endereco: changes.endereco,
-		"conecta.avatar_url": changes.avatar,
 		numeroOuIdentificador: changes.numeroOuIdentificador,
 		complemento: changes.complemento,
 		profissao: changes.profissao,

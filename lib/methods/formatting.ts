@@ -11,19 +11,12 @@ export function formatDateTimeForInput(value: any) {
 	return dayjs(value).format("YYYY-MM-DDTHH:mm");
 }
 
-export function formatDateAsLocale(
-	date?: string | Date | null,
-	showHours = false,
-) {
+export function formatDateAsLocale(date?: string | Date | null, showHours = false) {
 	if (!date) return null;
 	if (showHours) return dayjs(date).format("DD/MM/YYYY HH:mm");
 	return dayjs(date).add(3, "hour").format("DD/MM/YYYY");
 }
-export function formatDateInputChange(
-	value: any,
-	returnType?: "date" | "string",
-	normalizeHours = true,
-) {
+export function formatDateInputChange(value: any, returnType?: "date" | "string", normalizeHours = true) {
 	if (Number.isNaN(new Date(value).getMilliseconds())) return null;
 	if (!returnType || returnType === "string") {
 		if (!normalizeHours) return new Date(value).toISOString();
@@ -36,19 +29,13 @@ export function formatToDateTime(date: string | null) {
 	if (!date) return "";
 	return dayjs(date).format("DD/MM/YYYY HH:mm");
 }
-export function formatDateQuery(
-	date: string,
-	type: "start" | "end",
-	returnAs?: "string" | "date",
-) {
+export function formatDateQuery(date: string, type: "start" | "end", returnAs?: "string" | "date") {
 	if (type === "start") {
-		if (returnAs === "date")
-			return dayjs(date).startOf("day").subtract(3, "hour").toDate() as Date;
+		if (returnAs === "date") return dayjs(date).startOf("day").subtract(3, "hour").toDate() as Date;
 		return dayjs(date).startOf("day").subtract(3, "hour").toISOString();
 	}
 	if (type === "end") {
-		if (returnAs === "date")
-			return dayjs(date).endOf("day").subtract(3, "hour").toDate() as Date;
+		if (returnAs === "date") return dayjs(date).endOf("day").subtract(3, "hour").toDate() as Date;
 		return dayjs(date).endOf("day").subtract(3, "hour").toISOString();
 	}
 	return dayjs(date).startOf("day").subtract(3, "hour").toISOString();
@@ -57,8 +44,7 @@ export function formatNameAsInitials(name: string) {
 	const splittedName = name.split(" ");
 	const firstLetter = splittedName[0] ? splittedName[0][0] || "" : "";
 	let secondLetter = "";
-	if (["DE", "DA", "DO", "DOS", "DAS"].includes(splittedName[1] || ""))
-		secondLetter = splittedName[2] ? splittedName[2][0] : "";
+	if (["DE", "DA", "DO", "DOS", "DAS"].includes(splittedName[1] || "")) secondLetter = splittedName[2] ? splittedName[2][0] : "";
 	else secondLetter = splittedName[1] ? splittedName[1][0] : "";
 	if (!firstLetter && !secondLetter) return "N";
 	return firstLetter + secondLetter;
@@ -69,16 +55,10 @@ export function formatToMoney(value: string | number, tag = "R$") {
 		maximumFractionDigits: 2,
 	})}`;
 }
-export function formatDecimalPlaces(
-	value: string | number,
-	minPlaces?: number,
-	maxPlaces?: number,
-) {
+export function formatDecimalPlaces(value: string | number, minPlaces?: number, maxPlaces?: number) {
 	return Number(value).toLocaleString("pt-br", {
-		minimumFractionDigits:
-			minPlaces !== null && minPlaces !== undefined ? minPlaces : 0,
-		maximumFractionDigits:
-			maxPlaces !== null && maxPlaces !== undefined ? maxPlaces : 2,
+		minimumFractionDigits: minPlaces !== null && minPlaces !== undefined ? minPlaces : 0,
+		maximumFractionDigits: maxPlaces !== null && maxPlaces !== undefined ? maxPlaces : 2,
 	});
 }
 export function formatToCPForCNPJ(value: string): string {
@@ -88,10 +68,7 @@ export function formatToCPForCNPJ(value: string): string {
 		return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "$1.$2.$3-$4");
 	}
 
-	return cnpjCpf.replace(
-		/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,
-		"$1.$2.$3/$4-$5",
-	);
+	return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "$1.$2.$3/$4-$5");
 }
 export function formatToCEP(value: string): string {
 	const cep = value
@@ -127,40 +104,39 @@ export function formatLocation({
 	includeUf,
 	includeCity,
 	includeCEP,
+	includeAddress = true,
+	includeNeighborhood = true,
+	includeNumber = true,
+	includeLatitude,
+	includeLongitude,
 }: {
 	location: TLocation;
 	includeUf?: boolean;
 	includeCity?: boolean;
 	includeCEP?: boolean;
+	includeAddress?: boolean;
+	includeNeighborhood?: boolean;
+	includeNumber?: boolean;
+	includeLatitude?: boolean;
+	includeLongitude?: boolean;
 }) {
 	let addressStr = "";
-	if (includeCity && location.cidade)
-		addressStr = addressStr + `${location.cidade}`;
-	if (includeUf && location.uf)
-		addressStr = location.endereco
-			? addressStr + ` (${location.uf}), `
-			: addressStr + ` (${location.uf})`;
+	if (includeCity && location.cidade) addressStr = addressStr + `${location.cidade}`;
+	if (includeUf && location.uf) addressStr = location.endereco && includeAddress ? addressStr + ` (${location.uf}), ` : addressStr + ` (${location.uf})`;
 	if (!location.endereco && !includeUf && !includeCity) return "";
-	if (location.endereco) addressStr = addressStr + location.endereco;
-	if (location.numeroOuIdentificador)
-		addressStr = addressStr + `, Nº ${location.numeroOuIdentificador}`;
-	if (location.bairro) addressStr = addressStr + `, ${location.bairro}`;
-	if (location.latitude) addressStr = addressStr + `, LAT ${location.latitude}`;
-	if (location.longitude)
-		addressStr = addressStr + `, LONG ${location.longitude}`;
-	if (includeCEP && location.cep)
-		addressStr = addressStr + `, CEP:${location.cep}`;
+	if (includeAddress && location.endereco) addressStr = addressStr + location.endereco;
+	if (includeNumber && location.numeroOuIdentificador) addressStr = addressStr + `, Nº ${location.numeroOuIdentificador}`;
+	if (includeNeighborhood && location.bairro) addressStr = addressStr + `, ${location.bairro}`;
+	if (includeLatitude && location.latitude) addressStr = addressStr + `, LAT ${location.latitude}`;
+	if (includeLongitude && location.longitude) addressStr = addressStr + `, LONG ${location.longitude}`;
+	if (includeCEP && location.cep) addressStr = addressStr + `, CEP:${location.cep}`;
 
-	addressStr += ".";
+	if (addressStr.length > 0) addressStr += ".";
 	return addressStr.toUpperCase();
 }
 
-export function formatWithoutDiacritics(
-	string: string,
-	useUpperCase?: boolean,
-) {
-	if (!useUpperCase)
-		return string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+export function formatWithoutDiacritics(string: string, useUpperCase?: boolean) {
+	if (!useUpperCase) return string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 	return string
 		.toUpperCase()
 		.normalize("NFD")
