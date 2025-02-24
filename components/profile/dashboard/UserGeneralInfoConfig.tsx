@@ -1,4 +1,4 @@
-import type { TGetUserProfileRouteOutput } from "@/app/api/configurations/profile/route";
+import type { TGetUserProfileRouteOutput, TUpdateUserProfileRouteInput } from "@/app/api/configurations/profile/route";
 import { Button } from "@/components/ui/button";
 import { getAgeFromBirthdayDate } from "@/lib/methods/dates";
 import { formatDateAsLocale, formatDateForInput, formatDateInputChange, formatToCPForCNPJ, formatToPhone } from "@/lib/methods/formatting";
@@ -23,7 +23,7 @@ type UserGeneralInfoConfigProps = {
 	};
 };
 function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProps) {
-	const [holder, setHolder] = useState(profile);
+	const [holder, setHolder] = useState<TUpdateUserProfileRouteInput>({});
 	const [editInformationMenuIsOpen, setEditInformationMenuIsOpen] = useState(false);
 	function updateHolder(changes: Partial<TGetUserProfileRouteOutput["data"]>) {
 		setHolder((prev) => ({ ...prev, ...changes }));
@@ -38,6 +38,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 		onSuccess: (data) => {
 			toast.success(data.message);
 			if (callbacks?.onSuccess) callbacks.onSuccess();
+			setHolder({});
 		},
 		onSettled: () => {
 			if (callbacks?.onSettled) callbacks.onSettled();
@@ -47,6 +48,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 			toast.error(msg);
 		},
 	});
+	console.log("HOLDER", holder);
 	return (
 		<div className="w-full flex flex-col items-center gap-1.5">
 			<div className="w-full flex items-center justify-between gap-1.5">
@@ -121,7 +123,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="NOME"
 									placeholderText="Preencha aqui o seu nome completo..."
-									value={holder.nome}
+									value={holder.nome || profile.nome}
 									handleChange={(value) =>
 										updateHolder({
 											nome: value,
@@ -133,7 +135,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="CPF/CNPJ"
 									placeholderText="Preencha aqui o seu CPF (ou CNPJ)..."
-									value={holder.cpfCnpj || ""}
+									value={holder.cpfCnpj || profile.cpfCnpj || ""}
 									handleChange={(value) =>
 										updateHolder({
 											cpfCnpj: formatToCPForCNPJ(value),
@@ -147,7 +149,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="TELEFONE"
 									placeholderText="Preencha aqui o seu telefone..."
-									value={holder.telefone || ""}
+									value={holder.telefone || profile.telefone || ""}
 									handleChange={(value) =>
 										updateHolder({
 											telefone: formatToPhone(value),
@@ -159,7 +161,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="EMAIL"
 									placeholderText="Preencha aqui o seu email..."
-									value={holder.email || ""}
+									value={holder.email || profile.email || ""}
 									handleChange={(value) =>
 										updateHolder({
 											email: value,
@@ -172,7 +174,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 							<div className="w-full lg:w-1/2">
 								<DateInput
 									labelText="DATA DE NASCIMENTO"
-									value={formatDateForInput(holder.dataNascimento)}
+									value={formatDateForInput(holder.dataNascimento || profile.dataNascimento)}
 									handleChange={(value) => updateHolder({ dataNascimento: formatDateInputChange(value, "string") as string })}
 								/>
 							</div>
@@ -180,7 +182,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<SelectInput
 									labelText="SEXO"
 									placeholderText="Preencha aqui o seu sexo..."
-									value={holder.sexo || null}
+									value={holder.sexo || profile.sexo || null}
 									options={[
 										{ id: 1, label: "MASCULINO", value: "MASCULINO" },
 										{ id: 2, label: "FEMININO", value: "FEMININO" },
@@ -197,7 +199,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="PROFISSÃO"
 									placeholderText="Preencha aqui a sua profissão..."
-									value={holder.profissao || ""}
+									value={holder.profissao || profile.profissao || ""}
 									handleChange={(value) =>
 										updateHolder({
 											profissao: value,
@@ -209,7 +211,7 @@ function UserGeneralInfoConfig({ profile, callbacks }: UserGeneralInfoConfigProp
 								<TextInput
 									labelText="EMPRESA"
 									placeholderText="Preencha aqui o nome da empresa onde você trabalha..."
-									value={holder.ondeTrabalha || ""}
+									value={holder.ondeTrabalha || profile.ondeTrabalha || ""}
 									handleChange={(value) =>
 										updateHolder({
 											ondeTrabalha: value,

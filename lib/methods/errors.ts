@@ -12,5 +12,6 @@ export function getErrorMessage(error: any) {
 		return error.message;
 	}
 	if (error instanceof ZodError) return error.errors[0].message;
+	if (error instanceof Error) return error.message;
 	return "Houve um erro desconhecido, por favor, comunique o setor de tecnologia.";
 }

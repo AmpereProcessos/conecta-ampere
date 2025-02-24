@@ -1,4 +1,4 @@
-import type { TGetUserProfileRouteOutput } from "@/app/api/configurations/profile/route";
+import type { TGetUserProfileRouteOutput, TUpdateUserProfileRouteInput } from "@/app/api/configurations/profile/route";
 import { LoadingButton } from "@/components/buttons/loading-button";
 import SelectInput from "@/components/inputs/SelectInput";
 import TextInput from "@/components/inputs/TextInput";
@@ -26,7 +26,8 @@ type UserLocationInfoConfigProps = {
 function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigProps) {
 	const [editInformationMenuIsOpen, setEditInformationMenuIsOpen] = useState(false);
 
-	const [holder, setHolder] = useState(profile);
+	const [holder, setHolder] = useState<TUpdateUserProfileRouteInput>(profile);
+
 	function updateHolder(changes: Partial<TGetUserProfileRouteOutput["data"]>) {
 		setHolder((prev) => ({ ...prev, ...changes }));
 	}
@@ -82,6 +83,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 		onSuccess: (data) => {
 			toast.success(data.message);
 			if (callbacks?.onSuccess) callbacks.onSuccess();
+			setHolder({});
 		},
 		onSettled: () => {
 			if (callbacks?.onSettled) callbacks.onSettled();
@@ -139,7 +141,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<TextInput
 									labelText="CEP"
 									placeholderText="Preencha aqui o seu CEP..."
-									value={holder.cep || ""}
+									value={holder.cep || profile.cep || ""}
 									handleChange={(value) => {
 										if (value.length === 9) {
 											setAddressDataByCEP(value);
@@ -154,7 +156,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<SelectInput
 									labelText="ESTADO(UF)"
 									placeholderText="Preencha aqui o seu estado federativo..."
-									value={holder.uf}
+									value={holder.uf || profile.uf}
 									handleChange={(value) =>
 										updateHolder({
 											uf: value,
@@ -170,23 +172,28 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<SelectInput
 									labelText="CIDADE"
 									placeholderText="Preencha aqui a sua cidade..."
-									value={holder.cidade}
+									value={holder.cidade || profile.cidade}
 									handleChange={(value) => updateHolder({ cidade: value })}
 									handleReset={() => updateHolder({ cidade: profile.cidade })}
-									options={BrazilianCitiesOptionsFromUF(holder.uf)}
+									options={BrazilianCitiesOptionsFromUF(holder.uf || profile.uf)}
 									resetOptionText="NÃO DEFINIDO"
 								/>
 							</div>
 						</div>
 						<div className="w-full flex flex-col lg:flex-row items-center gap-1.5">
 							<div className="w-full lg:w-1/2">
-								<TextInput labelText="BAIRRO" placeholderText="Preencha aqui o seu bairro..." value={holder.bairro || ""} handleChange={(value) => updateHolder({ bairro: value })} />
+								<TextInput
+									labelText="BAIRRO"
+									placeholderText="Preencha aqui o seu bairro..."
+									value={holder.bairro || profile.bairro || ""}
+									handleChange={(value) => updateHolder({ bairro: value })}
+								/>
 							</div>
 							<div className="w-full lg:w-1/2">
 								<TextInput
 									labelText="LOGRADOURO"
 									placeholderText="Preencha aqui o seu logradouro/rua..."
-									value={holder.endereco || ""}
+									value={holder.endereco || profile.endereco || ""}
 									handleChange={(value) => updateHolder({ endereco: value })}
 								/>
 							</div>
@@ -196,7 +203,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<TextInput
 									labelText="NÚMERO/IDENTIFICADOR"
 									placeholderText="Preencha aqui o número ou identificador da sua residência..."
-									value={holder.numeroOuIdentificador || ""}
+									value={holder.numeroOuIdentificador || profile.numeroOuIdentificador || ""}
 									handleChange={(value) => updateHolder({ numeroOuIdentificador: value })}
 								/>
 							</div>
@@ -204,7 +211,7 @@ function UserLocationInfoConfig({ profile, callbacks }: UserLocationInfoConfigPr
 								<TextInput
 									labelText="COMPLEMENTO"
 									placeholderText="Preencha aqui algum complemento sobre o seu endereço..."
-									value={holder.complemento || ""}
+									value={holder.complemento || profile.complemento || ""}
 									handleChange={(value) => updateHolder({ complemento: value })}
 								/>
 							</div>
