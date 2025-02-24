@@ -7,10 +7,11 @@ import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
 import { IndicationSchema, type TIndication } from "@/schemas/indication.schema";
 import type { TOpportunity } from "@/schemas/opportunity.schema";
 import createHttpError from "http-errors";
-import { ObjectId } from "mongodb";
+import { ObjectId, type WithId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import type { z } from "zod";
 import type { NextRequest as NextRequestType, NextResponse as NextResponseType } from "next/server";
+import type { TUser } from "@/schemas/users.schema";
 
 export const CreateIndicationRouteInput = IndicationSchema;
 export type TCreateIndicationRouteInput = z.infer<typeof CreateIndicationRouteInput>;
@@ -21,6 +22,7 @@ async function handleCreateIndication(req: NextRequestType) {
 
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const usersCollection = crmDb.collection<TUser>(DATABASE_COLLECTION_NAMES.USERS);
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
@@ -67,6 +69,12 @@ async function handleCreateIndication(req: NextRequestType) {
 		clientId = client._id.toString();
 	}
 
+	let indicationSeller: WithId<TUser> | null = null;
+
+	if (indication.codigoIndicacaoPromotor) {
+		const sellerUser = await usersCollection.findOne({ codigoIndicacaoConecta: indication.codigoIndicacaoPromotor });
+		indicationSeller = sellerUser;
+	}
 	const lastInsertedIdentificator = await opportunitiesCollection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
 	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
@@ -83,14 +91,22 @@ async function handleCreateIndication(req: NextRequestType) {
 		descricao: "",
 		identificador: newIdentifier,
 		responsaveis: [
-			{
-				id: "6463ccaa8c5e3e227af54d89",
-				nome: "LUCAS FERNANDES",
-				papel: "VENDEDOR",
-				avatar_url:
-					"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
-				dataInsercao: new Date().toISOString(),
-			},
+			indicationSeller
+				? {
+						id: indicationSeller._id.toString(),
+						nome: indicationSeller.nome,
+						papel: "VENDEDOR",
+						avatar_url: indicationSeller.avatar_url,
+						dataInsercao: new Date().toISOString(),
+					}
+				: {
+						id: "6463ccaa8c5e3e227af54d89",
+						nome: "LUCAS FERNANDES",
+						papel: "VENDEDOR",
+						avatar_url:
+							"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
+						dataInsercao: new Date().toISOString(),
+					},
 		],
 		segmento: "RESIDENCIAL" as TOpportunity["segmento"],
 		idCliente: clientId as string,

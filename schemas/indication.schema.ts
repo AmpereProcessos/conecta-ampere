@@ -35,6 +35,12 @@ export const IndicationSchema = z.object({
 			.optional()
 			.nullable(),
 	}),
+	codigoIndicacaoPromotor: z
+		.string({
+			invalid_type_error: "Tipo não válido para o código de indicação do promotor.",
+		})
+		.optional()
+		.nullable(),
 	dataInsercao: z.string({ invalid_type_error: "Tipo não válido para data de inserção." }).datetime({ message: "Formato inválido para data de inserção." }),
 	creditosRecebidos: z.number({ invalid_type_error: "Tipo não válido para o número de créditos recebidos." }).optional().nullable(),
 	autor: z.object({
