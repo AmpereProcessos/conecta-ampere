@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
 	const inviteId = searchParams.get("inviteId");
 
+	console.log("CHEGUEI AQUI");
 	console.log("INVITE ID", inviteId);
 	if (!inviteId || typeof inviteId !== "string" || !ObjectId.isValid(inviteId)) {
 		return new Response(null, {
@@ -70,6 +71,7 @@ export async function GET(request: NextRequest) {
 		_id: new ObjectId(clientId),
 	});
 	console.log("CLIENT", client);
+	console.log("CLIENT EMAIL", client?.email);
 	if (!client || !client.email) {
 		return new Response(null, {
 			status: 400,
@@ -106,16 +108,19 @@ export async function GET(request: NextRequest) {
 			},
 		},
 	);
+	console.log("GOT IN SESSION CREATION");
 	const sessionToken = await generateSessionToken();
 	const session = await createSession({
 		token: sessionToken,
 		userId: client?._id.toString(),
 	});
+	console.log("SESSION CREATED", session);
 	try {
 		setSetSessionCookie({
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
+		console.log("SESSION COOKIE SET");
 		return new Response(null, {
 			status: 302,
 			headers: { Location: "/" },
