@@ -68,10 +68,10 @@ function NavegationMenu({ sessionUser }: NavegationMenuProps) {
 							className="flex items-center justify-around gap-6 lg:gap-4 rounded-full bg-background shadow-lg self-center p-2 w-full px-4 lg:px-12"
 						>
 							<Link
-								href="/"
+								href="/dashboard"
 								className={cn(
 									"flex flex-col items-center justify-center gap-1 rounded-full text-primary/60 aspect-square hover:text-blue-600 transition-all",
-									pathname === "/" && "text-blue-500 font-black",
+									pathname.startsWith("/dashboard") && "text-blue-500 font-black",
 								)}
 							>
 								<House className="w-3 h-3 lg:w-4 lg:h-4" />

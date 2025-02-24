@@ -5,7 +5,7 @@ import { getCurrentSession } from "@/lib/authentication/session";
 import { redirect } from "next/navigation";
 import { IdCard, LogOut } from "lucide-react";
 import Image from "next/image";
-import Logo from "@/svgs/ampere-blue-logo-icon.svg";
+import Logo from "@/assets/svgs/ampere-blue-logo-icon.svg";
 import type { TAuthSession } from "@/lib/authentication/types";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -25,9 +25,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 						<AvatarImage src={sessionUser.avatar_url || undefined} />
 						<AvatarFallback className="text-xs">CN</AvatarFallback>
 					</Avatar>
-					<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight">
-						{sessionUser.nome}
-					</h1>
+					<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight">{sessionUser.nome}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
 					<ThemeModeToggle />
@@ -42,17 +40,13 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1">
 					<IdCard className="w-5 h-5 lg:w-6 lg:h-6 min-w-6 min-h-6" />
-					<h1 className="py-0.5 text-center text-[0.6rem] lg:text-xs font-medium italic text-primary/80">
-						{sessionUser.cpfCnpj || "N/A"}
-					</h1>
+					<h1 className="py-0.5 text-center text-[0.6rem] lg:text-xs font-medium italic text-primary/80">{sessionUser.cpfCnpj || "N/A"}</h1>
 				</div>
 				<div className="flex items-center gap-1">
 					<div className="w-5 h-5 lg:w-6 lg:h-6 min-w-6 min-h-6 relative">
 						<Image src={Logo} alt="Logo Ampère Energias" fill={true} />
 					</div>
-					<h1 className="py-0.5 text-center text-[0.6rem] lg:text-xs font-medium italic text-primary/80">
-						CONECTA AMPÈRE
-					</h1>
+					<h1 className="py-0.5 text-center text-[0.6rem] lg:text-xs font-medium italic text-primary/80">CONECTA AMPÈRE</h1>
 				</div>
 			</div>
 		</div>

@@ -7,13 +7,9 @@ import TextareaInput from "@/components/inputs/TextareaInput";
 import TextInput from "@/components/inputs/TextInput";
 import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-	formatDateForInput,
-	formatDateInputChange,
-} from "@/lib/methods/formatting";
+import { formatDateForInput, formatDateInputChange } from "@/lib/methods/formatting";
 import { Minus, Plus } from "lucide-react";
 import React, { useState } from "react";
-import AmpereLogo from "@/svgs/ampere-blue-logo-icon.svg";
 function TestingPage() {
 	const [infoHolder, setInfoHolder] = useState({
 		name: "",
@@ -30,18 +26,8 @@ function TestingPage() {
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center grow bg-background">
 				<div className="w-[60%] flex flex-col p-3 rounded-lg border border-primary/50 gap-3 self-center">
-					<TextInput
-						labelText="NOME"
-						placeholderText="Preencha aqui seu nome.."
-						value={infoHolder.name}
-						handleChange={(value) => updateInfoHolder({ name: value })}
-					/>
-					<TextareaInput
-						labelText="SOBRE VOCÊ"
-						placeholderText="Preencha aqui sobre você.."
-						value={infoHolder.name}
-						handleChange={(value) => updateInfoHolder({ name: value })}
-					/>
+					<TextInput labelText="NOME" placeholderText="Preencha aqui seu nome.." value={infoHolder.name} handleChange={(value) => updateInfoHolder({ name: value })} />
+					<TextareaInput labelText="SOBRE VOCÊ" placeholderText="Preencha aqui sobre você.." value={infoHolder.name} handleChange={(value) => updateInfoHolder({ name: value })} />
 					<DateInput
 						labelText="DATA DE CRIAÇÃO DO REGISTRO"
 						value={formatDateForInput(infoHolder.insertDate)}
@@ -51,12 +37,7 @@ function TestingPage() {
 							})
 						}
 					/>
-					<NumberInput
-						labelText="IDADE"
-						value={infoHolder.age}
-						placeholderText="Preencha aqui a sua idade..."
-						handleChange={(value) => updateInfoHolder({ age: value })}
-					/>
+					<NumberInput labelText="IDADE" value={infoHolder.age} placeholderText="Preencha aqui a sua idade..." handleChange={(value) => updateInfoHolder({ age: value })} />
 					<SelectInput
 						labelText="TIPO"
 						placeholderText="Preencha o tipo do usuário"

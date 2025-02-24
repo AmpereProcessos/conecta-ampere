@@ -1,20 +1,7 @@
-import {
-	CONECTA_AMPERE_CRM_USER_DATA,
-	DATABASE_COLLECTION_NAMES,
-	MATRIX_COMPANY_PARTNER_ID,
-} from "@/configs/app-definitions";
+import { CONECTA_AMPERE_CRM_USER_DATA, DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from "@/configs/app-definitions";
 import { ReferEarnOptions } from "@/configs/constants";
-import {
-	google,
-	GOOGLE_OAUTH_STATE_COOKIE_NAME,
-	GOOGLE_OAUTH_VERIFIER_COOKIE_NAME,
-	type GoogleUserOpenIDConnect,
-} from "@/lib/authentication/providers";
-import {
-	createSession,
-	generateSessionToken,
-	setSetSessionCookie,
-} from "@/lib/authentication/session";
+import { google, GOOGLE_OAUTH_STATE_COOKIE_NAME, GOOGLE_OAUTH_VERIFIER_COOKIE_NAME, type GoogleUserOpenIDConnect } from "@/lib/authentication/providers";
+import { createSession, generateSessionToken, setSetSessionCookie } from "@/lib/authentication/session";
 import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
 import type { TClient } from "@/schemas/client.schema";
 import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
@@ -35,18 +22,10 @@ export async function GET(request: NextRequest): Promise<Response> {
 	const code = url.searchParams.get("code");
 	const state = url.searchParams.get("state");
 
-	const storedState =
-		cookieStore.get(GOOGLE_OAUTH_STATE_COOKIE_NAME)?.value ?? null;
-	const codeVerifier =
-		cookieStore.get(GOOGLE_OAUTH_VERIFIER_COOKIE_NAME)?.value ?? null;
+	const storedState = cookieStore.get(GOOGLE_OAUTH_STATE_COOKIE_NAME)?.value ?? null;
+	const codeVerifier = cookieStore.get(GOOGLE_OAUTH_VERIFIER_COOKIE_NAME)?.value ?? null;
 
-	if (
-		!code ||
-		!state ||
-		!storedState ||
-		state !== storedState ||
-		!codeVerifier
-	) {
+	if (!code || !state || !storedState || state !== storedState || !codeVerifier) {
 		return new Response(null, {
 			status: 400,
 			headers: { Location: "/login" },
@@ -58,22 +37,16 @@ export async function GET(request: NextRequest): Promise<Response> {
 
 		// console.log("GOOGLE OAUTH TOKENS", tokens);
 		const accessToken = tokens.accessToken();
-		const refreshToken = tokens.hasRefreshToken()
-			? tokens.refreshToken()
-			: null;
+		const refreshToken = tokens.hasRefreshToken() ? tokens.refreshToken() : null;
 		// console.log("GOOGLE OAUTH ACCESS TOKEN", accessToken);
 		// console.log("GOOGLE OAUTH REFRESH TOKEN", refreshToken);
-		const googleOpenIdConnectResponse = await fetch(
-			"https://openidconnect.googleapis.com/v1/userinfo",
-			{
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
+		const googleOpenIdConnectResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
 			},
-		);
+		});
 
-		const googleUser: GoogleUserOpenIDConnect =
-			await googleOpenIdConnectResponse.json();
+		const googleUser: GoogleUserOpenIDConnect = await googleOpenIdConnectResponse.json();
 
 		// console.log("GOOGLE USER", googleUser);
 
@@ -87,25 +60,14 @@ export async function GET(request: NextRequest): Promise<Response> {
 		}
 
 		const crmDb = await connectToCRMDatabase();
-		const clientsCollection = crmDb.collection<TClient>(
-			DATABASE_COLLECTION_NAMES.CLIENTS,
-		);
-		const opportunitiesCollection = crmDb.collection<TOpportunity>(
-			DATABASE_COLLECTION_NAMES.OPPORTUNITIES,
-		);
-		const funnelReferencesCollection = crmDb.collection<TFunnelReference>(
-			DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES,
-		);
-		const conectaSessionsCollection = crmDb.collection<TSession>(
-			DATABASE_COLLECTION_NAMES.SESSIONS,
-		);
+		const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+		const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
+		const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
+		const conectaSessionsCollection = crmDb.collection<TSession>(DATABASE_COLLECTION_NAMES.SESSIONS);
 
 		let clientId: string | null = null;
 		const existingUser = await clientsCollection.findOne({
-			$or: [
-				{ email: googleUser.email },
-				{ "conecta.googleId": googleUser.sub },
-			],
+			$or: [{ email: googleUser.email }, { "conecta.googleId": googleUser.sub }],
 		});
 
 		if (!existingUser) {
@@ -141,9 +103,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
 
-			const newOpportunityIdentifier = await getNewOpportunityIdentifier(
-				opportunitiesCollection,
-			);
+			const newOpportunityIdentifier = await getNewOpportunityIdentifier(opportunitiesCollection);
 
 			let opportunityId: string | null = null;
 			const newOpportunity: TOpportunity = {
@@ -186,8 +146,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 				dataExclusao: null,
 				dataInsercao: new Date().toISOString(),
 			};
-			const insertOpportunityResponse =
-				await opportunitiesCollection.insertOne(newOpportunity);
+			const insertOpportunityResponse = await opportunitiesCollection.insertOne(newOpportunity);
 
 			opportunityId = insertOpportunityResponse.insertedId.toString();
 
@@ -211,21 +170,13 @@ export async function GET(request: NextRequest): Promise<Response> {
 				},
 				{
 					$set: {
-						uf: existingUser.uf
-							? existingUser.uf
-							: userRequestLocation.countryRegion || "",
-						cidade: existingUser.cidade
-							? existingUser.cidade
-							: userRequestLocation.city?.toUpperCase() || "",
-						"conecta.usuario":
-							existingUser.conecta?.usuario || googleUser.email,
-						"conecta.avatar_url":
-							existingUser.conecta?.avatar_url || googleUser.picture,
+						uf: existingUser.uf ? existingUser.uf : userRequestLocation.countryRegion || "",
+						cidade: existingUser.cidade ? existingUser.cidade : userRequestLocation.city?.toUpperCase() || "",
+						"conecta.usuario": existingUser.conecta?.usuario || googleUser.email,
+						"conecta.avatar_url": existingUser.conecta?.avatar_url || googleUser.picture,
 						"conecta.email": existingUser.conecta?.email || googleUser.email,
-						"conecta.googleId":
-							existingUser.conecta?.googleId || googleUser.sub,
-						"conecta.googleRefreshToken":
-							existingUser.conecta?.googleRefreshToken || refreshToken,
+						"conecta.googleId": existingUser.conecta?.googleId || googleUser.sub,
+						"conecta.googleRefreshToken": existingUser.conecta?.googleRefreshToken || refreshToken,
 					},
 				},
 			);
@@ -243,7 +194,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
 		return new Response(null, {
 			status: 302,
-			headers: { Location: "/" },
+			headers: { Location: "/dashboard" },
 		});
 	} catch (error) {
 		// the specific error message depends on the provider
@@ -255,28 +206,15 @@ export async function GET(request: NextRequest): Promise<Response> {
 		}
 		console.error(error);
 
-		return new Response(
-			JSON.stringify({ error: "Oops, um erro desconhecido ocorreu." }),
-			{
-				status: 500,
-			},
-		);
+		return new Response(JSON.stringify({ error: "Oops, um erro desconhecido ocorreu." }), {
+			status: 500,
+		});
 	}
 }
 
-async function getNewOpportunityIdentifier(
-	collection: Collection<TOpportunity>,
-) {
-	const lastInsertedIdentificator = await collection
-		.aggregate([
-			{ $project: { identificador: 1 } },
-			{ $sort: { _id: -1 } },
-			{ $limit: 1 },
-		])
-		.toArray();
-	const lastIdentifierNumber = lastInsertedIdentificator[0]
-		? Number(lastInsertedIdentificator[0].identificador.split("-")[1])
-		: 0;
+async function getNewOpportunityIdentifier(collection: Collection<TOpportunity>) {
+	const lastInsertedIdentificator = await collection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
+	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
 	const newIdentifier = `CRM-${newIdentifierNumber}`;
 

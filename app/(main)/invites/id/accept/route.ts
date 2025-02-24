@@ -99,12 +99,11 @@ export async function GET(request: NextRequest) {
 		},
 		{
 			$set: {
-				conecta: {
-					usuario: client.email,
-					email: client.email,
-					codigoIndicacaoVendedor: invite.promotor.tipo === "VENDEDOR" ? invite.promotor.codigoIndicacao : null,
-					senha: "",
-				},
+				"conecta.usuario": client.email,
+				"conecta.email": client.email,
+				"conecta.senha": "",
+				"conecta.codigoIndicacaoVendedor": invite.promotor.tipo === "VENDEDOR" ? invite.promotor.codigoIndicacao : null,
+				"conecta.conviteDataAceite": new Date().toISOString(),
 			},
 		},
 	);
@@ -123,7 +122,7 @@ export async function GET(request: NextRequest) {
 		console.log("SESSION COOKIE SET");
 		return new Response(null, {
 			status: 302,
-			headers: { Location: "/" },
+			headers: { Location: "/dashboard" },
 		});
 	} catch (error) {
 		console.log("ERROR", error);

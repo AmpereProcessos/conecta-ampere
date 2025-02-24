@@ -86,6 +86,6 @@ export async function GET(request: NextRequest) {
 	}
 
 	console.log("SESSION SET");
-	return redirect("/");
+	return redirect("/dashboard");
 	// query is "hello" for /api/search?query=hello
 }

@@ -147,6 +147,8 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 				usuario: phone,
 				email: email,
 				senha: "",
+				conviteId: inviteId,
+				conviteDataAceite: invite ? new Date().toISOString() : null,
 				codigoIndicacaoVendedor: invitePromoterSellerCode,
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
@@ -261,7 +263,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/");
+		return redirect("/dashboard");
 	} catch (error) {
 		console.log("Error during opportunity automation of signup", error);
 		// In case the opportunity creation failed, just redirecting the user
@@ -274,7 +276,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/");
+		return redirect("/dashboard");
 	}
 }
 async function getNewOpportunityIdentifier(collection: Collection<TOpportunity>) {
