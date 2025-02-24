@@ -32,12 +32,14 @@ function AcceptInvitePage({ inviteById }: AcceptInvitePageProps) {
 						</div>
 						<div className="flex flex-col my-2">
 							<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">Estamos muitos felizes de receber você.</p>
-							<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">Preencha as informações abaixo para efetivar seu acesso.</p>
+							<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">Clique abaixo para efetivar seu acesso.</p>
 						</div>
 					</CardContent>
 					<CardFooter>
 						<Button asChild className="w-full">
-							<Link href={`/invites/id/accept?inviteId=${inviteById.id}`}>EFETIVAR ACESSO</Link>
+							<Link href={`/invites/id/accept?inviteId=${inviteById.id}`} prefetch={false}>
+								EFETIVAR ACESSO
+							</Link>
 						</Button>
 					</CardFooter>
 				</Card>

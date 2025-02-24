@@ -127,11 +127,8 @@ export async function GET(request: NextRequest) {
 		});
 	} catch (error) {
 		console.log("ERROR", error);
-		return new Response(null, {
-			status: 400,
-			headers: {
-				Location: `/invites/id?error=${encodeURIComponent("Um erro desconhecido ocorreu.")}`,
-			},
+		return new Response(JSON.stringify({ error: "Oops, um erro desconhecido ocorreu." }), {
+			status: 500,
 		});
 	}
 }
