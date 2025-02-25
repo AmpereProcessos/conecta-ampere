@@ -117,6 +117,9 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
 	let clientId: string | null = null;
+	let clientName: string | null = null;
+	let clientPhone: string | null = null;
+	let clientEmail: string | null | undefined = null;
 	let clientCpfCnpj: string | null = null;
 	let clientAcquisitionChannel: string | null = null;
 	// First, checking for possible existing client in db
@@ -141,6 +144,9 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
+		clientName = existingClientInDb.nome;
+		clientPhone = existingClientInDb.telefonePrimario;
+		clientEmail = existingClientInDb.email;
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
 	} else {
@@ -174,6 +180,11 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 				};
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
+			clientName = newClient.nome;
+			clientPhone = newClient.telefonePrimario;
+			clientEmail = newClient.email;
+			clientCpfCnpj = newClient.cpfCnpj || null;
+			clientAcquisitionChannel = newClient.canalAquisicao;
 		} catch (error) {
 			console.log("INSERT CLIENT ERROR", error);
 			return {
@@ -210,10 +221,10 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
 			idCliente: clientId as string,
 			cliente: {
-				nome: name,
+				nome: clientName,
 				cpfCnpj: clientCpfCnpj,
-				telefonePrimario: phone,
-				email: email,
+				telefonePrimario: clientPhone,
+				email: clientEmail,
 				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
 			},
 			localizacao: {
@@ -355,6 +366,9 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 	const indicationId = insertIndicationResponse.insertedId.toString();
 
 	let clientId: string | null = null;
+	let clientName: string | null = null;
+	let clientPhone: string | null = null;
+	let clientEmail: string | null | undefined = null;
 	let clientCpfCnpj: string | null = null;
 	let clientAcquisitionChannel: string | null = null;
 	// First, checking for possible existing client in db
@@ -367,6 +381,9 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
+		clientName = existingClientInDb.nome;
+		clientPhone = existingClientInDb.telefonePrimario;
+		clientEmail = existingClientInDb.email;
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
 	} else {
@@ -402,6 +419,11 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 				};
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
+			clientName = newClient.nome;
+			clientPhone = newClient.telefonePrimario;
+			clientEmail = newClient.email;
+			clientCpfCnpj = newClient.cpfCnpj || null;
+			clientAcquisitionChannel = newClient.canalAquisicao;
 		} catch (error) {
 			console.log("INSERT CLIENT ERROR", error);
 			return {
@@ -437,10 +459,10 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
 			idCliente: clientId as string,
 			cliente: {
-				nome: name,
+				nome: clientName,
 				cpfCnpj: clientCpfCnpj,
-				telefonePrimario: phone,
-				email: email,
+				telefonePrimario: clientPhone,
+				email: clientEmail,
 				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
 			},
 			localizacao: {
@@ -473,6 +495,18 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			dataInsercao: new Date().toISOString(),
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
+
+		// Finally, updating the indication with its respective opportunity
+		await indicationsCollection.updateOne(
+			{ _id: new ObjectId(indicationId) },
+			{
+				$set: {
+					"oportunidade.id": opportunityId,
+					"oportunidade.nome": newOpportunity.nome,
+					"oportunidade.identificador": newOpportunity.identificador,
+				},
+			},
+		);
 
 		// In case the opportunity creation succedded, redirecting the user
 		const sessionToken = await generateSessionToken();

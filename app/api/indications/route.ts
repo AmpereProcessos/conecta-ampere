@@ -33,12 +33,17 @@ async function handleCreateIndication(req: NextRequestType) {
 	// Then, checking the existence of the same client
 
 	let clientId: string | null = null;
+	let clientName: string | null = null;
+	let clientPhone: string | null = null;
+	let clientEmail: string | null | undefined = null;
+	let clientCpfCnpj: string | null = null;
+	let clientAcquisitionChannel: string | null = null;
 	const client = await clientsCollection.findOne({
 		telefonePrimario: indication.telefone,
 	});
 	if (!client) {
 		// If the client does not exist, we create it
-		const insertClientResponse = await clientsCollection.insertOne({
+		const newClient: TClient = {
 			nome: indication.nome,
 			idParceiro: MATRIX_COMPANY_PARTNER_ID,
 			telefonePrimario: indication.telefone,
@@ -57,16 +62,27 @@ async function handleCreateIndication(req: NextRequestType) {
 				contato: indication.autor.nome,
 			},
 			dataInsercao: new Date().toISOString(),
-		});
+		};
+		const insertClientResponse = await clientsCollection.insertOne(newClient);
 		if (!insertClientResponse.acknowledged) {
 			console.error("Error inserting client");
 			throw new createHttpError.InternalServerError("Oops, um erro desconhecido ocorreu ao criar a indicação.");
 		}
 		const insertedClientId = insertClientResponse.insertedId.toString();
 		clientId = insertedClientId;
+		clientName = newClient.nome;
+		clientPhone = newClient.telefonePrimario;
+		clientEmail = newClient.email;
+		clientCpfCnpj = newClient.cpfCnpj || null;
+		clientAcquisitionChannel = newClient.canalAquisicao;
 	} else {
 		console.log("FOUND EXISTING CLIENT");
 		clientId = client._id.toString();
+		clientName = client.nome;
+		clientPhone = client.telefonePrimario;
+		clientEmail = client.email;
+		clientCpfCnpj = client.cpfCnpj || null;
+		clientAcquisitionChannel = client.canalAquisicao;
 	}
 
 	let indicationSeller: WithId<TUser> | null = null;
@@ -111,11 +127,11 @@ async function handleCreateIndication(req: NextRequestType) {
 		segmento: "RESIDENCIAL" as TOpportunity["segmento"],
 		idCliente: clientId as string,
 		cliente: {
-			nome: client?.nome || indication.nome,
-			cpfCnpj: client?.cpfCnpj,
-			telefonePrimario: client?.telefonePrimario || indication.telefone,
-			email: client?.email,
-			canalAquisicao: client?.canalAquisicao || "INDICAÇÃO",
+			nome: clientName,
+			cpfCnpj: clientCpfCnpj,
+			telefonePrimario: clientPhone,
+			email: clientEmail,
+			canalAquisicao: clientAcquisitionChannel || "INDICAÇÃO",
 		},
 		localizacao: {
 			uf: indication.uf,
