@@ -71,8 +71,8 @@ async function handleCreateIndication(req: NextRequestType) {
 
 	let indicationSeller: WithId<TUser> | null = null;
 
-	if (indication.codigoIndicacaoPromotor) {
-		const sellerUser = await usersCollection.findOne({ codigoIndicacaoConecta: indication.codigoIndicacaoPromotor });
+	if (indication.codigoIndicacaoVendedor) {
+		const sellerUser = await usersCollection.findOne({ codigoIndicacaoConecta: indication.codigoIndicacaoVendedor });
 		indicationSeller = sellerUser;
 	}
 	const lastInsertedIdentificator = await opportunitiesCollection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();

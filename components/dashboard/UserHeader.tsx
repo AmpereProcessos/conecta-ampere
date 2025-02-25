@@ -3,7 +3,7 @@ import React from "react";
 
 import { getCurrentSession } from "@/lib/authentication/session";
 import { redirect } from "next/navigation";
-import { IdCard, LogOut } from "lucide-react";
+import { Copy, IdCard, LogOut } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/assets/svgs/ampere-blue-logo-icon.svg";
 import type { TAuthSession } from "@/lib/authentication/types";
@@ -12,7 +12,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeModeToggle } from "../themes/ThemeToggle";
 import { Button } from "../ui/button";
 import Link from "next/link";
-
+import { Link as LinkIcon } from "lucide-react";
+import { copyToClipboard } from "@/lib/methods/utils";
+import HeaderIndicationBlock from "./utils/HeaderIndicationBlock";
 type UserHeaderProps = {
 	sessionUser: TAuthSession["user"];
 };
@@ -36,7 +38,6 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 					</Button>
 				</div>
 			</div>
-
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1">
 					<IdCard className="w-5 h-5 lg:w-6 lg:h-6 min-w-6 min-h-6" />
@@ -49,6 +50,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 					<h1 className="py-0.5 text-center text-[0.6rem] lg:text-xs font-medium italic text-primary/80">CONECTA AMPÈRE</h1>
 				</div>
 			</div>
+			<HeaderIndicationBlock sessionUserId={sessionUser.id} />
 		</div>
 	);
 }

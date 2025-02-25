@@ -7,6 +7,7 @@ export type TSessionUser = {
 	cpfCnpj?: string | null;
 	email?: string | null;
 	avatar_url?: string | null;
+	codigoIndicacaoVendedor?: string | null;
 };
 
 export type TAuthSession = {
@@ -60,6 +61,42 @@ export const SignUpSchema = z.object({
 		.nullable(),
 });
 export type TSignUpSchema = z.infer<typeof SignUpSchema>;
+
+export const SignUpViaPromoterSchema = z.object({
+	name: z.string({
+		required_error: "Nome não informado.",
+		invalid_type_error: "Tipo não válido para nome.",
+	}),
+	email: z
+		.string({
+			required_error: "Email não fornecido.",
+			invalid_type_error: "Tipo não válido para email.",
+		})
+		.email({ message: "Formato inválido para email." }),
+	phone: z.string({
+		required_error: "Telefone não informado.",
+		invalid_type_error: "Tipo não válido para telefone.",
+	}),
+	uf: z.string({
+		required_error: "Estado não informado.",
+		invalid_type_error: "Tipo não válido para estado.",
+	}),
+	city: z.string({
+		required_error: "Cidade não informada.",
+		invalid_type_error: "Tipo não válido para cidade.",
+	}),
+	invitesPromoterId: z.string({
+		invalid_type_error: "Tipo não válido para referência do promotor do convite.",
+	}),
+	termsAndPrivacyPolicyAcceptanceDate: z
+		.string({
+			required_error: "Data de aceitação dos termos de uso e política de privacidade não informada.",
+			invalid_type_error: "Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
+		})
+		.optional()
+		.nullable(),
+});
+export type TSignUpViaPromoterSchema = z.infer<typeof SignUpViaPromoterSchema>;
 
 export const ResendVerificationTokenSchema = z.object({
 	userId: z.string({

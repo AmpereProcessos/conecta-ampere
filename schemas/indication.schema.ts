@@ -35,7 +35,7 @@ export const IndicationSchema = z.object({
 			.optional()
 			.nullable(),
 	}),
-	codigoIndicacaoPromotor: z
+	codigoIndicacaoVendedor: z
 		.string({
 			invalid_type_error: "Tipo não válido para o código de indicação do promotor.",
 		})

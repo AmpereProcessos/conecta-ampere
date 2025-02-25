@@ -17,6 +17,9 @@ import { useMutation } from "@tanstack/react-query";
 import { createIndication } from "@/lib/mutations/indications";
 import { getErrorMessage } from "@/lib/methods/errors";
 import { toast } from "sonner";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useSellerByIndicationCodeQuery } from "@/lib/queries/sellers";
+import IndicationDataSeller from "./blocks/IndicationDataSeller";
 
 type NewIndicationProps = {
 	sessionUser: TSessionUser;
@@ -51,6 +54,7 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 			nome: "",
 			identificador: "",
 		},
+		codigoIndicacaoVendedor: sessionUser.codigoIndicacaoVendedor,
 		dataInsercao: new Date().toISOString(),
 	};
 	const [infoHolder, setInfoHolder] = useState(initialHolderState);
@@ -184,6 +188,7 @@ function IndicationData({ infoHolder, updateInfoHolder }: IndicationDataProps) {
 						options={BrazilianCitiesOptionsFromUF(infoHolder.uf)}
 						resetOptionText="NÃO DEFINIDO"
 					/>
+					<IndicationDataSeller infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</>
 			)}
 		</div>

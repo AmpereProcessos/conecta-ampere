@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Copy } from "lucide-react";
 import { toast } from "sonner";
 
 type ViaCEPSuccessfulReturn = {
@@ -23,4 +24,11 @@ export async function getCEPInfo(cep: string): Promise<ViaCEPSuccessfulReturn | 
 		toast.error("Erro ao buscar informações à partir do CEP.");
 		return null;
 	}
+}
+
+export async function copyToClipboard(text: string) {
+	await navigator.clipboard.writeText(text);
+	return toast("Copiado para área de transferência.", {
+		icon: <Copy className="h-4 w-4" />,
+	});
 }
