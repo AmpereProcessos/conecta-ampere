@@ -13,8 +13,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-	const { session, user } = await getCurrentSession();
-	if (!session) return redirect("/login");
+
 	return (
 		<FullScreenWrapper>
 			<LandingPage />
