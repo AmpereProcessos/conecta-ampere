@@ -4,6 +4,7 @@ import connectToCRMDatabase from "../services/mongodb/crm-db-connection";
 import { ObjectId } from "mongodb";
 import type { TInvite } from "@/schemas/invites.schema";
 import type { TClient } from "@/schemas/client.schema";
+import type { TUser } from "@/schemas/users.schema";
 
 export async function getInviteById(id: string) {
 	try {
@@ -58,3 +59,29 @@ export async function getInvitesPromoterById(id: string) {
 	}
 }
 export type TGetInvitesPromoterById = Awaited<ReturnType<typeof getInvitesPromoterById>>;
+
+export async function getSellerInviteByCode(code: string) {
+	try {
+		const crmDb = await connectToCRMDatabase();
+		const usersCollection = crmDb.collection<TUser>(DATABASE_COLLECTION_NAMES.USERS);
+
+		const seller = await usersCollection.findOne({
+			codigoIndicacaoConecta: code,
+		});
+
+		if (!seller) throw new Error("Oops, vendedor não encontrado ou inválido.");
+
+		return {
+			id: seller._id.toString(),
+			nome: seller.nome,
+			avatarUrl: seller.avatar_url,
+			telefone: seller.telefone,
+			email: seller.email,
+			codigoIndicacaoConecta: seller.codigoIndicacaoConecta,
+		};
+	} catch (error) {
+		console.log("Error running getSellerInviteByCode", error);
+		throw error;
+	}
+}
+export type TGetSellerInviteByCode = Awaited<ReturnType<typeof getSellerInviteByCode>>;

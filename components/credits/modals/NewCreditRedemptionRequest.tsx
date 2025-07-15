@@ -72,21 +72,23 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 	});
 	return isDesktop ? (
 		<Dialog open onOpenChange={closeModal}>
-			<DialogContent>
+			<DialogContent className="flex flex-col h-fit min-h-[60vh] max-h-[80vh]">
 				<DialogHeader>
 					<DialogTitle>NOVO RESGATE</DialogTitle>
 					<DialogDescription>Preencha alguns dados para retirada de créditos.</DialogDescription>
 				</DialogHeader>
-				<ScrollArea className="w-full flex flex-col grow max-h-[500px]">
-					<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
-					<TextareaInput
-						labelText="INFORMAÇÕES AUXILIARES"
-						placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
-						value={infoHolder.pagamento.observacoes}
-						handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
-						inputClassName="lg:min-h-[80px]"
-					/>
-				</ScrollArea>
+				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+					<div className="w-full h-full flex flex-col gap-6 px-2">
+						<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+						<TextareaInput
+							labelText="INFORMAÇÕES AUXILIARES"
+							placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
+							value={infoHolder.pagamento.observacoes}
+							handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
+							inputClassName="lg:min-h-[80px]"
+						/>
+					</div>
+				</div>
 
 				<DialogFooter>
 					<DialogClose asChild>
@@ -107,16 +109,18 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 					<DrawerTitle>NOVO RESGATE</DrawerTitle>
 					<DrawerDescription>Preencha alguns dados para retirada de créditos.</DrawerDescription>
 				</DrawerHeader>
-				<ScrollArea className="w-full flex flex-col grow max-h-[500px]">
-					<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
-					<TextareaInput
-						labelText="INFORMAÇÕES AUXILIARES"
-						placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
-						value={infoHolder.pagamento.observacoes}
-						handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
-						inputClassName="lg:min-h-[100px]"
-					/>
-				</ScrollArea>
+				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+					<div className="w-full h-full flex flex-col gap-6 px-2">
+						<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+						<TextareaInput
+							labelText="INFORMAÇÕES AUXILIARES"
+							placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
+							value={infoHolder.pagamento.observacoes}
+							handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
+							inputClassName="lg:min-h-[100px]"
+						/>
+					</div>
+				</div>
 
 				<DrawerFooter className="pt-2">
 					{infoHolder.recompensaResgatada?.id ? (

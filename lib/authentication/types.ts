@@ -98,6 +98,14 @@ export const SignUpViaPromoterSchema = z.object({
 });
 export type TSignUpViaPromoterSchema = z.infer<typeof SignUpViaPromoterSchema>;
 
+export const SignUpViaSellerInviteSchema = SignUpSchema.extend({
+	invitesSellerId: z.string({
+		required_error: "Código de vendedor não informado.",
+		invalid_type_error: "Tipo não válido para código de vendedor.",
+	}),
+});
+export type TSignUpViaSellerInviteSchema = z.infer<typeof SignUpViaSellerInviteSchema>;
+
 export const ResendVerificationTokenSchema = z.object({
 	userId: z.string({
 		required_error: "Referência do usuário não informada.",

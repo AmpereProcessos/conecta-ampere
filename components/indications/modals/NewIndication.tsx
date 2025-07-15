@@ -83,12 +83,14 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 	});
 	return isDesktop ? (
 		<Dialog open onOpenChange={closeModal}>
-			<DialogContent>
+			<DialogContent className="flex flex-col h-fit min-h-[60vh] max-h-[80vh]">
 				<DialogHeader>
 					<DialogTitle>NOVA INDICAÇÃO</DialogTitle>
 					<DialogDescription>Preencha alguns dados sobre a sua indicação.</DialogDescription>
 				</DialogHeader>
-				<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+					<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+				</div>
 				<DialogFooter>
 					<DialogClose asChild>
 						<Button variant="outline">FECHAR</Button>
@@ -108,7 +110,9 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 					<DrawerTitle>NOVA INDICAÇÃO</DrawerTitle>
 					<DrawerDescription>Preencha alguns dados sobre a sua indicação.</DrawerDescription>
 				</DrawerHeader>
-				<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+					<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+				</div>
 				<DrawerFooter className="pt-2">
 					{infoHolder.tipo?.id ? (
 						<LoadingButton onClick={() => mutateCreateIndication(infoHolder)} loading={isPending}>
@@ -132,7 +136,7 @@ type IndicationDataProps = {
 };
 function IndicationData({ infoHolder, updateInfoHolder }: IndicationDataProps) {
 	return (
-		<div className="w-full grow flex flex-col gap-3 px-2">
+		<div className="w-full h-full flex flex-col gap-3 px-4">
 			{!infoHolder.tipo.id ? (
 				<ProjectTypeSelection updateInfoHolder={updateInfoHolder} />
 			) : (
