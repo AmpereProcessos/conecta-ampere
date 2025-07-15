@@ -61,24 +61,34 @@ export const ReferEarnOptions: TReferEarnOption[] = [
 		projectTypeSaleCategory: "PLANO",
 		referEarnCall: "Indique para Manutenção Solar",
 	},
+	{
+		id: 4,
+		projectTypeId: "6627b8c19440d7db1e618594",
+		projectType: "SEGURO DE SISTEMA FOTOVOLTAICO",
+		projectTypeSaleCategory: "PLANO",
+		referEarnCall: "Indique para Seguro Solar",
+	},
 ];
 
 export const EarnRewardsOptions = [
 	{
 		id: "67a61c79fe128a1045e26528",
 		label: "VALE PIX - 50 REAIS",
+		redeemCall: "Resgate um Vale PIX - 50 Reais",
 		value: "67a61c79fe128a1045e26528",
 		requiredCredits: 50,
 	},
 	{
 		id: "67a61c825c120e5aa98b8581",
 		label: "VALE PIX - 100 REAIS",
+		redeemCall: "Resgate um Vale PIX - 100 Reais",
 		value: "67a61c825c120e5aa98b8581",
 		requiredCredits: 100,
 	},
 	{
 		id: "67a61ca1d890dc0dec6b1abf",
 		label: "VALE PIX - 500 REAIS",
+		redeemCall: "Resgate um Vale PIX - 500 Reais",
 		value: "67a61ca1d890dc0dec6b1abf",
 		requiredCredits: 500,
 	},

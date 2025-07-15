@@ -15,6 +15,7 @@ import TextareaInput from "@/components/inputs/TextareaInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type NewCreditRedemptionRequestProps = {
+	initialState?: Partial<TCreditRedemptionRequest>;
 	sessionUser: TSessionUser;
 	closeModal: () => void;
 	callbacks?: {
@@ -23,15 +24,15 @@ type NewCreditRedemptionRequestProps = {
 		onSettled?: () => void;
 	};
 };
-function NewCreditRedemptionRequest({ sessionUser, closeModal, callbacks }: NewCreditRedemptionRequestProps) {
+function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, callbacks }: NewCreditRedemptionRequestProps) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
 	const initialHolderState: TCreditRedemptionRequest = {
-		creditosResgatados: 0,
+		creditosResgatados: initialState?.creditosResgatados || 0,
 		recompensaResgatada: {
-			id: "",
-			nome: "",
-			creditosNecessarios: 0,
+			id: initialState?.recompensaResgatada?.id || "",
+			nome: initialState?.recompensaResgatada?.nome || "",
+			creditosNecessarios: initialState?.recompensaResgatada?.creditosNecessarios || 0,
 		},
 		requerente: {
 			id: sessionUser.id,
@@ -40,7 +41,7 @@ function NewCreditRedemptionRequest({ sessionUser, closeModal, callbacks }: NewC
 		},
 		analista: {},
 		pagamento: {
-			observacoes: "",
+			observacoes: initialState?.pagamento?.observacoes || "",
 		},
 		dataInsercao: new Date().toISOString(),
 	};
