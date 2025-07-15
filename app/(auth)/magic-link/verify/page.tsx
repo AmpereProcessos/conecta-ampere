@@ -26,7 +26,7 @@ async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string;
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
-				<Card className="w-full max-w-md">
+				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
 						<CardTitle>Acesso ao Conecta Ampère</CardTitle>
 						<CardDescription>Email de acesso enviado !</CardDescription>

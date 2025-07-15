@@ -6,7 +6,8 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatNameAsInitials } from "@/lib/methods/formatting";
-
+import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
+import Image from "next/image";
 type AcceptInvitePageProps = {
 	inviteById: TGetValidInviteById;
 };
@@ -14,9 +15,12 @@ function AcceptInvitePage({ inviteById }: AcceptInvitePageProps) {
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
-				<Card className="w-full max-w-md">
+				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
-						<CardTitle>Bem vindo ao Conecta Ampère !</CardTitle>
+						<CardTitle className="flex items-center justify-center gap-2">
+							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							Bem vindo ao Conecta Ampère !
+						</CardTitle>
 						<CardDescription>Você recebeu um convite para nossa plataforma.</CardDescription>
 					</CardHeader>
 					<CardContent className="gap-4 flex flex-col">

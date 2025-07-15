@@ -4,7 +4,8 @@ import { SubmitButton } from "@/components/buttons/submit-button";
 import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
+import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
+import Image from "next/image";
 import { login, signUp } from "@/lib/authentication/actions";
 import Link from "next/link";
 import React, { useActionState, useState } from "react";
@@ -17,6 +18,7 @@ import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/
 import TextInput from "@/components/inputs/TextInput";
 import SelectInput from "@/components/inputs/SelectInput";
 import { Checkbox } from "@/components/ui/checkbox";
+
 function SignUp() {
 	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
 		name: "",
@@ -32,9 +34,12 @@ function SignUp() {
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
-				<Card className="w-full max-w-md">
+				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
-						<CardTitle>Cadastro ao Conecta Ampère</CardTitle>
+						<CardTitle className="flex items-center justify-center gap-2">
+							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							Cadastro ao Conecta Ampère
+						</CardTitle>
 						<CardDescription>Crie já sua conta Conecta Ampère</CardDescription>
 					</CardHeader>
 					<CardContent>

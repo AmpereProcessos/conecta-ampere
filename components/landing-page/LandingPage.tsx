@@ -10,7 +10,7 @@ import Footer from "./blocks/Footer";
 
 function LandingPage() {
 	return (
-		<main className="w-full flex flex-col items-center">
+		<main className="w-full flex flex-col items-center bg-gray-50">
 			<Hero />
 			{/* <Header /> */}
 			<HowItWorks />

@@ -15,7 +15,8 @@ import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/
 import { Checkbox } from "../ui/checkbox";
 import { SubmitButton } from "../buttons/submit-button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-
+import Image from "next/image";
+import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
 type AcceptInviteFormPageProps = {
 	inviteById: TGetValidInviteById;
 };
@@ -34,9 +35,12 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
-				<Card className="w-full max-w-md">
+				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
-						<CardTitle>Bem vindo ao Conecta Ampère !</CardTitle>
+						<CardTitle className="flex items-center justify-center gap-2">
+							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							Bem vindo ao Conecta Ampère !
+						</CardTitle>
 						<CardDescription>Você recebeu um convite para nossa plataforma.</CardDescription>
 					</CardHeader>
 					<CardContent>

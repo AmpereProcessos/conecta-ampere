@@ -92,6 +92,27 @@ export const EarnRewardsOptions = [
 		value: "67a61ca1d890dc0dec6b1abf",
 		requiredCredits: 500,
 	},
+	{
+		id: "6876ab18da1ff5b2156dbbd0",
+		label: "VALE MANUTENÇÃO (ATÉ 10 PLACAS)",
+		redeemCall: "Resgate um Vale Manutenção (Até 10 Placas)",
+		value: "6876ab18da1ff5b2156dbbd0",
+		requiredCredits: 750,
+	},
+	{
+		id: "6876ab7e7c0b56933abb80d4",
+		label: "VALE MANUTENÇÃO (ATÉ 20 PLACAS)",
+		redeemCall: "Resgate um Vale Manutenção (Até 20 Placas)",
+		value: "6876ab7e7c0b56933abb80d4",
+		requiredCredits: 900,
+	},
+	{
+		id: "6876aba9224ce61a8a35400c",
+		label: "VALE MANUTENÇÃO (ATÉ 50 PLACAS)",
+		redeemCall: "Resgate um Vale Manutenção (Até 50 Placas)",
+		value: "6876aba9224ce61a8a35400c",
+		requiredCredits: 1800,
+	},
 ];
 
 type FileTypes = {

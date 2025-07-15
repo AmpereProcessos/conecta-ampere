@@ -12,7 +12,8 @@ import type { TLoginSchema } from "@/lib/authentication/types";
 import Link from "next/link";
 import React, { useActionState, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
-
+import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
+import Image from "next/image";
 function Login() {
 	const [loginHolder, setLoginHolder] = useState<TLoginSchema>({
 		username: "",
@@ -21,9 +22,12 @@ function Login() {
 	return (
 		<FullScreenWrapper>
 			<div className="w-full flex items-center justify-center h-full">
-				<Card className="w-full max-w-md">
+				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
-						<CardTitle>Acesso ao Conecta Ampère</CardTitle>
+						<CardTitle className="flex items-center justify-center gap-2">
+							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							Acesso ao Conecta Ampère
+						</CardTitle>
 						<CardDescription>Acesse ao Dashboard validando sua conta</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -43,8 +47,8 @@ function Login() {
 						<form action={async () => await actionMethod(loginHolder)} className="grid gap-4">
 							<TextInput
 								identifier="username"
-								labelText="Usuário"
-								placeholderText="meuusuario"
+								labelText="Email"
+								placeholderText="exemplo@email.com"
 								value={loginHolder.username}
 								handleChange={(value) => setLoginHolder((prev) => ({ ...prev, username: value }))}
 							/>

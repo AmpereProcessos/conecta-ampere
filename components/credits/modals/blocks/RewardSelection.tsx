@@ -30,7 +30,7 @@ function RewardSelection({ infoHolder, updateInfoHolder }: RewardSelectionProps)
 						className={cn(
 							"flex duration-300 ease-in-out flex-col items-center justify-center border-2 border-transparent gap-1 p-2 lg:p-8 bg-[#FB2E9F]/20 text-[#FB2E9F] rounded-lg aspect-auto w-full hover:bg-[#FB2E9F]/30",
 							{
-								"bg-[#FB2E9F]/30 border-primary": infoHolder.recompensaResgatada.id === option.value,
+								"bg-[#FB2E9F]/40 border-[#FB2E9F]": infoHolder.recompensaResgatada.id === option.value,
 							},
 						)}
 					>

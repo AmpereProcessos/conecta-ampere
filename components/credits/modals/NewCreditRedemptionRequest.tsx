@@ -104,7 +104,7 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 		</Dialog>
 	) : (
 		<Drawer open onOpenChange={closeModal}>
-			<DrawerContent>
+			<DrawerContent className="max-h-[85vh] flex flex-col">
 				<DrawerHeader className="text-left">
 					<DrawerTitle>NOVO RESGATE</DrawerTitle>
 					<DrawerDescription>Preencha alguns dados para retirada de créditos.</DrawerDescription>

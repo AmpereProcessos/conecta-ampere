@@ -20,7 +20,7 @@ type UserHeaderProps = {
 };
 function UserHeader({ sessionUser }: UserHeaderProps) {
 	return (
-		<div className="bg-background w-full flex p-3.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-lg">
+		<div className="bg-background w-full flex p-3.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-lg bg-[#fff] dark:bg-[#121212]">
 			<div className="w-full flex items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<Avatar className="w-6 h-6 lg:w-8 lg:h-8 min-w-6 min-h-6">
