@@ -6,82 +6,90 @@ import Maintenance from "@/assets/landing-page/illustration-maintenance.svg";
 import EnergyDiscount from "@/assets/landing-page/illustration-money-motivation.svg";
 import SolarInsurance from "@/assets/landing-page/illustration-insurance.svg";
 
+const services = [
+	{
+		title: ["Sistemas", "Fotovoltaicos"],
+		text:
+			"Prestamos serviços completos como integradores de sistemas fotovoltaicos, com homologação, projeto e instalação. A Ampère conta com mais de 1500 sistemas fotovoltaicos comercializados na região, sendo uma das maiores integradoras de Minas Gerais",
+		image: PhotovoltaicSystems,
+		alt: "Sistemas Fotovoltaicos",
+		color: "from-[#15599a] to-[#1e6bb8]",
+		badge: "bg-[#fead41] text-[#15599a]",
+		textColor: "text-white",
+		id: "sistemas-fotovoltaicos",
+	},
+	{
+		title: ["Manutenção", "Solar"],
+		text:
+			"Realizamos inspeções detalhadas, limpeza de painéis e verificação de componentes, prevenindo falhas e aumentando a vida útil do seu investimento em energia solar, prezando pelo desempenho máximo do seu sistema fotovoltaico.",
+		image: Maintenance,
+		alt: "Manutenção Solar",
+		color: "from-[#fead41] to-[#ffb84d]",
+		badge: "bg-white text-[#15599a]",
+		textColor: "text-[#15599a]",
+		id: "manutencao-solar",
+	},
+	{
+		title: ["Desconto", "em Energia"],
+		text:
+			"Nosso programa de desconto conecta você a fazendas solares, garantindo economia mensal significativa e tarifa reduzida, sem necessidade de instalação de painéis ou modificações em sua residência.",
+		image: EnergyDiscount,
+		alt: "Desconto em Energia",
+		color: "from-[#fead41] to-[#ffb84d]",
+		badge: "bg-white text-[#15599a]",
+		textColor: "text-[#15599a]",
+		id: "desconto-energia",
+	},
+	{
+		title: ["Seguro", "Solar"],
+		text:
+			"Com o seguro você se protege contra danos físicos, falhas elétricas e eventos climáticos extremos. Nosso seguro solar oferece cobertura completa e atendimento prioritário proporcionando tranquilidade e segurança para seu investimento em energia limpa.",
+		image: SolarInsurance,
+		alt: "Seguro Solar",
+		color: "from-[#15599a] to-[#1e6bb8]",
+		badge: "bg-[#fead41] text-[#15599a]",
+		textColor: "text-white",
+		id: "seguro-solar",
+	},
+];
+
 function OurServices() {
 	return (
-		<div id="nossos-servicos" className="px-6 lg:px-24 flex flex-col gap-20 w-full">
-			<div className="w-full flex items-center flex-col lg:flex-row gap-10">
-				<h1 className="font-medium text-4xl bg-[#fead41] px-1 rounded-lg">Nossos Serviços</h1>
-				<h3 className="text-lg">Conheça um pouco sobre a variedade de serviços que oferecemos aos nossos clientes.</h3>
-			</div>
-			<div className="w-full flex flex-col gap-10">
-				<div className="w-full flex flex-col lg:flex-row items-center gap-10">
-					<div className="flex items-center justify-between rounded-xl px-6 lg:px-12 py-12 w-full lg:w-1/2 flex-col lg:flex-row gap-10 border border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] h-full bg-[#f3f3f3]">
-						<div className="flex flex-col grow h-full justify-between gap-5">
-							<div className="flex flex-col">
-								<h1 className="bg-[#fead41] text-2xl px-1 rounded-lg w-fit">Sistemas</h1>
-								<h1 className="bg-[#fead41] text-2xl px-1 rounded-lg w-fit">Fotovoltaicos</h1>
-							</div>
-							<h3 className="text-xs">
-								Prestamos serviços completos como integradores de sistemas fotovoltaicos, com homologação, projeto e instalação. <br />A Ampère conta com mais de 1500 sistemas
-								fotovoltaicos comercializados na região, sendo uma das maiores integradoras de Minas Gerais
-							</h3>
-						</div>
-						<div className="relative w-[12.5rem] h-[12.5rem] min-w-[12.5rem] min-h-[12.5rem]">
-							<Image src={PhotovoltaicSystems} fill={true} alt="Sistemas Fotovoltaicos" />
-						</div>
-					</div>
-					<div className="flex items-center justify-between rounded-xl px-6 lg:px-12 py-12 w-full lg:w-1/2 flex-col lg:flex-row gap-10 border border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] h-full bg-[#fead41]">
-						<div className="flex flex-col grow h-full justify-between gap-5">
-							<div className="flex flex-col">
-								<h1 className="bg-white text-2xl text-black px-1 rounded-lg w-fit">Manutenção</h1>
-								<h1 className="bg-white text-2xl text-black px-1 rounded-lg w-fit">Solar</h1>
-							</div>
-							<h3 className="text-xs">
-								Realizamos inspeções detalhadas, limpeza de painéis e verificação de componentes, prevenindo falhas e aumentando a vida útil do seu investimento em energia solar, prezando
-								pelo desempenho máximo do seu sistema fotovoltaico.
-							</h3>
-						</div>
-						<div className="relative w-[12.5rem] h-[12.5rem] min-w-[12.5rem] min-h-[12.5rem]">
-							<Image src={Maintenance} fill={true} alt="Manutenção Solar" />
-						</div>
-					</div>
+		<section id="nossos-servicos" className="bg-gray-50 py-20">
+			<div className="container mx-auto px-4 flex flex-col items-center justify-center">
+				<div className="text-center mb-16">
+					<h2 className="text-4xl font-bold text-gray-800 mb-4">
+						Nossos <span className="text-[#fead41]">Serviços</span>
+					</h2>
+					<p className="text-xl text-gray-600 max-w-3xl mx-auto">Conheça um pouco sobre a variedade de serviços que oferecemos aos nossos clientes.</p>
 				</div>
-				<div className="w-full flex flex-col lg:flex-row items-center gap-10">
-					<div className="flex items-center justify-between rounded-xl px-6 lg:px-12 py-12 w-full lg:w-1/2 flex-col lg:flex-row gap-10 border border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] h-full bg-[#15599a]">
-						<div className="flex flex-col grow h-full justify-between gap-5">
-							<div className="flex flex-col">
-								<h1 className="bg-white text-2xl text-black px-1 rounded-lg w-fit">Desconto</h1>
-								<h1 className="bg-white text-2xl text-black px-1 rounded-lg w-fit">em Energia</h1>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+					{services.map((service) => (
+						<div
+							key={service.id}
+							className={`group flex flex-col relative overflow-hidden rounded-2xl bg-gradient-to-br ${service.color} p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 min-h-[22rem]`}
+						>
+							<div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
+							<div className="relative z-10 flex flex-col grow h-full">
+								<div className="flex flex-col gap-1 mb-4">
+									{service.title.map((t, i) => (
+										<span key={`${service.id}-badge-${t}`} className={`text-2xl font-bold px-3 py-1 rounded-lg w-fit mb-1 ${service.badge}`}>
+											{t}
+										</span>
+									))}
+								</div>
+								<p className={`mb-6 ${service.textColor}`}>{service.text}</p>
+								<div className="flex justify-center items-end grow">
+									<div className="relative w-40 h-40">
+										<Image src={service.image} fill alt={service.alt} className="object-contain" />
+									</div>
+								</div>
 							</div>
-
-							<h3 className="text-xs text-white">
-								Nosso programa de desconto conecta você a fazendas solares, garantindo economia mensal significativa e tarifa reduzida, sem necessidade de instalação de painéis ou
-								modificações em sua residência.
-							</h3>
 						</div>
-						<div className="relative w-[12.5rem] h-[12.5rem] min-w-[12.5rem] min-h-[12.5rem]">
-							<Image src={EnergyDiscount} fill={true} alt="Desconto em Energia" />
-						</div>
-					</div>
-					<div className="flex items-center justify-between rounded-xl px-6 lg:px-12 py-12 w-full lg:w-1/2 flex-col lg:flex-row gap-10 border border-black shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] h-full bg-[#f3f3f3]">
-						<div className="flex flex-col grow h-full justify-between gap-5">
-							<div className="flex flex-col">
-								<h1 className="bg-[#15599a] text-2xl px-1 rounded-lg w-fit text-white">Seguro</h1>
-								<h1 className="bg-[#15599a] text-2xl px-1 rounded-lg w-fit text-white">Solar</h1>
-							</div>
-
-							<h3 className="text-xs">
-								Com o seguro você se protege contra danos físicos, falhas elétricas e eventos climáticos extremos. <br />
-								Nosso seguro solar oferece cobertura completa e atendimento prioritário proporcionando tranquilidade e segurança para seu investimento em energia limpa.
-							</h3>
-						</div>
-						<div className="relative w-[12.5rem] h-[12.5rem] min-w-[12.5rem] min-h-[12.5rem]">
-							<Image src={SolarInsurance} fill={true} alt="Seguro Solar" />
-						</div>
-					</div>
+					))}
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 }
 

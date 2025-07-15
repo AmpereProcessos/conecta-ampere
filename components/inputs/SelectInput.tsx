@@ -5,15 +5,7 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-	CommandSeparator,
-} from "../ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
 
 type SelectOption = {
@@ -51,36 +43,18 @@ function SelectInput({
 	wrapperClassName,
 	labelClassName,
 }: SelectInputProps) {
-	const inputIdentifier =
-		identifier || labelText.toLowerCase().replaceAll(" ", "_");
+	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(" ", "_");
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	return isDesktop ? (
 		<div className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<Label
-				htmlFor={inputIdentifier}
-				className={cn(
-					"text-sm font-medium tracking-tight text-primary/80",
-					labelClassName,
-				)}
-			>
+			<Label htmlFor={inputIdentifier} className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>
 				{labelText}
 			</Label>
 			<Popover open={isOpen} onOpenChange={setIsOpen}>
 				<PopoverTrigger asChild>
-					<Button
-						type="button"
-						disabled={!editable}
-						variant="outline"
-						aria-haspopup="listbox"
-						aria-expanded={isOpen}
-						className="w-full justify-between"
-					>
-						<SelectedOption
-							value={value}
-							options={options}
-							placeholderText={placeholderText}
-						/>
+					<Button type="button" disabled={!editable} variant="outline" aria-haspopup="listbox" aria-expanded={isOpen} className="w-full justify-between">
+						<SelectedOption value={value} options={options} placeholderText={placeholderText} />
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</PopoverTrigger>
@@ -100,30 +74,13 @@ function SelectInput({
 		</div>
 	) : (
 		<div className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<Label
-				htmlFor={inputIdentifier}
-				className={cn(
-					"text-sm font-medium tracking-tight text-primary/80",
-					labelClassName,
-				)}
-			>
+			<Label htmlFor={inputIdentifier} className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>
 				{labelText}
 			</Label>
 			<Drawer open={isOpen} onOpenChange={setIsOpen}>
 				<DrawerTrigger asChild>
-					<Button
-						type="button"
-						disabled={!editable}
-						variant="outline"
-						aria-haspopup="listbox"
-						aria-expanded={isOpen}
-						className="w-full justify-between"
-					>
-						<SelectedOption
-							value={value}
-							options={options}
-							placeholderText={placeholderText}
-						/>
+					<Button type="button" disabled={!editable} variant="outline" aria-haspopup="listbox" aria-expanded={isOpen} className="w-full justify-between">
+						<SelectedOption value={value} options={options} placeholderText={placeholderText} />
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</DrawerTrigger>
@@ -158,23 +115,12 @@ type OptionsListProps = {
 	optionsStartContent?: ReactNode;
 	closeMenu: () => void;
 };
-function OptionsList({
-	value,
-	placeholderText,
-	resetOptionText,
-	handleChange,
-	handleReset,
-	options,
-	optionsStartContent,
-	closeMenu,
-}: OptionsListProps) {
+function OptionsList({ value, placeholderText, resetOptionText, handleChange, handleReset, options, optionsStartContent, closeMenu }: OptionsListProps) {
 	return (
 		<Command className="w-full" loop>
 			<CommandInput placeholder={placeholderText} className="h-9 w-full" />
 			<CommandList className="w-full">
-				<CommandEmpty className="w-full p-3">
-					Nenhuma opção encontrada.
-				</CommandEmpty>
+				<CommandEmpty className="w-full p-3">Nenhuma opção encontrada.</CommandEmpty>
 				<CommandGroup className="w-full">
 					<CommandItem
 						value={undefined}
@@ -184,12 +130,7 @@ function OptionsList({
 						}}
 					>
 						{resetOptionText}
-						<Check
-							className={cn(
-								"ml-auto",
-								value === null ? "opacity-100" : "opacity-0",
-							)}
-						/>
+						<Check className={cn("ml-auto", value === null ? "opacity-100" : "opacity-0")} />
 					</CommandItem>
 					<CommandSeparator className="my-1" />
 					{options.map((option) => (
@@ -202,18 +143,9 @@ function OptionsList({
 								closeMenu();
 							}}
 						>
-							{option.startContent
-								? option.startContent
-								: optionsStartContent
-									? optionsStartContent
-									: undefined}
+							{option.startContent ? option.startContent : optionsStartContent ? optionsStartContent : undefined}
 							{option.label}
-							<Check
-								className={cn(
-									"ml-auto",
-									value === option.value ? "opacity-100" : "opacity-0",
-								)}
-							/>
+							<Check className={cn("ml-auto", value === option.value ? "opacity-100" : "opacity-0")} />
 						</CommandItem>
 					))}
 				</CommandGroup>
@@ -227,11 +159,7 @@ type SelectedOptionProps = {
 	placeholderText: string;
 	options: SelectOption[];
 };
-function SelectedOption({
-	value,
-	placeholderText,
-	options,
-}: SelectedOptionProps) {
+function SelectedOption({ value, placeholderText, options }: SelectedOptionProps) {
 	const selectedOption = options.find((o) => o.value === value);
 
 	if (!selectedOption) return placeholderText;

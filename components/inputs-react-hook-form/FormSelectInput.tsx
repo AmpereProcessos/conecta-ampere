@@ -4,23 +4,9 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-	CommandSeparator,
-} from "../ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
-import {
-	FormControl,
-	FormDescription,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "../ui/form";
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "../ui/form";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 type SelectOption = {
@@ -43,9 +29,7 @@ type FormSelectInputProps<TFieldValues extends FieldValues = FieldValues> = {
 	labelClassName?: string;
 };
 
-export function FormSelectInput<
-	TFieldValues extends FieldValues = FieldValues,
->({
+export function FormSelectInput<TFieldValues extends FieldValues = FieldValues>({
 	field,
 	labelText,
 	placeholderText,
@@ -61,14 +45,7 @@ export function FormSelectInput<
 
 	return (
 		<FormItem className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<FormLabel
-				className={cn(
-					"text-sm font-medium tracking-tight text-primary/80",
-					labelClassName,
-				)}
-			>
-				{labelText}
-			</FormLabel>
+			<FormLabel className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>{labelText}</FormLabel>
 			<SelectContent
 				field={field}
 				isDesktop={isDesktop}
@@ -114,24 +91,12 @@ function SelectContent<TFieldValues extends FieldValues = FieldValues>({
 		<FormControl>
 			<SelectWrapper open={isOpen} onOpenChange={setIsOpen}>
 				<SelectTriggerWrapper asChild>
-					<Button
-						type="button"
-						disabled={!editable}
-						variant="outline"
-						aria-expanded={isOpen}
-						className="w-full justify-between"
-					>
-						<SelectedOption
-							value={field.value}
-							options={options}
-							placeholderText={placeholder}
-						/>
+					<Button type="button" disabled={!editable} variant="outline" aria-expanded={isOpen} className="w-full justify-between">
+						<SelectedOption value={field.value} options={options} placeholderText={placeholder} />
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</SelectTriggerWrapper>
-				<SelectContentWrapper
-					className={isDesktop ? "p-0 w-[--radix-popover-trigger-width]" : ""}
-				>
+				<SelectContentWrapper className={isDesktop ? "p-0 w-[--radix-popover-trigger-width]" : ""}>
 					<div className={!isDesktop ? "mt-4 border-t" : ""}>
 						<OptionsList
 							value={field.value}
@@ -162,23 +127,12 @@ type OptionsListProps = {
 	closeMenu: () => void;
 };
 
-function OptionsList({
-	value,
-	placeholderText,
-	resetOptionText,
-	handleChange,
-	handleReset,
-	options,
-	optionsStartContent,
-	closeMenu,
-}: OptionsListProps) {
+function OptionsList({ value, placeholderText, resetOptionText, handleChange, handleReset, options, optionsStartContent, closeMenu }: OptionsListProps) {
 	return (
 		<Command className="w-full" loop>
 			<CommandInput placeholder={placeholderText} className="h-9 w-full" />
 			<CommandList className="w-full">
-				<CommandEmpty className="w-full p-3">
-					Nenhuma opção encontrada.
-				</CommandEmpty>
+				<CommandEmpty className="w-full p-3">Nenhuma opção encontrada.</CommandEmpty>
 				<CommandGroup className="w-full">
 					<CommandItem
 						value={undefined}
@@ -188,12 +142,7 @@ function OptionsList({
 						}}
 					>
 						{resetOptionText}
-						<Check
-							className={cn(
-								"ml-auto",
-								value === null ? "opacity-100" : "opacity-0",
-							)}
-						/>
+						<Check className={cn("ml-auto", value === null ? "opacity-100" : "opacity-0")} />
 					</CommandItem>
 					<CommandSeparator className="my-1" />
 					{options.map((option) => (
@@ -206,18 +155,9 @@ function OptionsList({
 								closeMenu();
 							}}
 						>
-							{option.startContent
-								? option.startContent
-								: optionsStartContent
-									? optionsStartContent
-									: undefined}
+							{option.startContent ? option.startContent : optionsStartContent ? optionsStartContent : undefined}
 							{option.label}
-							<Check
-								className={cn(
-									"ml-auto",
-									value === option.value ? "opacity-100" : "opacity-0",
-								)}
-							/>
+							<Check className={cn("ml-auto", value === option.value ? "opacity-100" : "opacity-0")} />
 						</CommandItem>
 					))}
 				</CommandGroup>
@@ -232,11 +172,7 @@ type SelectedOptionProps = {
 	options: SelectOption[];
 };
 
-function SelectedOption({
-	value,
-	placeholderText,
-	options,
-}: SelectedOptionProps) {
+function SelectedOption({ value, placeholderText, options }: SelectedOptionProps) {
 	const selectedOption = options.find((o) => o.value === value);
 
 	if (!selectedOption) return <>{placeholderText}</>;

@@ -2,13 +2,7 @@ import type React from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
 import type { ControllerRenderProps, FieldValues } from "react-hook-form";
-import {
-	FormControl,
-	FormDescription,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "../ui/form";
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "../ui/form";
 
 type FormTextInputProps<TFieldValues extends FieldValues = FieldValues> = {
 	field: ControllerRenderProps<TFieldValues>;
@@ -30,14 +24,7 @@ function FormTextInput<TFieldValues extends FieldValues = FieldValues>({
 }: FormTextInputProps<TFieldValues>) {
 	return (
 		<FormItem className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<FormLabel
-				className={cn(
-					"text-sm font-medium tracking-tight text-primary/80",
-					labelClassName,
-				)}
-			>
-				{labelText}
-			</FormLabel>
+			<FormLabel className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>{labelText}</FormLabel>
 			<FormControl>
 				<Input
 					{...field}
