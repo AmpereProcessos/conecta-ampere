@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { z } from "zod";
 import type { NextRequest as NextRequestType, NextResponse as NextResponseType } from "next/server";
 import type { TUser } from "@/schemas/users.schema";
+import { notifyCRMResponsiblesOnNewIndication } from "@/lib/services/crm";
 
 export const CreateIndicationRouteInput = IndicationSchema;
 export type TCreateIndicationRouteInput = z.infer<typeof CreateIndicationRouteInput>;
@@ -179,6 +180,21 @@ async function handleCreateIndication(req: NextRequestType) {
 			},
 		},
 	);
+	await notifyCRMResponsiblesOnNewIndication({
+		tipo: "NEW_OPPORTUNITY",
+		payload: {
+			responsaveisIds: opportunityToInsert.responsaveis.map((responsavel) => responsavel.id),
+			autor: {
+				nome: indication.autor.nome,
+				avatar_url: indication.autor.avatar_url,
+			},
+			oportunidade: {
+				id: insertedOpportunityId,
+				identificador: opportunityToInsert.identificador,
+				nome: opportunityToInsert.nome,
+			},
+		},
+	});
 	return NextResponse.json(
 		{
 			data: { insertedId: indicationId },

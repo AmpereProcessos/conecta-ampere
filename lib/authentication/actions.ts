@@ -30,6 +30,7 @@ import dayjs from "dayjs";
 import type { TInvite } from "@/schemas/invites.schema";
 import type { TIndication } from "@/schemas/indication.schema";
 import type { TUser } from "@/schemas/users.schema";
+import { notifyCRMResponsiblesOnNewIndication } from "../services/crm";
 
 type TLoginResult = {
 	formError?: string;
@@ -265,6 +266,21 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
+		await notifyCRMResponsiblesOnNewIndication({
+			tipo: "NEW_OPPORTUNITY",
+			payload: {
+				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
+				autor: {
+					nome: newOpportunity.autor.nome,
+					avatar_url: newOpportunity.autor.avatar_url,
+				},
+				oportunidade: {
+					id: opportunityId,
+					identificador: newOpportunity.identificador,
+					nome: newOpportunity.nome,
+				},
+			},
+		});
 		// Updating the invite if it exists
 		if (inviteId)
 			await invitesCollection.updateOne(
@@ -504,6 +520,21 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
+		await notifyCRMResponsiblesOnNewIndication({
+			tipo: "NEW_OPPORTUNITY",
+			payload: {
+				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
+				autor: {
+					nome: newOpportunity.autor.nome,
+					avatar_url: newOpportunity.autor.avatar_url,
+				},
+				oportunidade: {
+					id: opportunityId,
+					identificador: newOpportunity.identificador,
+					nome: newOpportunity.nome,
+				},
+			},
+		});
 		// Finally, updating the indication with its respective opportunity
 		await indicationsCollection.updateOne(
 			{ _id: new ObjectId(indicationId) },
@@ -731,6 +762,21 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
+		await notifyCRMResponsiblesOnNewIndication({
+			tipo: "NEW_OPPORTUNITY",
+			payload: {
+				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
+				autor: {
+					nome: newOpportunity.autor.nome,
+					avatar_url: newOpportunity.autor.avatar_url,
+				},
+				oportunidade: {
+					id: opportunityId,
+					identificador: newOpportunity.identificador,
+					nome: newOpportunity.nome,
+				},
+			},
+		});
 		// Finally, updating the indication with its respective opportunity
 		await indicationsCollection.updateOne(
 			{ _id: new ObjectId(indicationId) },

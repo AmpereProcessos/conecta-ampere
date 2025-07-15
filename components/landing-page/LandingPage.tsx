@@ -19,9 +19,9 @@ function LandingPage() {
 			<OurServices />
 			<Footer
 				otherLinks={[
-					{ label: "Energia Solar", href: "https://solar.ampereenergias.com.br" },
-					{ label: "Monitoramento Solar", href: "https://solar.ampereenergias.com.br/monitoramento" },
-					{ label: "Consórcio de Energia", href: "https://solar.ampereenergias.com.br/consorcio-energia" },
+					{ label: "Energia Solar", href: "https://solar.ampereenergias.com.br?marketing_source=conecta" },
+					{ label: "Monitoramento Solar", href: "https://solar.ampereenergias.com.br/monitoramento?marketing_source=conecta" },
+					{ label: "Consórcio de Energia", href: "https://solar.ampereenergias.com.br/consorcio-energia?marketing_source=conecta" },
 				]}
 			/>
 		</main>
