@@ -47,7 +47,9 @@ async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string;
 					</CardContent>
 					<CardFooter>
 						<Button variant={"link"} size={"sm"} className="p-0" asChild>
-							<Link href={`/magic-link/send?userId=${token.usuarioId}`}>Não recebeu, ou o código expirou ? Clique aqui.</Link>
+							<Link href={`/magic-link/send?userId=${token.usuarioId}`} prefetch={false}>
+								Não recebeu, ou o código expirou ? Clique aqui.
+							</Link>
 						</Button>
 					</CardFooter>
 				</Card>
