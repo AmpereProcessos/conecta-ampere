@@ -11,7 +11,10 @@ import {
 	SignUpViaPromoterSchema,
 	type TSignUpViaSellerInviteSchema,
 	SignUpViaSellerInviteSchema,
+	VerifyMagicLinkCodeSchema,
+	type TVerifyMagicLinkCodeSchema,
 } from "./types";
+import { z } from "zod";
 import type { TClient } from "@/schemas/client.schema";
 import { createSession, generateSessionToken, setSetSessionCookie } from "@/lib/authentication/session";
 import { redirect } from "next/navigation";
@@ -59,9 +62,11 @@ export async function login(_: TLoginResult, data: TLoginSchema): Promise<TLogin
 	}
 
 	const verificationToken = randomBytes(32).toString("hex");
+	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
 		token: verificationToken,
+		codigo: verificationCode,
 		usuarioId: user._id.toString(),
 		usuarioEmail: user.conecta.email,
 		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
@@ -77,6 +82,7 @@ export async function login(_: TLoginResult, data: TLoginSchema): Promise<TLogin
 
 	await sendEmailWithResend(user.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+		verificationCode: verificationCode,
 		expiresInMinutes: verificationTokenExpiresInMinutes,
 	});
 
@@ -801,9 +807,11 @@ export async function resendVerificationToken(_: TResendVerificationTokenResult,
 	await authVerificationTokensCollection.deleteMany({ usuarioId: userId });
 
 	const verificationToken = randomBytes(32).toString("hex");
+	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
 		token: verificationToken,
+		codigo: verificationCode,
 		usuarioId: client._id.toString(),
 		usuarioEmail: client.conecta.email,
 		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
@@ -819,8 +827,90 @@ export async function resendVerificationToken(_: TResendVerificationTokenResult,
 
 	await sendEmailWithResend(client.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+		verificationCode: verificationCode,
 		expiresInMinutes: verificationTokenExpiresInMinutes,
 	});
 
 	return redirect(`/magic-link/verify?id=${insertedAuthVerificationTokenId}`);
+}
+
+type TVerifyCodeResult = {
+	formError?: string;
+	fieldError?: {
+		code?: string;
+	};
+};
+
+export async function verifyCode(_: TVerifyCodeResult, data: TVerifyMagicLinkCodeSchema): Promise<TVerifyCodeResult> {
+	const validationParsed = VerifyMagicLinkCodeSchema.safeParse(data);
+	if (!validationParsed.success) {
+		const err = validationParsed.error.flatten();
+		return {
+			fieldError: {
+				code: err.fieldErrors.code?.[0],
+			},
+		};
+	}
+
+	const { code, verificationTokenId } = validationParsed.data;
+
+	const crmDb = await connectToCRMDatabase();
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
+
+	const authVerificationToken = await authVerificationTokensCollection.findOne({
+		_id: new ObjectId(verificationTokenId),
+		codigo: code,
+	});
+
+	if (!authVerificationToken) {
+		return {
+			formError: "Código inválido ou expirado.",
+		};
+	}
+
+	// Verificar se o token ainda é válido (não expirou)
+	const now = dayjs();
+	const expirationDate = dayjs(authVerificationToken.dataExpiracao);
+	if (now.isAfter(expirationDate)) {
+		return {
+			formError: "Código expirado.",
+		};
+	}
+
+	const client = await clientsCollection.findOne({
+		_id: new ObjectId(authVerificationToken.usuarioId),
+	});
+
+	if (!client) {
+		return {
+			formError: "Usuário não encontrado.",
+		};
+	}
+
+	// Remover o token usado
+	await authVerificationTokensCollection.deleteOne({
+		_id: new ObjectId(authVerificationToken._id),
+	});
+
+	// Criar sessão e fazer login
+	const sessionToken = await generateSessionToken();
+	const session = await createSession({
+		token: sessionToken,
+		userId: client._id.toString(),
+	});
+
+	try {
+		setSetSessionCookie({
+			token: sessionToken,
+			expiresAt: session.dataExpiracao,
+		});
+	} catch (error) {
+		console.log("ERROR", error);
+		return {
+			formError: "Um erro desconhecido ocorreu.",
+		};
+	}
+
+	return redirect("/dashboard");
 }

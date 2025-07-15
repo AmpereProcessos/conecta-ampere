@@ -113,3 +113,12 @@ export const ResendVerificationTokenSchema = z.object({
 	}),
 });
 export type TResendVerificationTokenSchema = z.infer<typeof ResendVerificationTokenSchema>;
+
+export const VerifyMagicLinkCodeSchema = z.object({
+	code: z.string().length(6, "Código deve ter exatamente 6 dígitos").regex(/^\d+$/, "Código deve conter apenas números"),
+	verificationTokenId: z.string({
+		required_error: "Referência do token de verificação não informada.",
+		invalid_type_error: "Tipo não válido para referência do token de verificação.",
+	}),
+});
+export type TVerifyMagicLinkCodeSchema = z.infer<typeof VerifyMagicLinkCodeSchema>;

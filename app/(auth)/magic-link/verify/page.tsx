@@ -1,5 +1,3 @@
-import { LoadingButton } from "@/components/buttons/loading-button";
-import { SubmitButton } from "@/components/buttons/submit-button";
 import ErrorComponent from "@/components/layout/ErrorComponent";
 import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
 import { Button } from "@/components/ui/button";
@@ -8,6 +6,7 @@ import { getVerificationTokenById } from "@/lib/authentication/verification-toke
 import dayjs from "dayjs";
 import Link from "next/link";
 import React from "react";
+import VerifyWaitingPageForm from "./verify-form";
 
 async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string; error?: string; details?: string } }) {
 	const searchParamsValues = await searchParams;
@@ -34,8 +33,14 @@ async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string;
 					<CardContent className="gap-4 flex flex-col">
 						{searchParamsValues.details ? <p className="w-full text-sm tracking-tight text-blue-800 text-center font-bold">{searchParamsValues.details}</p> : null}
 						<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">
-							Enviamos um email com um link de acesso para: <strong>{token?.usuarioEmail}</strong>
+							Clique no link de acesso enviado para o email: <strong>{token?.usuarioEmail}</strong>
 						</p>
+						<div className="my-4 flex items-center">
+							<div className="flex-grow border-t border-muted" />
+							<div className="mx-2 text-muted-foreground">ou</div>
+							<div className="flex-grow border-t border-muted" />
+						</div>
+						<VerifyWaitingPageForm verificationTokenId={token.id} />
 						<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">
 							O link expira em: <strong>{expiresInMinutes.toFixed(0)} minutos.</strong>
 						</p>

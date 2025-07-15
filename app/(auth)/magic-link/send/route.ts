@@ -24,13 +24,8 @@ export async function GET(request: NextRequest) {
 	}
 
 	const crmDb = await connectToCRMDatabase();
-	const clientsCollection = crmDb.collection<TClient>(
-		DATABASE_COLLECTION_NAMES.CLIENTS,
-	);
-	const authVerificationTokensCollection =
-		crmDb.collection<TAuthVerificationToken>(
-			DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS,
-		);
+	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
+	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
 	const client = await clientsCollection.findOne({ _id: new ObjectId(userId) });
 
@@ -45,18 +40,18 @@ export async function GET(request: NextRequest) {
 	}
 
 	const verificationToken = randomBytes(32).toString("hex");
+	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
+
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
 		token: verificationToken,
+		codigo: verificationCode,
 		usuarioId: client._id.toString(),
 		usuarioEmail: client.conecta.email,
-		dataExpiracao: dayjs()
-			.add(verificationTokenExpiresInMinutes, "minute")
-			.toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
-	const insertAuthVerificationTokenResponse =
-		await authVerificationTokensCollection.insertOne(newVerificationToken);
+	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 
 	if (!insertAuthVerificationTokenResponse.acknowledged) {
 		const error = "Oops, um erro desconhecido ocorreu, tente novamente.";
@@ -66,30 +61,21 @@ export async function GET(request: NextRequest) {
 		});
 	}
 
-	const insertedAuthVerificationTokenId =
-		insertAuthVerificationTokenResponse.insertedId.toString();
+	const insertedAuthVerificationTokenId = insertAuthVerificationTokenResponse.insertedId.toString();
 
-	const deleteAuthVerificationTokensResponse =
-		await authVerificationTokensCollection.deleteMany({
-			_id: { $ne: new ObjectId(insertedAuthVerificationTokenId) },
-			usuarioId: userId,
-		});
+	const deleteAuthVerificationTokensResponse = await authVerificationTokensCollection.deleteMany({
+		_id: { $ne: new ObjectId(insertedAuthVerificationTokenId) },
+		usuarioId: userId,
+	});
 
-	await sendEmailWithResend(
-		client.conecta?.email,
-		EmailTemplate.AuthMagicLink,
-		{
-			magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
-			expiresInMinutes: verificationTokenExpiresInMinutes,
-		},
-	);
+	await sendEmailWithResend(client.conecta?.email, EmailTemplate.AuthMagicLink, {
+		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
+		verificationCode: verificationCode,
+		expiresInMinutes: verificationTokenExpiresInMinutes,
+	});
 
-	const deleteAuthVerificationTokensCount =
-		deleteAuthVerificationTokensResponse.deletedCount;
-	const detailsMsg =
-		deleteAuthVerificationTokensCount > 0
-			? "Um novo link de acesso foi enviado !"
-			: null;
+	const deleteAuthVerificationTokensCount = deleteAuthVerificationTokensResponse.deletedCount;
+	const detailsMsg = deleteAuthVerificationTokensCount > 0 ? "Um novo link de acesso foi enviado !" : null;
 	const redirectUrl = `${process.env.NEXT_PUBLIC_URL}/magic-link/verify?id=${insertedAuthVerificationTokenId}${detailsMsg ? `&details=${encodeURIComponent(detailsMsg)}` : ""}`;
 	return new Response(null, {
 		status: 302,

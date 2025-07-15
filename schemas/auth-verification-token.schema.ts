@@ -5,14 +5,21 @@ const AuthVerificationTokenSchema = z.object({
 		required_error: "Token de verificação não informado.",
 		invalid_type_error: "Tipo não válido para o token de verificação.",
 	}),
+	codigo: z
+		.string({
+			required_error: "Código de verificação não informado.",
+			invalid_type_error: "Tipo não válido para o código de verificação.",
+		})
+		.length(6, "Código deve ter exatamente 6 dígitos")
+		.regex(/^\d+$/, "Código deve conter apenas números")
+		.optional(),
 	usuarioId: z.string({
 		required_error: "ID de referência do usuário.",
 		invalid_type_error: "Tipo não válido para o ID de referência do usuário.",
 	}),
 	usuarioEmail: z.string({
 		required_error: "Email de referência do usuário.",
-		invalid_type_error:
-			"Tipo não válido para o email de referência do usuário.",
+		invalid_type_error: "Tipo não válido para o email de referência do usuário.",
 	}),
 	dataExpiracao: z.string({
 		required_error: "Data de expiração não informada.",
@@ -24,6 +31,4 @@ const AuthVerificationTokenSchema = z.object({
 	}),
 });
 
-export type TAuthVerificationToken = z.infer<
-	typeof AuthVerificationTokenSchema
->;
+export type TAuthVerificationToken = z.infer<typeof AuthVerificationTokenSchema>;
