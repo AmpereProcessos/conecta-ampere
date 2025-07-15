@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import IndicationProgram from "@/assets/landing-page/indication-program.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 async function Hero() {
 	return (
@@ -30,26 +31,10 @@ async function Hero() {
 						</h1>
 
 						<p className="text-xl text-white/90 mb-8 leading-relaxed max-w-2xl">Aumente seus ganhos enquanto ajuda amigos e familiares a economizarem com a gente também.</p>
-
-						{/* Stats */}
-						{/* <div className="grid grid-cols-3 gap-6 mb-8">
-							<div className="text-center">
-								<div className="text-3xl font-bold text-[#fead41] mb-1">24/7</div>
-								<div className="text-sm text-white/80">Monitoramento</div>
-							</div>
-							<div className="text-center">
-								<div className="text-3xl font-bold text-[#fead41] mb-1">98%</div>
-								<div className="text-sm text-white/80">Detecção de Falhas</div>
-							</div>
-							<div className="text-center">
-								<div className="text-3xl font-bold text-[#fead41] mb-1">+30%</div>
-								<div className="text-sm text-white/80">Vida Útil</div>
-							</div>
-						</div> */}
 						<div className="w-full flex items-center justify-start">
-							<Button size={"lg"} className="w-fit bg-[#fead41] text-[#15599a] hover:bg-[#fead41]/80 font-bold">
+							<Link href={"/signup"} className="bg-[#fead41] hover:bg-[#fead41]/90 text-[#15599a] w-fit px-6 py-3 rounded-full font-bold shadow-lg transition-colors mt-2">
 								COMEÇE A INDICAR
-							</Button>
+							</Link>
 						</div>
 
 						{/* Social Proof */}
@@ -68,7 +53,7 @@ async function Hero() {
 						<div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
 							{/* Video Container */}
 							<div className="aspect-video bg-gradient-to-br from-orange-300 to-[#fead41] flex items-center justify-center">
-								<video className="w-full h-full object-cover" controls poster="/placeholder.svg?height=400&width=600" preload="metadata">
+								<video className="w-full h-full object-cover" controls poster="/placeholder.svg?height=400&width=600" preload="metadata" loading="lazy">
 									<source src="/placeholder-video.mp4" type="video/mp4" />
 									Your browser does not support the video tag.
 								</video>

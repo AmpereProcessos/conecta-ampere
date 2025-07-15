@@ -2,8 +2,8 @@ import Link from "next/link";
 import React from "react";
 import AmpereVerticalBlueLogo from "@/assets/svgs/ampere-vertical-blue-logo-icon-text.svg";
 import Image from "next/image";
-import AboutUsBackgroundDesktop from "@/assets/landing-page/about-us-background-desktop.png";
-import AboutUsBackgroundMobile from "@/assets/landing-page/about-us-background-mobile.png";
+import AboutUsBackgroundDesktop from "@/assets/landing-page/about-us-background-desktop.webp";
+import AboutUsBackgroundMobile from "@/assets/landing-page/about-us-background-mobile.webp";
 
 function AboutUs() {
 	return (
@@ -28,9 +28,12 @@ function AboutUs() {
 						A energia que move o mundo <br />
 						<strong className="text-[#fead41]">vem de você!</strong>
 					</h3>
-					<Link href={"/signup"} className="bg-[#fead41] hover:bg-[#fead41]/90 text-[#15599a] w-full max-w-xs px-6 py-3 rounded-full font-bold shadow-lg transition-colors mt-2">
+					<a
+						href={"mailto:marketing@solarampereenergia.com.br"}
+						className="bg-[#fead41] hover:bg-[#fead41]/90 text-[#15599a] w-full max-w-xs px-6 py-3 rounded-full font-bold shadow-lg transition-colors mt-2"
+					>
 						ENTRE EM CONTATO
-					</Link>
+					</a>
 				</div>
 
 				{/* Desktop: conteúdo completo, alinhado à esquerda */}
@@ -46,9 +49,12 @@ function AboutUs() {
 						<br />
 						Oferecemos soluções completas e com qualidade para os nossos clientes, levando economia e qualidade, com praticidade e facilidade.
 					</p>
-					<Link href={"/signup"} className="bg-[#fead41] hover:bg-[#fead41]/90 text-[#15599a] w-fit px-6 py-3 rounded-full font-bold shadow-lg transition-colors mt-4">
+					<a
+						href={"mailto:marketing@solarampereenergia.com.br"}
+						className="bg-[#fead41] hover:bg-[#fead41]/90 text-[#15599a] w-fit px-6 py-3 rounded-full font-bold shadow-lg transition-colors mt-4"
+					>
 						ENTRE EM CONTATO CONOSCO
-					</Link>
+					</a>
 				</div>
 			</div>
 		</section>

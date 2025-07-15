@@ -9,7 +9,7 @@ type LandingPageFooterProps = {
 		href: string;
 	}[];
 };
-async function Footer({ otherLinks }: LandingPageFooterProps) {
+function Footer({ otherLinks }: LandingPageFooterProps) {
 	return (
 		<footer className="bg-[#15599a] text-white w-full">
 			<div className="container mx-auto px-4 py-12">
@@ -61,7 +61,7 @@ async function Footer({ otherLinks }: LandingPageFooterProps) {
 						<h3 className="text-lg font-semibold mb-4 text-[#fead41]">Outros</h3>
 						<ul className="space-y-2 text-blue-100 text-sm">
 							<li>
-								<Link href="/politica-privacidade" className="hover:text-white transition-colors">
+								<Link href="/legal" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
 									- Política de Privacidade
 								</Link>
 							</li>
@@ -72,7 +72,7 @@ async function Footer({ otherLinks }: LandingPageFooterProps) {
 							</li>
 							{otherLinks.map((link) => (
 								<li key={link.label}>
-									<Link href={link.href} className="hover:text-white transition-colors">
+									<Link href={link.href} className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
 										- {link.label}
 									</Link>
 								</li>

@@ -10,7 +10,7 @@ import Footer from "./blocks/Footer";
 
 function LandingPage() {
 	return (
-		<div className="w-full flex flex-col items-center gap-24">
+		<main className="w-full flex flex-col items-center">
 			<Hero />
 			{/* <Header /> */}
 			<HowItWorks />
@@ -24,7 +24,7 @@ function LandingPage() {
 					{ label: "Consórcio de Energia", href: "https://solar.ampereenergias.com.br/consorcio-energia" },
 				]}
 			/>
-		</div>
+		</main>
 	);
 }
 
