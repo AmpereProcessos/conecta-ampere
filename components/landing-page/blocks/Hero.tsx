@@ -11,7 +11,7 @@ async function Hero() {
 				<div className="absolute top-0 right-0 w-96 h-96 bg-[#fead41]/10 rounded-full -translate-y-48 translate-x-48" />
 				<div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32" />
 			</div>
-			<div className="container mx-auto px-4 relative z-10 flex items-center justify-center">
+			<div className="container mx-auto px-4 relative z-10 flex items-center justify-center py-6 lg:py-12">
 				<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 					{/* Content */}
 					<div className="text-white flex flex-col gap-6">
