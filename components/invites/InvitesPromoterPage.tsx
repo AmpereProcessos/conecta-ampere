@@ -70,13 +70,6 @@ function InvitesPromoterPage({ promoter }: InvitesPromoterPageProps) {
 								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
 							/>
 							<TextInput
-								identifier="name"
-								labelText="Nome"
-								placeholderText="Preencha aqui seu nome..."
-								value={signUpHolder.name}
-								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
-							/>
-							<TextInput
 								identifier="phone"
 								labelText="Telefone"
 								placeholderText="Preencha aqui seu telefone..."

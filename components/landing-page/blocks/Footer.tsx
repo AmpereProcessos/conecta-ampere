@@ -33,19 +33,13 @@ function Footer({ otherLinks }: LandingPageFooterProps) {
 							<div>
 								<p className="font-medium text-white mb-1">Matriz</p>
 								<p>Av. 9, nº 833, Centro, Ituiutaba/MG</p>
-								<p>Cep: 38300-150 - Tel: (34) 3700-700</p>
-							</div>
-
-							<div>
-								<p className="font-medium text-white mb-1">Unidade Fernandópolis</p>
-								<p>Av dos Arnaldos, 1980 - Parque Estoril,</p>
-								<p>Fernandópolis - SP - Cep: 15600-306</p>
+								<p>Cep: 38300-150 - Tel: (34) 3700-7001</p>
 							</div>
 
 							<div>
 								<p className="font-medium text-white mb-1">Unidade Uberlândia</p>
 								<p>Av Cesário Alvim, 3550 - Brasil,</p>
-								<p>Uberlândia - MG - Cep: 38400-656 - Tel: (34) 3700-7001</p>
+								<p>Uberlândia - MG - Cep: 38400-656 - Tel: (34) 3212-2680</p>
 							</div>
 
 							<div>
