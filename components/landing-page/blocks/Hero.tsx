@@ -56,6 +56,7 @@ async function Hero() {
 										video_id: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoId,
 										video_title: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoTitle,
 									}}
+									thumbnailTime={MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.thumbnailTime}
 								/>
 								{/* {showVideo ? (
 									<MuxPlayer
