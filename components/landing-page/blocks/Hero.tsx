@@ -1,10 +1,14 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import IndicationProgram from "@/assets/landing-page/indication-program.svg";
 import Image from "next/image";
 import Link from "next/link";
-
-async function Hero() {
+import { useState } from "react";
+import MuxPlayer from "@mux/mux-player-react";
+import { MuxAssetsConfig } from "@/configs/services/mux";
+function Hero() {
+	const [showVideo, setShowVideo] = useState(false);
 	return (
 		<section id="main" className="w-full relative min-h-[80vh] flex overflow-hidden bg-gradient-to-br from-[#15599a] via-[#1e6bb8] to-[#2575c7]">
 			{/* Background Elements */}
@@ -53,18 +57,39 @@ async function Hero() {
 						<div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
 							{/* Video Container */}
 							<div className="aspect-video bg-gradient-to-br from-orange-300 to-[#fead41] flex items-center justify-center">
-								<video className="w-full h-full object-cover" controls poster="/placeholder.svg?height=400&width=600" preload="metadata" loading="lazy">
-									<source src="/placeholder-video.mp4" type="video/mp4" />
-									Your browser does not support the video tag.
-								</video>
-							</div>
-
-							{/* Video Overlay for Demo */}
-							<div className="absolute inset-0 bg-gradient-to-br from-orange-300/20 to-[#fead41]/20 flex items-center justify-center">
-								<div className="bg-white/10 backdrop-blur-sm rounded-full p-6 border border-white/20">
-									<Play className="w-12 h-12 text-white fill-current" />
-								</div>
-								<Image src={IndicationProgram} alt="Programa de Indicações" fill={true} className="opacity-50" />
+								{showVideo ? (
+									<MuxPlayer
+										playbackId={MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.playbackId}
+										metadata={{
+											video_id: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoId,
+											video_title: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoTitle,
+										}}
+									/>
+									// <video
+									// 	className="w-full h-full object-cover"
+									// 	controls
+									// 	poster="/assets/landing-page/about-us-background-desktop.webp"
+									// 	preload="none"
+									// 	playsInline
+									// 	style={{ background: "#fead41" }}
+									// >
+									// 	<source src={"/videos/program-presentation.mp4"} type="video/mp4" />
+									// 	<track kind="captions" srcLang="pt" label="Português" default />
+									// 	Seu navegador não suporta o elemento de vídeo.
+									// </video>
+								) : (
+									<button
+										type="button"
+										className="absolute inset-0 w-full h-full flex items-center justify-center focus:outline-none group"
+										onClick={() => setShowVideo(true)}
+										aria-label="Assistir vídeo de apresentação"
+									>
+										<Image src={IndicationProgram} alt="Programa de Indicações" fill={true} className="opacity-50" />
+										<div className="bg-white/20 backdrop-blur-sm rounded-full p-6 border border-white/20 flex items-center justify-center transition group-hover:scale-105">
+											<Play className="w-12 h-12 text-white fill-current drop-shadow-lg" />
+										</div>
+									</button>
+								)}
 							</div>
 						</div>
 					</div>

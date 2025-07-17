@@ -13,6 +13,7 @@
 		"@hookform/resolvers": "^3.10.0",
 		"@mdx-js/loader": "^3.1.0",
 		"@mdx-js/react": "^3.1.0",
+		"@mux/mux-player-react": "^3.5.1",
 		"@next/mdx": "^15.1.6",
 		"@node-rs/argon2": "^2.0.2",
 		"@oslojs/crypto": "^1.0.1",
