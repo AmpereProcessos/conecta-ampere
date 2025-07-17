@@ -1,14 +1,7 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
-import IndicationProgram from "@/assets/landing-page/indication-program.svg";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import MuxPlayer from "@mux/mux-player-react";
 import { MuxAssetsConfig } from "@/configs/services/mux";
-function Hero() {
-	const [showVideo, setShowVideo] = useState(false);
+async function Hero() {
 	return (
 		<section id="main" className="w-full relative min-h-[80vh] flex overflow-hidden bg-gradient-to-br from-[#15599a] via-[#1e6bb8] to-[#2575c7]">
 			{/* Background Elements */}
@@ -57,7 +50,14 @@ function Hero() {
 						<div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
 							{/* Video Container */}
 							<div className="aspect-video bg-gradient-to-br from-orange-300 to-[#fead41] flex items-center justify-center">
-								{showVideo ? (
+								<MuxPlayer
+									playbackId={MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.playbackId}
+									metadata={{
+										video_id: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoId,
+										video_title: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoTitle,
+									}}
+								/>
+								{/* {showVideo ? (
 									<MuxPlayer
 										playbackId={MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.playbackId}
 										metadata={{
@@ -65,18 +65,6 @@ function Hero() {
 											video_title: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoTitle,
 										}}
 									/>
-									// <video
-									// 	className="w-full h-full object-cover"
-									// 	controls
-									// 	poster="/assets/landing-page/about-us-background-desktop.webp"
-									// 	preload="none"
-									// 	playsInline
-									// 	style={{ background: "#fead41" }}
-									// >
-									// 	<source src={"/videos/program-presentation.mp4"} type="video/mp4" />
-									// 	<track kind="captions" srcLang="pt" label="Português" default />
-									// 	Seu navegador não suporta o elemento de vídeo.
-									// </video>
 								) : (
 									<button
 										type="button"
@@ -89,7 +77,7 @@ function Hero() {
 											<Play className="w-12 h-12 text-white fill-current drop-shadow-lg" />
 										</div>
 									</button>
-								)}
+								)} */}
 							</div>
 						</div>
 					</div>
