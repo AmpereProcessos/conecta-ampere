@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
 import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from 'sonner';
 import ProvidersWrapper from '@/components/Providers';
@@ -27,6 +28,7 @@ export default function RootLayout({
 					<NuqsAdapter>{children}</NuqsAdapter>
 				</ProvidersWrapper>
 				<Toaster />
+				<Analytics />
 			</body>
 		</html>
 	);

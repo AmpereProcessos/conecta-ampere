@@ -209,8 +209,8 @@ async function handleCreateIndication(req: NextRequestType) {
 			avatar_url: indication.autor.avatar_url,
 		},
 		localizacao: {
-			cidade: city,
-			uf: region,
+			cidade: city?.toUpperCase(),
+			uf: countryRegion?.toUpperCase(),
 			latitude,
 			longitude,
 		},
