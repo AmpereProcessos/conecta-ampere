@@ -1,23 +1,27 @@
-import { DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from "@/configs/app-definitions";
-import { apiHandler, type UnwrapNextResponse } from "@/lib/api/handler";
-import { getCurrentSessionUncached, getValidCurrentSessionUncached } from "@/lib/authentication/session";
-import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
-import type { TClient } from "@/schemas/client.schema";
-import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
-import { IndicationSchema, type TIndication } from "@/schemas/indication.schema";
-import type { TOpportunity } from "@/schemas/opportunity.schema";
-import createHttpError from "http-errors";
-import { ObjectId, type WithId } from "mongodb";
-import { NextRequest, NextResponse } from "next/server";
-import type { z } from "zod";
-import type { NextRequest as NextRequestType, NextResponse as NextResponseType } from "next/server";
-import type { TUser } from "@/schemas/users.schema";
-import { notifyCRMResponsiblesOnNewIndication } from "@/lib/services/crm";
+import { geolocation } from '@vercel/functions';
+import createHttpError from 'http-errors';
+import { ObjectId, type WithId } from 'mongodb';
+import type { NextRequest as NextRequestType } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { z } from 'zod';
+import { DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from '@/configs/app-definitions';
+import { apiHandler, type UnwrapNextResponse } from '@/lib/api/handler';
+import { getValidCurrentSessionUncached } from '@/lib/authentication/session';
+import { notifyCRMResponsiblesOnNewIndication } from '@/lib/services/crm';
+import connectToCRMDatabase from '@/lib/services/mongodb/crm-db-connection';
+import type { TClient } from '@/schemas/client.schema';
+import type { TFunnelReference } from '@/schemas/funnel-reference.schema';
+import { IndicationSchema, type TIndication } from '@/schemas/indication.schema';
+import type { TInteractionEvent } from '@/schemas/interaction-events.schema';
+import type { TOpportunity } from '@/schemas/opportunity.schema';
+import type { TUser } from '@/schemas/users.schema';
 
 export const CreateIndicationRouteInput = IndicationSchema;
 export type TCreateIndicationRouteInput = z.infer<typeof CreateIndicationRouteInput>;
 async function handleCreateIndication(req: NextRequestType) {
-	const { session, user } = await getValidCurrentSessionUncached();
+	const { city, country, region, latitude, longitude, countryRegion } = await geolocation(req);
+	console.log('[INFO] [CREATE INDICATION] Geolocation data:', { city, country, region, latitude, longitude, countryRegion });
+	await getValidCurrentSessionUncached();
 	const payload = await req.json();
 	const indication = CreateIndicationRouteInput.parse(payload);
 
@@ -27,6 +31,7 @@ async function handleCreateIndication(req: NextRequestType) {
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
+	const interactionEventsCollection = crmDb.collection<TInteractionEvent>(DATABASE_COLLECTION_NAMES.INTERACTION_EVENTS);
 	// First, inserting the indication
 	const insertIndicationResponse = await indicationsCollection.insertOne(indication);
 	const indicationId = insertIndicationResponse.insertedId.toString();
@@ -42,7 +47,15 @@ async function handleCreateIndication(req: NextRequestType) {
 	const client = await clientsCollection.findOne({
 		telefonePrimario: indication.telefone,
 	});
-	if (!client) {
+	if (client) {
+		console.log('FOUND EXISTING CLIENT');
+		clientId = client._id.toString();
+		clientName = client.nome;
+		clientPhone = client.telefonePrimario;
+		clientEmail = client.email;
+		clientCpfCnpj = client.cpfCnpj || null;
+		clientAcquisitionChannel = client.canalAquisicao;
+	} else {
 		// If the client does not exist, we create it
 		const newClient: TClient = {
 			nome: indication.nome,
@@ -50,7 +63,7 @@ async function handleCreateIndication(req: NextRequestType) {
 			telefonePrimario: indication.telefone,
 			uf: indication.uf,
 			cidade: indication.cidade,
-			canalAquisicao: "INDICAÇÃO",
+			canalAquisicao: 'INDICAÇÃO',
 			autor: {
 				id: indication.autor.id,
 				nome: indication.autor.nome,
@@ -66,8 +79,8 @@ async function handleCreateIndication(req: NextRequestType) {
 		};
 		const insertClientResponse = await clientsCollection.insertOne(newClient);
 		if (!insertClientResponse.acknowledged) {
-			console.error("Error inserting client");
-			throw new createHttpError.InternalServerError("Oops, um erro desconhecido ocorreu ao criar a indicação.");
+			console.error('Error inserting client');
+			throw new createHttpError.InternalServerError('Oops, um erro desconhecido ocorreu ao criar a indicação.');
 		}
 		const insertedClientId = insertClientResponse.insertedId.toString();
 		clientId = insertedClientId;
@@ -76,14 +89,6 @@ async function handleCreateIndication(req: NextRequestType) {
 		clientEmail = newClient.email;
 		clientCpfCnpj = newClient.cpfCnpj || null;
 		clientAcquisitionChannel = newClient.canalAquisicao;
-	} else {
-		console.log("FOUND EXISTING CLIENT");
-		clientId = client._id.toString();
-		clientName = client.nome;
-		clientPhone = client.telefonePrimario;
-		clientEmail = client.email;
-		clientCpfCnpj = client.cpfCnpj || null;
-		clientAcquisitionChannel = client.canalAquisicao;
 	}
 
 	let indicationSeller: WithId<TUser> | null = null;
@@ -93,7 +98,7 @@ async function handleCreateIndication(req: NextRequestType) {
 		indicationSeller = sellerUser;
 	}
 	const lastInsertedIdentificator = await opportunitiesCollection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
-	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
+	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split('-')[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
 	const newIdentifier = `CRM-${newIdentifierNumber}`;
 
@@ -105,34 +110,34 @@ async function handleCreateIndication(req: NextRequestType) {
 			titulo: indication.tipo.titulo,
 		},
 		categoriaVenda: indication.tipo.categoriaVenda,
-		descricao: "",
+		descricao: '',
 		identificador: newIdentifier,
 		responsaveis: [
 			indicationSeller
 				? {
 						id: indicationSeller._id.toString(),
 						nome: indicationSeller.nome,
-						papel: "VENDEDOR",
+						papel: 'VENDEDOR',
 						avatar_url: indicationSeller.avatar_url,
 						dataInsercao: new Date().toISOString(),
 					}
 				: {
-						id: "6463ccaa8c5e3e227af54d89",
-						nome: "LUCAS FERNANDES",
-						papel: "VENDEDOR",
+						id: '6463ccaa8c5e3e227af54d89',
+						nome: 'LUCAS FERNANDES',
+						papel: 'VENDEDOR',
 						avatar_url:
-							"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
+							'https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4',
 						dataInsercao: new Date().toISOString(),
 					},
 		],
-		segmento: "RESIDENCIAL" as TOpportunity["segmento"],
+		segmento: 'RESIDENCIAL' as TOpportunity['segmento'],
 		idCliente: clientId as string,
 		cliente: {
 			nome: clientName,
 			cpfCnpj: clientCpfCnpj,
 			telefonePrimario: clientPhone,
 			email: clientEmail,
-			canalAquisicao: clientAcquisitionChannel || "INDICAÇÃO",
+			canalAquisicao: clientAcquisitionChannel || 'INDICAÇÃO',
 		},
 		localizacao: {
 			uf: indication.uf,
@@ -152,18 +157,18 @@ async function handleCreateIndication(req: NextRequestType) {
 	};
 	const insertOpportunityResponse = await opportunitiesCollection.insertOne(opportunityToInsert);
 	if (!insertOpportunityResponse.acknowledged) {
-		console.error("Error inserting opportunity");
-		throw new createHttpError.InternalServerError("Oops, um erro desconhecido ocorreu ao criar a indicação.");
+		console.error('Error inserting opportunity');
+		throw new createHttpError.InternalServerError('Oops, um erro desconhecido ocorreu ao criar a indicação.');
 	}
 	const insertedOpportunityId = insertOpportunityResponse.insertedId.toString();
 
 	const funnelReferenceToInsert: TFunnelReference = {
-		idParceiro: "65454ba15cf3e3ecf534b308",
+		idParceiro: '65454ba15cf3e3ecf534b308',
 		idOportunidade: insertedOpportunityId,
-		idFunil: "661eb0996dd818643c5334f5",
-		idEstagioFunil: "1",
+		idFunil: '661eb0996dd818643c5334f5',
+		idEstagioFunil: '1',
 		estagios: {
-			"1": { entrada: new Date().toISOString() },
+			'1': { entrada: new Date().toISOString() },
 		},
 		dataInsercao: new Date().toISOString(),
 	};
@@ -174,14 +179,14 @@ async function handleCreateIndication(req: NextRequestType) {
 		{ _id: new ObjectId(indicationId) },
 		{
 			$set: {
-				"oportunidade.id": insertedOpportunityId,
-				"oportunidade.nome": opportunityToInsert.nome,
-				"oportunidade.identificador": opportunityToInsert.identificador,
+				'oportunidade.id': insertedOpportunityId,
+				'oportunidade.nome': opportunityToInsert.nome,
+				'oportunidade.identificador': opportunityToInsert.identificador,
 			},
-		},
+		}
 	);
 	await notifyCRMResponsiblesOnNewIndication({
-		tipo: "NEW_OPPORTUNITY",
+		tipo: 'NEW_OPPORTUNITY',
 		payload: {
 			responsaveisIds: opportunityToInsert.responsaveis.map((responsavel) => responsavel.id),
 			autor: {
@@ -195,12 +200,36 @@ async function handleCreateIndication(req: NextRequestType) {
 			},
 		},
 	});
+	// Creating an interaction event
+	await interactionEventsCollection.insertOne({
+		tipo: 'INDICAÇÃO',
+		usuario: {
+			id: indication.autor.id,
+			nome: indication.autor.nome,
+			avatar_url: indication.autor.avatar_url,
+		},
+		localizacao: {
+			cidade: city,
+			uf: region,
+			latitude,
+			longitude,
+		},
+		codigoIndicacaoVendedor: indication.codigoIndicacaoVendedor,
+		vendedor: indicationSeller
+			? {
+					id: indicationSeller._id.toString(),
+					nome: indicationSeller.nome,
+					avatar_url: indicationSeller.avatar_url,
+				}
+			: undefined,
+		data: new Date().toISOString(),
+	});
 	return NextResponse.json(
 		{
 			data: { insertedId: indicationId },
-			message: "Indicação criada com sucesso.",
+			message: 'Indicação criada com sucesso.',
 		},
-		{ status: 201 },
+		{ status: 201 }
 	);
 }
 export type TCreateIndicationRouteOutput = UnwrapNextResponse<Awaited<ReturnType<typeof handleCreateIndication>>>;
@@ -215,31 +244,31 @@ async function handleGetIndications(req: NextRequestType) {
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 
 	const searchParams = req.nextUrl.searchParams;
-	const id = searchParams.get("id");
+	const id = searchParams.get('id');
 
 	if (id) {
-		if (typeof id !== "string" || !ObjectId.isValid(id)) throw new createHttpError.BadRequest("ID inválido.");
+		if (typeof id !== 'string' || !ObjectId.isValid(id)) throw new createHttpError.BadRequest('ID inválido.');
 
 		// Fetching the indication by id and the session user
 		const indication = await indicationsCollection.findOne({
 			_id: new ObjectId(id),
-			"autor.id": user.id,
+			'autor.id': user.id,
 		});
-		if (!indication) throw new createHttpError.NotFound("Indicação não encontrada.");
+		if (!indication) throw new createHttpError.NotFound('Indicação não encontrada.');
 		return NextResponse.json(
 			{
 				data: {
 					default: undefined,
 					byId: { ...indication, _id: indication._id.toString() },
 				},
-				message: "Indicação encontrada com sucesso !",
+				message: 'Indicação encontrada com sucesso !',
 			},
-			{ status: 200 },
+			{ status: 200 }
 		);
 	}
 
 	// Fetching all indications by the session user
-	const indications = await indicationsCollection.find({ "autor.id": user.id }).toArray();
+	const indications = await indicationsCollection.find({ 'autor.id': user.id }).toArray();
 	return NextResponse.json(
 		{
 			data: {
@@ -249,13 +278,13 @@ async function handleGetIndications(req: NextRequestType) {
 				})),
 				byId: undefined,
 			},
-			message: "Indicações encontradas com sucesso !",
+			message: 'Indicações encontradas com sucesso !',
 		},
-		{ status: 200 },
+		{ status: 200 }
 	);
 }
 export type TGetIndicationsRouteOutput = UnwrapNextResponse<Awaited<ReturnType<typeof handleGetIndications>>>;
-export type TGetIndicationsRouteOutputDataById = Exclude<TGetIndicationsRouteOutput["data"]["byId"], undefined>;
-export type TGetIndicationsRouteOutputDataDefault = Exclude<TGetIndicationsRouteOutput["data"]["default"], undefined>;
+export type TGetIndicationsRouteOutputDataById = Exclude<TGetIndicationsRouteOutput['data']['byId'], undefined>;
+export type TGetIndicationsRouteOutputDataDefault = Exclude<TGetIndicationsRouteOutput['data']['default'], undefined>;
 
 export const GET = apiHandler({ GET: handleGetIndications });

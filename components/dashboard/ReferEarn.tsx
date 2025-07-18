@@ -1,12 +1,12 @@
-"use client";
-import React, { useState } from "react";
-import { UsersRound } from "lucide-react";
-import { FaBolt, FaSolarPanel } from "react-icons/fa";
-import type { TSaleCategoryEnum } from "@/schemas/enums.schema";
-import { useQueryClient } from "@tanstack/react-query";
-import type { TAuthSession } from "@/lib/authentication/types";
-import { ReferEarnOptions } from "@/configs/constants";
-import NewIndication from "../indications/modals/NewIndication";
+'use client';
+import { useQueryClient } from '@tanstack/react-query';
+import { UsersRound } from 'lucide-react';
+import { useState } from 'react';
+import { FaBolt, FaSolarPanel } from 'react-icons/fa';
+import { ReferEarnOptions } from '@/configs/constants';
+import type { TAuthSession } from '@/lib/authentication/types';
+import type { TSaleCategoryEnum } from '@/schemas/enums.schema';
+import NewIndication from '../indications/modals/NewIndication';
 
 type NewIndicationMenuState = {
 	isOpen: boolean;
@@ -18,46 +18,40 @@ type NewIndicationMenuState = {
 };
 
 type ReferEarnProps = {
-	sessionUser: TAuthSession["user"];
+	sessionUser: TAuthSession['user'];
+	initialIndicationSellerCode?: string;
 };
-function ReferEarn({ sessionUser }: ReferEarnProps) {
+function ReferEarn({ sessionUser, initialIndicationSellerCode }: ReferEarnProps) {
 	const queryClient = useQueryClient(); // Use the query client to cancel and invalidate queries
-	const [newIndicationMenu, setNewIndicationMenu] =
-		useState<NewIndicationMenuState>({
-			isOpen: false,
-			projectType: null,
-		});
+	const [newIndicationMenu, setNewIndicationMenu] = useState<NewIndicationMenuState>({
+		isOpen: false,
+		projectType: null,
+	});
 
-	const handleNewIndicationOnMutate = async () =>
-		await queryClient.cancelQueries({ queryKey: ["indications"] });
-	const handleNewIndicationOnSettled = async () =>
-		await queryClient.invalidateQueries({ queryKey: ["indications"] });
+	const handleNewIndicationOnMutate = async () => await queryClient.cancelQueries({ queryKey: ['indications'] });
+	const handleNewIndicationOnSettled = async () => await queryClient.invalidateQueries({ queryKey: ['indications'] });
 	return (
-		<div className="bg-[#fff] dark:bg-[#121212] w-full flex p-3.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-lg">
-			<div className="w-full flex items-center justify-between gap-1.5">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
-					<UsersRound className="w-4 h-4 lg:w-6 lg:h-6 min-w-4 min-h-4" />
-					<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight">
-						INDIQUE E GANHE
-					</h1>
+					<UsersRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+					<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">INDIQUE E GANHE</h1>
 				</div>
 			</div>
 			<div className="w-full">
 				<p className="text-[0.625rem] lg:text-sm">
-					<span className="font-normal">
-						Indique nossos produtos para familiares, amigos ou conhecidos e
-						GANHE{" "}
-					</span>
-					<span className="text-[#FB2E9F] font-bold inline-flex items-center gap-0.5">
-						<FaBolt className="w-2 h-2 lg:w-4 lg:h-4" />
+					<span className="font-normal">Indique nossos produtos para familiares, amigos ou conhecidos e GANHE </span>
+					<span className="inline-flex items-center gap-0.5 font-bold text-[#FB2E9F]">
+						<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
 						CRÉDITOS AMPÈRE
 					</span>
 				</p>
 			</div>
-			<div className="w-full grid grid-cols-2 lg:flex items-center justify-center grow py-3 px-0 lg:px-6 gap-1.5 lg:flex-wrap">
+			<div className="grid w-full grow grid-cols-2 items-center justify-center gap-1.5 px-0 py-3 lg:flex lg:flex-wrap lg:px-6">
 				{ReferEarnOptions.map((option) => (
 					<button
-						type="button"
+						className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 sm:aspect-auto lg:p-8"
+						key={`${option.id}-${option.projectTypeId}`}
 						onClick={() =>
 							setNewIndicationMenu({
 								isOpen: true,
@@ -68,27 +62,25 @@ function ReferEarn({ sessionUser }: ReferEarnProps) {
 								},
 							})
 						}
-						key={`${option.id}-${option.projectTypeId}`}
-						className="flex hover:bg-blue-200 duration-300 ease-in-out flex-col items-center justify-center gap-1 p-2 lg:p-8 bg-blue-100 text-[#15599a] rounded-lg aspect-video sm:aspect-auto"
+						type="button"
 					>
-						<FaSolarPanel className="w-6 h-6 lg:w-12 lg:h-12 min-w-4 min-h-4" />
-						<h1 className="font-bold text-[0.55rem] lg:text-lg tracking-tight text-center uppercase break-words">
-							{option.referEarnCall}
-						</h1>
+						<FaSolarPanel className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:w-12" />
+						<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.referEarnCall}</h1>
 					</button>
 				))}
 			</div>
 			{newIndicationMenu.isOpen && newIndicationMenu.projectType ? (
 				<NewIndication
-					projectType={newIndicationMenu.projectType}
-					sessionUser={sessionUser}
-					closeModal={() =>
-						setNewIndicationMenu({ isOpen: false, projectType: null })
-					}
 					callbacks={{
 						onMutate: handleNewIndicationOnMutate,
 						onSettled: handleNewIndicationOnSettled,
 					}}
+					closeModal={() => setNewIndicationMenu({ isOpen: false, projectType: null })}
+					initialState={{
+						codigoIndicacaoVendedor: initialIndicationSellerCode,
+					}}
+					projectType={newIndicationMenu.projectType}
+					sessionUser={sessionUser}
 				/>
 			) : null}
 		</div>

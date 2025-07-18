@@ -1,7 +1,7 @@
-import type React from "react";
-import { Label } from "../ui/label";
-import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
+import type React from 'react';
+import { cn } from '@/lib/utils';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 type TextInputProps = {
 	identifier?: string;
@@ -14,18 +14,21 @@ type TextInputProps = {
 	inputClassName?: string;
 };
 function TextInput({ identifier, labelText, placeholderText, value, handleChange, wrapperClassName, labelClassName, inputClassName }: TextInputProps) {
-	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(" ", "_");
+	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(' ', '_');
 	return (
-		<div className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<Label htmlFor={inputIdentifier} className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>
+		<div className={cn('flex w-full flex-col gap-1', wrapperClassName)}>
+			<Label className={cn('font-medium text-primary/80 text-sm tracking-tight', labelClassName)} htmlFor={inputIdentifier}>
 				{labelText}
 			</Label>
 			<Input
+				className={cn(
+					'w-full rounded-md border border-primary/20 bg-background p-3 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary',
+					inputClassName
+				)}
 				id={inputIdentifier}
-				value={value}
 				onChange={(e) => handleChange(e.target.value)}
 				placeholder={placeholderText}
-				className={cn("w-full rounded-md border border-primary/20 p-3 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary", inputClassName)}
+				value={value}
 			/>
 		</div>
 	);

@@ -1,8 +1,7 @@
-import AcceptInviteFormPage from "@/components/invites/AcceptInviteFormPage";
-import AcceptInvitePage from "@/components/invites/AcceptInvitePage";
-import ErrorComponent from "@/components/layout/ErrorComponent";
-import { getInviteById } from "@/lib/authentication/invites";
-import React from "react";
+import AcceptInviteFormPage from '@/components/invites/AcceptInviteFormPage';
+import AcceptInvitePage from '@/components/invites/AcceptInvitePage';
+import ErrorComponent from '@/components/layout/ErrorComponent';
+import { getInviteById } from '@/lib/authentication/invites';
 
 async function AcceptInviteMainPage({ params }: { params: { id: string } }) {
 	const id = params.id;

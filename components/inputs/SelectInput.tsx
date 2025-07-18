@@ -1,12 +1,12 @@
-import { cn } from "@/lib/utils";
-import React, { type ReactNode, useState } from "react";
-import { Label } from "../ui/label";
-import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '../ui/command';
+import { Drawer, DrawerContent, DrawerTrigger } from '../ui/drawer';
+import { Label } from '../ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 type SelectOption = {
 	id: string | number;
@@ -43,58 +43,58 @@ function SelectInput({
 	wrapperClassName,
 	labelClassName,
 }: SelectInputProps) {
-	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(" ", "_");
-	const isDesktop = useMediaQuery("(min-width: 768px)");
+	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(' ', '_');
+	const isDesktop = useMediaQuery('(min-width: 768px)');
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	return isDesktop ? (
-		<div className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<Label htmlFor={inputIdentifier} className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>
+		<div className={cn('flex w-full flex-col gap-1', wrapperClassName)}>
+			<Label className={cn('font-medium text-primary/80 text-sm tracking-tight', labelClassName)} htmlFor={inputIdentifier}>
 				{labelText}
 			</Label>
-			<Popover open={isOpen} onOpenChange={setIsOpen}>
+			<Popover onOpenChange={setIsOpen} open={isOpen}>
 				<PopoverTrigger asChild>
-					<Button type="button" disabled={!editable} variant="outline" aria-haspopup="listbox" aria-expanded={isOpen} className="w-full justify-between">
-						<SelectedOption value={value} options={options} placeholderText={placeholderText} />
+					<Button aria-expanded={isOpen} aria-haspopup="listbox" className="w-full justify-between" disabled={!editable} type="button" variant="outline">
+						<SelectedOption options={options} placeholderText={placeholderText} value={value} />
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
+				<PopoverContent className="w-[--radix-popover-trigger-width] p-0">
 					<OptionsList
-						value={value}
-						placeholderText={placeholderText}
-						resetOptionText={resetOptionText}
+						closeMenu={() => setIsOpen(false)}
 						handleChange={handleChange}
 						handleReset={handleReset}
 						options={options}
 						optionsStartContent={optionsStartContent}
-						closeMenu={() => setIsOpen(false)}
+						placeholderText={placeholderText}
+						resetOptionText={resetOptionText}
+						value={value}
 					/>
 				</PopoverContent>
 			</Popover>
 		</div>
 	) : (
-		<div className={cn("flex flex-col w-full gap-1", wrapperClassName)}>
-			<Label htmlFor={inputIdentifier} className={cn("text-sm font-medium tracking-tight text-primary/80", labelClassName)}>
+		<div className={cn('flex w-full flex-col gap-1', wrapperClassName)}>
+			<Label className={cn('font-medium text-primary/80 text-sm tracking-tight', labelClassName)} htmlFor={inputIdentifier}>
 				{labelText}
 			</Label>
-			<Drawer open={isOpen} onOpenChange={setIsOpen}>
+			<Drawer onOpenChange={setIsOpen} open={isOpen}>
 				<DrawerTrigger asChild>
-					<Button type="button" disabled={!editable} variant="outline" aria-haspopup="listbox" aria-expanded={isOpen} className="w-full justify-between">
-						<SelectedOption value={value} options={options} placeholderText={placeholderText} />
+					<Button aria-expanded={isOpen} aria-haspopup="listbox" className="w-full justify-between" disabled={!editable} type="button" variant="outline">
+						<SelectedOption options={options} placeholderText={placeholderText} value={value} />
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</DrawerTrigger>
 				<DrawerContent>
 					<div className="mt-4 border-t">
 						<OptionsList
-							value={value}
-							placeholderText={placeholderText}
-							resetOptionText={resetOptionText}
+							closeMenu={() => setIsOpen(false)}
 							handleChange={handleChange}
 							handleReset={handleReset}
 							options={options}
 							optionsStartContent={optionsStartContent}
-							closeMenu={() => setIsOpen(false)}
+							placeholderText={placeholderText}
+							resetOptionText={resetOptionText}
+							value={value}
 						/>
 					</div>
 				</DrawerContent>
@@ -118,34 +118,34 @@ type OptionsListProps = {
 function OptionsList({ value, placeholderText, resetOptionText, handleChange, handleReset, options, optionsStartContent, closeMenu }: OptionsListProps) {
 	return (
 		<Command className="w-full" loop>
-			<CommandInput placeholder={placeholderText} className="h-9 w-full" />
+			<CommandInput className="h-9 w-full" placeholder={placeholderText} />
 			<CommandList className="w-full">
 				<CommandEmpty className="w-full p-3">Nenhuma opção encontrada.</CommandEmpty>
 				<CommandGroup className="w-full">
 					<CommandItem
-						value={undefined}
 						onSelect={() => {
 							handleReset();
 							closeMenu();
 						}}
+						value={undefined}
 					>
 						{resetOptionText}
-						<Check className={cn("ml-auto", value === null ? "opacity-100" : "opacity-0")} />
+						<Check className={cn('ml-auto', value === null ? 'opacity-100' : 'opacity-0')} />
 					</CommandItem>
 					<CommandSeparator className="my-1" />
 					{options.map((option) => (
 						<CommandItem
 							key={option.id}
-							value={option.value}
 							onSelect={(currentValue) => {
 								if (currentValue === value) handleReset();
 								else handleChange(currentValue);
 								closeMenu();
 							}}
+							value={option.value}
 						>
-							{option.startContent ? option.startContent : optionsStartContent ? optionsStartContent : undefined}
+							{option.startContent ?? optionsStartContent}
 							{option.label}
-							<Check className={cn("ml-auto", value === option.value ? "opacity-100" : "opacity-0")} />
+							<Check className={cn('ml-auto', value === option.value ? 'opacity-100' : 'opacity-0')} />
 						</CommandItem>
 					))}
 				</CommandGroup>

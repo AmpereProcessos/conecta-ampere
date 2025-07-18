@@ -1,36 +1,36 @@
-"use server";
-import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
+'use server';
+import { randomBytes } from 'node:crypto';
+import dayjs from 'dayjs';
+import { type Collection, type Filter, ObjectId } from 'mongodb';
+import { redirect } from 'next/navigation';
+import { CONECTA_AMPERE_CRM_USER_DATA, DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from '@/configs/app-definitions';
+import { ReferEarnOptions } from '@/configs/constants';
+import { createSession, generateSessionToken, setSetSessionCookie } from '@/lib/authentication/session';
+import connectToCRMDatabase from '@/lib/services/mongodb/crm-db-connection';
+import type { TAuthVerificationToken } from '@/schemas/auth-verification-token.schema';
+import type { TClient } from '@/schemas/client.schema';
+import type { TFunnelReference } from '@/schemas/funnel-reference.schema';
+import type { TIndication } from '@/schemas/indication.schema';
+import type { TInteractionEvent } from '@/schemas/interaction-events.schema';
+import type { TInvite } from '@/schemas/invites.schema';
+import type { TOpportunity } from '@/schemas/opportunity.schema';
+import type { TUser } from '@/schemas/users.schema';
+import { EmailTemplate, sendEmailWithResend } from '../email';
+import { notifyCRMResponsiblesOnNewIndication } from '../services/crm';
 import {
 	LoginSchema,
 	ResendVerificationTokenSchema,
 	SignUpSchema,
-	type TResendVerificationTokenSchema,
+	SignUpViaPromoterSchema,
+	SignUpViaSellerInviteSchema,
 	type TLoginSchema,
+	type TResendVerificationTokenSchema,
 	type TSignUpSchema,
 	type TSignUpViaPromoterSchema,
-	SignUpViaPromoterSchema,
 	type TSignUpViaSellerInviteSchema,
-	SignUpViaSellerInviteSchema,
-	VerifyMagicLinkCodeSchema,
 	type TVerifyMagicLinkCodeSchema,
-} from "./types";
-import { z } from "zod";
-import type { TClient } from "@/schemas/client.schema";
-import { createSession, generateSessionToken, setSetSessionCookie } from "@/lib/authentication/session";
-import { redirect } from "next/navigation";
-import { ObjectId, type Collection, type Filter } from "mongodb";
-import { CONECTA_AMPERE_CRM_USER_DATA, DATABASE_COLLECTION_NAMES, MATRIX_COMPANY_PARTNER_ID } from "@/configs/app-definitions";
-import type { TOpportunity } from "@/schemas/opportunity.schema";
-import { ReferEarnOptions } from "@/configs/constants";
-import type { TFunnelReference } from "@/schemas/funnel-reference.schema";
-import { sendEmailWithResend, EmailTemplate } from "../email";
-import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
-import { randomBytes } from "node:crypto";
-import dayjs from "dayjs";
-import type { TInvite } from "@/schemas/invites.schema";
-import type { TIndication } from "@/schemas/indication.schema";
-import type { TUser } from "@/schemas/users.schema";
-import { notifyCRMResponsiblesOnNewIndication } from "../services/crm";
+	VerifyMagicLinkCodeSchema,
+} from './types';
 
 type TLoginResult = {
 	formError?: string;
@@ -55,35 +55,35 @@ export async function login(_: TLoginResult, data: TLoginSchema): Promise<TLogin
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
 	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
-	const user = await clientsCollection.findOne({ "conecta.usuario": username }, { projection: { conecta: 1 } });
-	if (!user || !user.conecta || !user.conecta.email) {
+	const user = await clientsCollection.findOne({ 'conecta.usuario': username }, { projection: { conecta: 1 } });
+	if (!user?.conecta?.email) {
 		return {
-			formError: "Usuário incorreto.",
+			formError: 'Usuário incorreto.',
 		};
 	}
 
-	const verificationToken = randomBytes(32).toString("hex");
-	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
+	const verificationToken = randomBytes(32).toString('hex');
+	const verificationCode = Math.floor(100_000 + Math.random() * 900_000).toString(); // Gera código de 6 dígitos
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
 		token: verificationToken,
 		codigo: verificationCode,
 		usuarioId: user._id.toString(),
 		usuarioEmail: user.conecta.email,
-		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, 'minute').toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
 	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 	if (!insertAuthVerificationTokenResponse.acknowledged)
 		return {
-			formError: "Oops, um erro desconhecido ocorreu, tente novamente.",
+			formError: 'Oops, um erro desconhecido ocorreu, tente novamente.',
 		};
 
 	const insertedAuthVerificationTokenId = insertAuthVerificationTokenResponse.insertedId.toString();
 
 	await sendEmailWithResend(user.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
-		verificationCode: verificationCode,
+		verificationCode,
 		expiresInMinutes: verificationTokenExpiresInMinutes,
 	});
 
@@ -117,7 +117,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 
 	if (!termsAndPrivacyPolicyAcceptanceDate) {
 		return {
-			formError: "Para criar sua conta, é necessário aceitar os Termos de Uso e a Política de Privacidade.",
+			formError: 'Para criar sua conta, é necessário aceitar os Termos de Uso e a Política de Privacidade.',
 		};
 	}
 	const crmDb = await connectToCRMDatabase();
@@ -133,23 +133,23 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 	let clientAcquisitionChannel: string | null = null;
 	// First, checking for possible existing client in db
 	const query: Filter<TClient> = {
-		$or: [{ email: email }, { telefonePrimario: phone }],
+		$or: [{ email }, { telefonePrimario: phone }],
 	};
 	const existingClientInDb = await clientsCollection.findOne({ ...query });
 
 	let invite: TInvite | null = null;
 	if (inviteId) invite = await invitesCollection.findOne({ _id: new ObjectId(inviteId) });
-	const invitePromoterSellerCode = invite && invite.promotor.tipo === "VENDEDOR" ? invite.promotor.codigoIndicacao : null;
+	const invitePromoterSellerCode = invite && invite.promotor.tipo === 'VENDEDOR' ? invite.promotor.codigoIndicacao : null;
 
 	if (existingClientInDb) {
-		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
+		console.log('CLIENT FOUND', existingClientInDb._id, existingClientInDb.nome);
 		await clientsCollection.updateOne(
 			{ _id: new ObjectId(existingClientInDb._id) },
 			{
 				$set: {
-					"conecta.codigoIndicacaoVendedor": invitePromoterSellerCode,
+					'conecta.codigoIndicacaoVendedor': invitePromoterSellerCode,
 				},
-			},
+			}
 		);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
@@ -159,21 +159,21 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
 	} else {
-		console.log("CLIENT NOT FOUND, CREATING CLIENT");
+		console.log('CLIENT NOT FOUND, CREATING CLIENT');
 		// In case there is no existing client in db
 		const newClient: TClient = {
 			nome: name,
 			idParceiro: MATRIX_COMPANY_PARTNER_ID,
 			telefonePrimario: phone,
-			email: email,
-			uf: uf,
+			email,
+			uf,
 			cidade: city,
-			canalAquisicao: "CONECTA AMPÈRE",
+			canalAquisicao: 'CONECTA AMPÈRE',
 			indicador: {},
 			conecta: {
 				usuario: phone,
-				email: email,
-				senha: "",
+				email,
+				senha: '',
 				conviteId: inviteId,
 				conviteDataAceite: invite ? new Date().toISOString() : null,
 				codigoIndicacaoVendedor: invitePromoterSellerCode,
@@ -185,7 +185,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			const insertClientResponse = await clientsCollection.insertOne(newClient);
 			if (!insertClientResponse.acknowledged)
 				return {
-					formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+					formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 				};
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
@@ -195,9 +195,9 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			clientCpfCnpj = newClient.cpfCnpj || null;
 			clientAcquisitionChannel = newClient.canalAquisicao;
 		} catch (error) {
-			console.log("INSERT CLIENT ERROR", error);
+			console.log('INSERT CLIENT ERROR', error);
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		}
 	}
@@ -215,29 +215,29 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 				titulo: ReferEarnOptions[0].projectType,
 			},
 			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
-			descricao: "",
+			descricao: '',
 			identificador: newOpportunityIdentifier,
 			responsaveis: [
 				{
-					id: "6463ccaa8c5e3e227af54d89",
-					nome: "LUCAS FERNANDES",
-					papel: "VENDEDOR",
+					id: '6463ccaa8c5e3e227af54d89',
+					nome: 'LUCAS FERNANDES',
+					papel: 'VENDEDOR',
 					avatar_url:
-						"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
+						'https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4',
 					dataInsercao: new Date().toISOString(),
 				},
 			],
-			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
+			segmento: 'RESIDENCIAL' as TOpportunity['segmento'],
 			idCliente: clientId as string,
 			cliente: {
 				nome: clientName,
 				cpfCnpj: clientCpfCnpj,
 				telefonePrimario: clientPhone,
 				email: clientEmail,
-				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
+				canalAquisicao: clientAcquisitionChannel || 'CONECTA AMPÈRE',
 			},
 			localizacao: {
-				uf: uf,
+				uf,
 				cidade: city,
 			},
 			ganho: {},
@@ -250,24 +250,24 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 		const insertOpportunityResponse = await opportunitiesCollection.insertOne(newOpportunity);
 		if (!insertOpportunityResponse.acknowledged)
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		opportunityId = insertOpportunityResponse.insertedId.toString();
 
 		const newFunnelReference: TFunnelReference = {
-			idParceiro: "65454ba15cf3e3ecf534b308",
+			idParceiro: '65454ba15cf3e3ecf534b308',
 			idOportunidade: opportunityId,
-			idFunil: "661eb0996dd818643c5334f5",
-			idEstagioFunil: "1",
+			idFunil: '661eb0996dd818643c5334f5',
+			idEstagioFunil: '1',
 			estagios: {
-				"1": { entrada: new Date().toISOString() },
+				'1': { entrada: new Date().toISOString() },
 			},
 			dataInsercao: new Date().toISOString(),
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
 		await notifyCRMResponsiblesOnNewIndication({
-			tipo: "NEW_OPPORTUNITY",
+			tipo: 'NEW_OPPORTUNITY',
 			payload: {
 				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
 				autor: {
@@ -291,14 +291,14 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 							id: clientId,
 							nome: name,
 							telefone: phone,
-							email: email,
-							uf: uf,
+							email,
+							uf,
 							cidade: city,
 						},
 						dataInformacoesDefinidas: new Date().toISOString(),
 						dataAceite: new Date().toISOString(),
 					},
-				},
+				}
 			);
 		// In case the opportunity creation succedded, redirecting the user
 		const sessionToken = await generateSessionToken();
@@ -310,9 +310,9 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	} catch (error) {
-		console.log("Error during opportunity automation of signup", error);
+		console.log('Error during opportunity automation of signup', error);
 		// In case the opportunity creation failed, just redirecting the user
 		const sessionToken = await generateSessionToken();
 		const session = await createSession({
@@ -323,7 +323,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	}
 }
 
@@ -350,11 +350,10 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		};
 	}
 
-	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate, invitesPromoterId } = validationParsed.data;
+	const { name, email, phone, uf, city, invitesPromoterId } = validationParsed.data;
 
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
-	const usersCollection = crmDb.collection<TUser>(DATABASE_COLLECTION_NAMES.USERS);
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
@@ -362,12 +361,12 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 	const promoter = await clientsCollection.findOne({ _id: new ObjectId(invitesPromoterId) });
 	if (!promoter)
 		return {
-			formError: "Promotor não encontrado.",
+			formError: 'Promotor não encontrado.',
 		};
 	const newIndication: TIndication = {
 		nome: name,
 		telefone: phone,
-		uf: uf,
+		uf,
 		cidade: city,
 		tipo: {
 			id: ReferEarnOptions[0].projectTypeId,
@@ -375,9 +374,9 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
 		},
 		oportunidade: {
-			id: "",
-			nome: "",
-			identificador: "",
+			id: '',
+			nome: '',
+			identificador: '',
 			dataGanho: null,
 			dataPerda: null,
 			dataInteracao: null,
@@ -397,12 +396,12 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 	let clientAcquisitionChannel: string | null = null;
 	// First, checking for possible existing client in db
 	const query: Filter<TClient> = {
-		$or: [{ email: email }, { telefonePrimario: phone }],
+		$or: [{ email }, { telefonePrimario: phone }],
 	};
 	const existingClientInDb = await clientsCollection.findOne({ ...query });
 
 	if (existingClientInDb) {
-		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
+		console.log('CLIENT FOUND', existingClientInDb._id, existingClientInDb.nome);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
 		clientName = existingClientInDb.nome;
@@ -411,16 +410,16 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
 	} else {
-		console.log("CLIENT NOT FOUND, CREATING CLIENT");
+		console.log('CLIENT NOT FOUND, CREATING CLIENT');
 		// In case there is no existing client in db
 		const newClient: TClient = {
 			nome: name,
 			idParceiro: MATRIX_COMPANY_PARTNER_ID,
 			telefonePrimario: phone,
-			email: email,
-			uf: uf,
+			email,
+			uf,
 			cidade: city,
-			canalAquisicao: "CONECTA AMPÈRE",
+			canalAquisicao: 'CONECTA AMPÈRE',
 			idIndicacao: indicationId,
 			indicador: {
 				id: promoter._id.toString(),
@@ -429,8 +428,8 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			},
 			conecta: {
 				usuario: phone,
-				email: email,
-				senha: "",
+				email,
+				senha: '',
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),
@@ -439,7 +438,7 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			const insertClientResponse = await clientsCollection.insertOne(newClient);
 			if (!insertClientResponse.acknowledged)
 				return {
-					formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+					formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 				};
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
@@ -449,9 +448,9 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			clientCpfCnpj = newClient.cpfCnpj || null;
 			clientAcquisitionChannel = newClient.canalAquisicao;
 		} catch (error) {
-			console.log("INSERT CLIENT ERROR", error);
+			console.log('INSERT CLIENT ERROR', error);
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		}
 	}
@@ -468,29 +467,29 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 				titulo: ReferEarnOptions[0].projectType,
 			},
 			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
-			descricao: "",
+			descricao: '',
 			identificador: newOpportunityIdentifier,
 			responsaveis: [
 				{
-					id: "6463ccaa8c5e3e227af54d89",
-					nome: "LUCAS FERNANDES",
-					papel: "VENDEDOR",
+					id: '6463ccaa8c5e3e227af54d89',
+					nome: 'LUCAS FERNANDES',
+					papel: 'VENDEDOR',
 					avatar_url:
-						"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4",
+						'https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FLUCAS%20FERNANDES?alt=media&token=3b345c22-c4d2-46cc-865e-8544e29e76a4',
 					dataInsercao: new Date().toISOString(),
 				},
 			],
-			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
+			segmento: 'RESIDENCIAL' as TOpportunity['segmento'],
 			idCliente: clientId as string,
 			cliente: {
 				nome: clientName,
 				cpfCnpj: clientCpfCnpj,
 				telefonePrimario: clientPhone,
 				email: clientEmail,
-				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
+				canalAquisicao: clientAcquisitionChannel || 'CONECTA AMPÈRE',
 			},
 			localizacao: {
-				uf: uf,
+				uf,
 				cidade: city,
 			},
 			ganho: {},
@@ -504,24 +503,24 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		const insertOpportunityResponse = await opportunitiesCollection.insertOne(newOpportunity);
 		if (!insertOpportunityResponse.acknowledged)
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		opportunityId = insertOpportunityResponse.insertedId.toString();
 
 		const newFunnelReference: TFunnelReference = {
-			idParceiro: "65454ba15cf3e3ecf534b308",
+			idParceiro: '65454ba15cf3e3ecf534b308',
 			idOportunidade: opportunityId,
-			idFunil: "661eb0996dd818643c5334f5",
-			idEstagioFunil: "1",
+			idFunil: '661eb0996dd818643c5334f5',
+			idEstagioFunil: '1',
 			estagios: {
-				"1": { entrada: new Date().toISOString() },
+				'1': { entrada: new Date().toISOString() },
 			},
 			dataInsercao: new Date().toISOString(),
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
 		await notifyCRMResponsiblesOnNewIndication({
-			tipo: "NEW_OPPORTUNITY",
+			tipo: 'NEW_OPPORTUNITY',
 			payload: {
 				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
 				autor: {
@@ -540,11 +539,11 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			{ _id: new ObjectId(indicationId) },
 			{
 				$set: {
-					"oportunidade.id": opportunityId,
-					"oportunidade.nome": newOpportunity.nome,
-					"oportunidade.identificador": newOpportunity.identificador,
+					'oportunidade.id': opportunityId,
+					'oportunidade.nome': newOpportunity.nome,
+					'oportunidade.identificador': newOpportunity.identificador,
 				},
-			},
+			}
 		);
 
 		// In case the opportunity creation succedded, redirecting the user
@@ -557,9 +556,9 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	} catch (error) {
-		console.log("Error during opportunity automation of signup", error);
+		console.log('Error during opportunity automation of signup', error);
 		// In case the opportunity creation failed, just redirecting the user
 		const sessionToken = await generateSessionToken();
 		const session = await createSession({
@@ -570,7 +569,7 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	}
 }
 
@@ -597,7 +596,7 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 		};
 	}
 
-	const { name, email, phone, uf, city, termsAndPrivacyPolicyAcceptanceDate, invitesSellerId } = validationParsed.data;
+	const { name, email, phone, uf, city, invitesSellerId } = validationParsed.data;
 
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
@@ -605,16 +604,16 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
-
+	const interactionEventsCollection = crmDb.collection<TInteractionEvent>(DATABASE_COLLECTION_NAMES.INTERACTION_EVENTS);
 	const seller = await usersCollection.findOne({ _id: new ObjectId(invitesSellerId) });
 	if (!seller)
 		return {
-			formError: "Vendedor não encontrado.",
+			formError: 'Vendedor não encontrado.',
 		};
 	const newIndication: TIndication = {
 		nome: name,
 		telefone: phone,
-		uf: uf,
+		uf,
 		cidade: city,
 		tipo: {
 			id: ReferEarnOptions[0].projectTypeId,
@@ -622,14 +621,14 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
 		},
 		oportunidade: {
-			id: "",
-			nome: "",
-			identificador: "",
+			id: '',
+			nome: '',
+			identificador: '',
 			dataGanho: null,
 			dataPerda: null,
 			dataInteracao: null,
 		},
-		codigoIndicacaoVendedor: null,
+		codigoIndicacaoVendedor: seller.codigoIndicacaoConecta,
 		dataInsercao: new Date().toISOString(),
 		autor: CONECTA_AMPERE_CRM_USER_DATA,
 	};
@@ -644,12 +643,12 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 	let clientAcquisitionChannel: string | null = null;
 	// First, checking for possible existing client in db
 	const query: Filter<TClient> = {
-		$or: [{ email: email }, { telefonePrimario: phone }],
+		$or: [{ email }, { telefonePrimario: phone }],
 	};
 	const existingClientInDb = await clientsCollection.findOne({ ...query });
 
 	if (existingClientInDb) {
-		console.log("CLIENT FOUND", existingClientInDb._id, existingClientInDb.nome);
+		console.log('CLIENT FOUND', existingClientInDb._id, existingClientInDb.nome);
 		// In case there is an existing client in db
 		clientId = existingClientInDb._id.toString();
 		clientName = existingClientInDb.nome;
@@ -658,22 +657,22 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
 	} else {
-		console.log("CLIENT NOT FOUND, CREATING CLIENT");
+		console.log('CLIENT NOT FOUND, CREATING CLIENT');
 		// In case there is no existing client in db
 		const newClient: TClient = {
 			nome: name,
 			idParceiro: MATRIX_COMPANY_PARTNER_ID,
 			telefonePrimario: phone,
-			email: email,
-			uf: uf,
+			email,
+			uf,
 			cidade: city,
-			canalAquisicao: "CONECTA AMPÈRE",
+			canalAquisicao: 'CONECTA AMPÈRE',
 			idIndicacao: indicationId,
 			indicador: {},
 			conecta: {
 				usuario: phone,
-				email: email,
-				senha: "",
+				email,
+				senha: '',
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),
@@ -682,7 +681,7 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 			const insertClientResponse = await clientsCollection.insertOne(newClient);
 			if (!insertClientResponse.acknowledged)
 				return {
-					formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+					formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 				};
 			const insertedClientId = insertClientResponse.insertedId.toString();
 			clientId = insertedClientId;
@@ -692,9 +691,9 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 			clientCpfCnpj = newClient.cpfCnpj || null;
 			clientAcquisitionChannel = newClient.canalAquisicao;
 		} catch (error) {
-			console.log("INSERT CLIENT ERROR", error);
+			console.log('INSERT CLIENT ERROR', error);
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		}
 	}
@@ -711,28 +710,28 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 				titulo: ReferEarnOptions[0].projectType,
 			},
 			categoriaVenda: ReferEarnOptions[0].projectTypeSaleCategory,
-			descricao: "",
+			descricao: '',
 			identificador: newOpportunityIdentifier,
 			responsaveis: [
 				{
 					id: seller._id.toString(),
 					nome: seller.nome,
-					papel: "VENDEDOR",
+					papel: 'VENDEDOR',
 					avatar_url: seller.avatar_url,
 					dataInsercao: new Date().toISOString(),
 				},
 			],
-			segmento: "RESIDENCIAL" as TOpportunity["segmento"],
+			segmento: 'RESIDENCIAL' as TOpportunity['segmento'],
 			idCliente: clientId as string,
 			cliente: {
 				nome: clientName,
 				cpfCnpj: clientCpfCnpj,
 				telefonePrimario: clientPhone,
 				email: clientEmail,
-				canalAquisicao: clientAcquisitionChannel || "CONECTA AMPÈRE",
+				canalAquisicao: clientAcquisitionChannel || 'CONECTA AMPÈRE',
 			},
 			localizacao: {
-				uf: uf,
+				uf,
 				cidade: city,
 			},
 			ganho: {},
@@ -746,24 +745,24 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 		const insertOpportunityResponse = await opportunitiesCollection.insertOne(newOpportunity);
 		if (!insertOpportunityResponse.acknowledged)
 			return {
-				formError: "Oops, houve um erro desconhecido ao realizar cadastro.",
+				formError: 'Oops, houve um erro desconhecido ao realizar cadastro.',
 			};
 		opportunityId = insertOpportunityResponse.insertedId.toString();
 
 		const newFunnelReference: TFunnelReference = {
-			idParceiro: "65454ba15cf3e3ecf534b308",
+			idParceiro: '65454ba15cf3e3ecf534b308',
 			idOportunidade: opportunityId,
-			idFunil: "661eb0996dd818643c5334f5",
-			idEstagioFunil: "1",
+			idFunil: '661eb0996dd818643c5334f5',
+			idEstagioFunil: '1',
 			estagios: {
-				"1": { entrada: new Date().toISOString() },
+				'1': { entrada: new Date().toISOString() },
 			},
 			dataInsercao: new Date().toISOString(),
 		};
 		await funnelReferencesCollection.insertOne(newFunnelReference);
 
 		await notifyCRMResponsiblesOnNewIndication({
-			tipo: "NEW_OPPORTUNITY",
+			tipo: 'NEW_OPPORTUNITY',
 			payload: {
 				responsaveisIds: newOpportunity.responsaveis.map((responsavel) => responsavel.id),
 				autor: {
@@ -777,16 +776,29 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 				},
 			},
 		});
+
+		// Creating interaction event for subscription
+		await interactionEventsCollection.insertOne({
+			tipo: 'INSCRIÇÃO',
+			codigoIndicacaoVendedor: seller.codigoIndicacaoConecta,
+			vendedor: {
+				id: seller._id.toString(),
+				nome: seller.nome,
+				avatar_url: seller.avatar_url,
+			},
+			localizacao: {},
+			data: new Date().toISOString(),
+		});
 		// Finally, updating the indication with its respective opportunity
 		await indicationsCollection.updateOne(
 			{ _id: new ObjectId(indicationId) },
 			{
 				$set: {
-					"oportunidade.id": opportunityId,
-					"oportunidade.nome": newOpportunity.nome,
-					"oportunidade.identificador": newOpportunity.identificador,
+					'oportunidade.id': opportunityId,
+					'oportunidade.nome': newOpportunity.nome,
+					'oportunidade.identificador': newOpportunity.identificador,
 				},
-			},
+			}
 		);
 
 		// In case the opportunity creation succedded, redirecting the user
@@ -799,9 +811,9 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	} catch (error) {
-		console.log("Error during opportunity automation of signup", error);
+		console.log('Error during opportunity automation of signup', error);
 		// In case the opportunity creation failed, just redirecting the user
 		const sessionToken = await generateSessionToken();
 		const session = await createSession({
@@ -812,13 +824,13 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 			token: sessionToken,
 			expiresAt: session.dataExpiracao,
 		});
-		return redirect("/dashboard");
+		return redirect('/dashboard');
 	}
 }
 
 async function getNewOpportunityIdentifier(collection: Collection<TOpportunity>) {
 	const lastInsertedIdentificator = await collection.aggregate([{ $project: { identificador: 1 } }, { $sort: { _id: -1 } }, { $limit: 1 }]).toArray();
-	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split("-")[1]) : 0;
+	const lastIdentifierNumber = lastInsertedIdentificator[0] ? Number(lastInsertedIdentificator[0].identificador.split('-')[1]) : 0;
 	const newIdentifierNumber = lastIdentifierNumber + 1;
 	const newIdentifier = `CRM-${newIdentifierNumber}`;
 
@@ -845,35 +857,35 @@ export async function resendVerificationToken(_: TResendVerificationTokenResult,
 	const authVerificationTokensCollection = crmDb.collection<TAuthVerificationToken>(DATABASE_COLLECTION_NAMES.VERIFICATION_TOKENS);
 
 	const client = await clientsCollection.findOne({ _id: new ObjectId(userId) });
-	if (!client || !client.conecta?.email)
+	if (!client?.conecta?.email)
 		return {
-			actionError: "Usuário não encontrado.",
+			actionError: 'Usuário não encontrado.',
 		};
 
 	await authVerificationTokensCollection.deleteMany({ usuarioId: userId });
 
-	const verificationToken = randomBytes(32).toString("hex");
-	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
+	const verificationToken = randomBytes(32).toString('hex');
+	const verificationCode = Math.floor(100_000 + Math.random() * 900_000).toString(); // Gera código de 6 dígitos
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
 		token: verificationToken,
 		codigo: verificationCode,
 		usuarioId: client._id.toString(),
 		usuarioEmail: client.conecta.email,
-		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, 'minute').toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
 	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 	if (!insertAuthVerificationTokenResponse.acknowledged)
 		return {
-			actionError: "Oops, um erro desconhecido ocorreu, tente novamente.",
+			actionError: 'Oops, um erro desconhecido ocorreu, tente novamente.',
 		};
 
 	const insertedAuthVerificationTokenId = insertAuthVerificationTokenResponse.insertedId.toString();
 
 	await sendEmailWithResend(client.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
-		verificationCode: verificationCode,
+		verificationCode,
 		expiresInMinutes: verificationTokenExpiresInMinutes,
 	});
 
@@ -911,7 +923,7 @@ export async function verifyCode(_: TVerifyCodeResult, data: TVerifyMagicLinkCod
 
 	if (!authVerificationToken) {
 		return {
-			formError: "Código inválido ou expirado.",
+			formError: 'Código inválido ou expirado.',
 		};
 	}
 
@@ -920,7 +932,7 @@ export async function verifyCode(_: TVerifyCodeResult, data: TVerifyMagicLinkCod
 	const expirationDate = dayjs(authVerificationToken.dataExpiracao);
 	if (now.isAfter(expirationDate)) {
 		return {
-			formError: "Código expirado.",
+			formError: 'Código expirado.',
 		};
 	}
 
@@ -930,7 +942,7 @@ export async function verifyCode(_: TVerifyCodeResult, data: TVerifyMagicLinkCod
 
 	if (!client) {
 		return {
-			formError: "Usuário não encontrado.",
+			formError: 'Usuário não encontrado.',
 		};
 	}
 
@@ -952,11 +964,11 @@ export async function verifyCode(_: TVerifyCodeResult, data: TVerifyMagicLinkCod
 			expiresAt: session.dataExpiracao,
 		});
 	} catch (error) {
-		console.log("ERROR", error);
+		console.log('ERROR', error);
 		return {
-			formError: "Um erro desconhecido ocorreu.",
+			formError: 'Um erro desconhecido ocorreu.',
 		};
 	}
 
-	return redirect("/dashboard");
+	return redirect('/dashboard');
 }

@@ -1,10 +1,10 @@
-"use server";
-import { DATABASE_COLLECTION_NAMES } from "@/configs/app-definitions";
-import connectToCRMDatabase from "../services/mongodb/crm-db-connection";
-import { ObjectId } from "mongodb";
-import type { TInvite } from "@/schemas/invites.schema";
-import type { TClient } from "@/schemas/client.schema";
-import type { TUser } from "@/schemas/users.schema";
+'use server';
+import { ObjectId } from 'mongodb';
+import { DATABASE_COLLECTION_NAMES } from '@/configs/app-definitions';
+import type { TClient } from '@/schemas/client.schema';
+import type { TInvite } from '@/schemas/invites.schema';
+import type { TUser } from '@/schemas/users.schema';
+import connectToCRMDatabase from '../services/mongodb/crm-db-connection';
 
 export async function getInviteById(id: string) {
 	try {
@@ -16,7 +16,7 @@ export async function getInviteById(id: string) {
 		});
 		if (!invite) return null;
 
-		const isExpired = new Date().getTime() > new Date(invite.dataExpiracao).getTime();
+		const isExpired = Date.now() > new Date(invite.dataExpiracao).getTime();
 
 		if (isExpired) return null;
 
@@ -28,7 +28,7 @@ export async function getInviteById(id: string) {
 			convidadoId: invite.convidado.id,
 		};
 	} catch (error) {
-		console.log("Error running getInviteById", error);
+		console.log('Error running getInviteById', error);
 		throw error;
 	}
 }
@@ -44,7 +44,7 @@ export async function getInvitesPromoterById(id: string) {
 			_id: new ObjectId(id),
 		});
 
-		if (!client) throw new Error("Oops, promotor não encontrado.");
+		if (!client) throw new Error('Oops, promotor não encontrado.');
 
 		return {
 			id: client._id.toString(),
@@ -54,7 +54,7 @@ export async function getInvitesPromoterById(id: string) {
 			email: client.email,
 		};
 	} catch (error) {
-		console.log("Error running getPromoterById", error);
+		console.log('Error running getPromoterById', error);
 		throw error;
 	}
 }
@@ -69,7 +69,7 @@ export async function getSellerInviteByCode(code: string) {
 			codigoIndicacaoConecta: code,
 		});
 
-		if (!seller) throw new Error("Oops, vendedor não encontrado ou inválido.");
+		if (!seller) return null;
 
 		return {
 			id: seller._id.toString(),
@@ -80,7 +80,7 @@ export async function getSellerInviteByCode(code: string) {
 			codigoIndicacaoConecta: seller.codigoIndicacaoConecta,
 		};
 	} catch (error) {
-		console.log("Error running getSellerInviteByCode", error);
+		console.log('Error running getSellerInviteByCode', error);
 		throw error;
 	}
 }

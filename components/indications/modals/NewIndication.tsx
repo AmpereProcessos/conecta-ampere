@@ -1,27 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import type { TSessionUser } from "@/lib/authentication/types";
-import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import type { TSaleCategoryEnum } from "@/schemas/enums.schema";
-import type { TIndication } from "@/schemas/indication.schema";
-import React, { useState } from "react";
-import ProjectTypeSelection from "./blocks/ProjectTypeSelection";
-import TextInput from "@/components/inputs/TextInput";
-import { formatToPhone } from "@/lib/methods/formatting";
-import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions, BrazilStatesAndCities } from "@/configs/states_cities";
-import SelectInput from "@/components/inputs/SelectInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { LoadingButton } from "@/components/buttons/loading-button";
-import { useMutation } from "@tanstack/react-query";
-import { createIndication } from "@/lib/mutations/indications";
-import { getErrorMessage } from "@/lib/methods/errors";
-import { toast } from "sonner";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useSellerByIndicationCodeQuery } from "@/lib/queries/sellers";
-import IndicationDataSeller from "./blocks/IndicationDataSeller";
+import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { LoadingButton } from '@/components/buttons/loading-button';
+import SelectInput from '@/components/inputs/SelectInput';
+import TextInput from '@/components/inputs/TextInput';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from '@/configs/states_cities';
+import type { TSessionUser } from '@/lib/authentication/types';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { getErrorMessage } from '@/lib/methods/errors';
+import { formatToPhone } from '@/lib/methods/formatting';
+import { createIndication } from '@/lib/mutations/indications';
+import type { TSaleCategoryEnum } from '@/schemas/enums.schema';
+import type { TIndication } from '@/schemas/indication.schema';
+import IndicationDataSeller from './blocks/IndicationDataSeller';
+import ProjectTypeSelection from './blocks/ProjectTypeSelection';
 
 type NewIndicationProps = {
+	initialState?: Partial<TIndication>;
 	sessionUser: TSessionUser;
 	projectType?: { id: string; title: string; saleCategory: TSaleCategoryEnum };
 	closeModal: () => void;
@@ -31,18 +29,18 @@ type NewIndicationProps = {
 		onSettled?: () => void;
 	};
 };
-function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewIndicationProps) {
-	const isDesktop = useMediaQuery("(min-width: 768px)");
+function NewIndication({ sessionUser, projectType, closeModal, callbacks, initialState }: NewIndicationProps) {
+	const isDesktop = useMediaQuery('(min-width: 768px)');
 
 	const initialHolderState: TIndication = {
-		nome: "",
-		telefone: "",
-		uf: "MG",
-		cidade: "ITUIUTABA",
+		nome: initialState?.nome || '',
+		telefone: initialState?.telefone || '',
+		uf: initialState?.uf || 'MG',
+		cidade: initialState?.cidade || 'ITUIUTABA',
 		tipo: {
-			id: projectType?.id || "",
-			titulo: projectType?.title || "",
-			categoriaVenda: projectType?.saleCategory || "KIT",
+			id: initialState?.tipo?.id || projectType?.id || '',
+			titulo: initialState?.tipo?.titulo || projectType?.title || '',
+			categoriaVenda: initialState?.tipo?.categoriaVenda || projectType?.saleCategory || 'KIT',
 		},
 		autor: {
 			id: sessionUser.id,
@@ -50,11 +48,11 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 			avatar_url: sessionUser.avatar_url,
 		},
 		oportunidade: {
-			id: "",
-			nome: "",
-			identificador: "",
+			id: '',
+			nome: '',
+			identificador: '',
 		},
-		codigoIndicacaoVendedor: sessionUser.codigoIndicacaoVendedor,
+		codigoIndicacaoVendedor: initialState?.codigoIndicacaoVendedor || sessionUser.codigoIndicacaoVendedor,
 		dataInsercao: new Date().toISOString(),
 	};
 	const [infoHolder, setInfoHolder] = useState(initialHolderState);
@@ -63,7 +61,7 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 	}
 
 	const { mutate: mutateCreateIndication, isPending } = useMutation({
-		mutationKey: ["create-indication"],
+		mutationKey: ['create-indication'],
 		mutationFn: createIndication,
 		onMutate: () => {
 			if (callbacks?.onMutate) callbacks.onMutate();
@@ -82,13 +80,13 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 		},
 	});
 	return isDesktop ? (
-		<Dialog open onOpenChange={closeModal}>
-			<DialogContent className="flex flex-col h-fit min-h-[60vh] max-h-[80vh]">
+		<Dialog onOpenChange={closeModal} open>
+			<DialogContent className="flex h-fit max-h-[80vh] min-h-[60vh] flex-col">
 				<DialogHeader>
 					<DialogTitle>NOVA INDICAÇÃO</DialogTitle>
 					<DialogDescription>Preencha alguns dados sobre a sua indicação.</DialogDescription>
 				</DialogHeader>
-				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+				<div className="scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30 flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2">
 					<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</div>
 				<DialogFooter>
@@ -96,7 +94,7 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 						<Button variant="outline">FECHAR</Button>
 					</DialogClose>
 					{infoHolder.tipo.id ? (
-						<LoadingButton onClick={() => mutateCreateIndication(infoHolder)} loading={isPending}>
+						<LoadingButton loading={isPending} onClick={() => mutateCreateIndication(infoHolder)}>
 							INDICAR
 						</LoadingButton>
 					) : null}
@@ -104,18 +102,18 @@ function NewIndication({ sessionUser, projectType, closeModal, callbacks }: NewI
 			</DialogContent>
 		</Dialog>
 	) : (
-		<Drawer open onOpenChange={closeModal}>
+		<Drawer onOpenChange={closeModal} open>
 			<DrawerContent>
 				<DrawerHeader className="text-left">
 					<DrawerTitle>NOVA INDICAÇÃO</DrawerTitle>
 					<DrawerDescription>Preencha alguns dados sobre a sua indicação.</DrawerDescription>
 				</DrawerHeader>
-				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
+				<div className="scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30 flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2">
 					<IndicationData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</div>
 				<DrawerFooter className="pt-2">
 					{infoHolder.tipo?.id ? (
-						<LoadingButton onClick={() => mutateCreateIndication(infoHolder)} loading={isPending}>
+						<LoadingButton loading={isPending} onClick={() => mutateCreateIndication(infoHolder)}>
 							INDICAR
 						</LoadingButton>
 					) : null}
@@ -136,64 +134,64 @@ type IndicationDataProps = {
 };
 function IndicationData({ infoHolder, updateInfoHolder }: IndicationDataProps) {
 	return (
-		<div className="w-full h-full flex flex-col gap-3 px-4">
-			{!infoHolder.tipo.id ? (
-				<ProjectTypeSelection updateInfoHolder={updateInfoHolder} />
-			) : (
+		<div className="flex h-full w-full flex-col gap-3 px-4">
+			{infoHolder.tipo.id ? (
 				<>
-					<div className="w-full flex items-center justify-center flex-col gap-1 py-2">
-						<h1 className="text-sm lg:text-lg leading-none tracking-tight w-full text-center">
-							Indicando para: <strong>{infoHolder.tipo.titulo}</strong>{" "}
+					<div className="flex w-full flex-col items-center justify-center gap-1 py-2">
+						<h1 className="w-full text-center text-sm leading-none tracking-tight lg:text-lg">
+							Indicando para: <strong>{infoHolder.tipo.titulo}</strong>{' '}
 						</h1>
 						<button
-							type="button"
+							className="rounded-lg px-2 py-1 font-medium text-[0.65rem] text-primary/80 tracking-tight duration-300 ease-in-out hover:bg-primary/10 hover:text-primary"
 							onClick={() => {
 								updateInfoHolder({
-									tipo: { id: "", titulo: "", categoriaVenda: "KIT" },
+									tipo: { id: '', titulo: '', categoriaVenda: 'KIT' },
 								});
 							}}
-							className="px-2 py-1 duration-300 ease-in-out hover:bg-primary/10 hover:text-primary font-medium rounded-lg text-[0.65rem] tracking-tight text-primary/80"
+							type="button"
 						>
 							Clique aqui para escolher outro Tipo de Indicação
 						</button>
 					</div>
 					<TextInput
+						handleChange={(value) => updateInfoHolder({ nome: value })}
 						labelText="NOME DA PESSOA INDICADA"
 						placeholderText="Preencha aqui o nome da pessoa que está indicando..."
 						value={infoHolder.nome}
-						handleChange={(value) => updateInfoHolder({ nome: value })}
 					/>
 					<TextInput
+						handleChange={(value) => updateInfoHolder({ telefone: formatToPhone(value) })}
 						labelText="TELEFONE DA PESSOA INDICADA"
 						placeholderText="Preencha aqui o telefone da pessoa que está indicando..."
 						value={infoHolder.telefone}
-						handleChange={(value) => updateInfoHolder({ telefone: formatToPhone(value) })}
 					/>
 					<SelectInput
-						labelText="ESTADO(UF) DA PESSOA INDICADA"
-						placeholderText="Preencha aqui o estado federativo da pessoa indicada..."
-						value={infoHolder.uf}
 						handleChange={(value) =>
 							updateInfoHolder({
 								uf: value,
 								cidade: BrazilianCitiesOptionsFromUF(value)[0]?.value,
 							})
 						}
-						handleReset={() => updateInfoHolder({ uf: "MG", cidade: "ITUIUTABA" })}
+						handleReset={() => updateInfoHolder({ uf: 'MG', cidade: 'ITUIUTABA' })}
+						labelText="ESTADO(UF) DA PESSOA INDICADA"
 						options={BrazilianStatesOptions}
+						placeholderText="Preencha aqui o estado federativo da pessoa indicada..."
 						resetOptionText="NÃO DEFINIDO"
+						value={infoHolder.uf}
 					/>
 					<SelectInput
-						labelText="CIDADE DA PESSOA INDICADA"
-						placeholderText="Preencha aqui o cidade da pessoa indicada..."
-						value={infoHolder.cidade}
 						handleChange={(value) => updateInfoHolder({ cidade: value })}
-						handleReset={() => updateInfoHolder({ cidade: "ITUIUTABA" })}
+						handleReset={() => updateInfoHolder({ cidade: 'ITUIUTABA' })}
+						labelText="CIDADE DA PESSOA INDICADA"
 						options={BrazilianCitiesOptionsFromUF(infoHolder.uf)}
+						placeholderText="Preencha aqui o cidade da pessoa indicada..."
 						resetOptionText="NÃO DEFINIDO"
+						value={infoHolder.cidade}
 					/>
 					<IndicationDataSeller infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</>
+			) : (
+				<ProjectTypeSelection updateInfoHolder={updateInfoHolder} />
 			)}
 		</div>
 	);

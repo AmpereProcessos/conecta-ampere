@@ -1,22 +1,23 @@
-export const SESSION_COOKIE_NAME = "conecta-session";
+export const SESSION_COOKIE_NAME = 'conecta-session';
 
 export const DATABASE_COLLECTION_NAMES = {
-	CLIENTS: "clients",
-	USERS: "users",
-	OPPORTUNITIES: "opportunities",
-	FUNNEL_REFERENCES: "funnel-references",
-	SESSIONS: "conecta-sessions",
-	INDICATIONS: "conecta-indications",
-	VERIFICATION_TOKENS: "conecta-verification-tokens",
-	CREDIT_REDEMPTION_REQUESTS: "conecta-credit-redemption-requests",
-	INVITES: "conecta-invites",
+	CLIENTS: 'clients',
+	USERS: 'users',
+	OPPORTUNITIES: 'opportunities',
+	FUNNEL_REFERENCES: 'funnel-references',
+	SESSIONS: 'conecta-sessions',
+	INDICATIONS: 'conecta-indications',
+	VERIFICATION_TOKENS: 'conecta-verification-tokens',
+	INTERACTION_EVENTS: 'conecta-interaction-events',
+	CREDIT_REDEMPTION_REQUESTS: 'conecta-credit-redemption-requests',
+	INVITES: 'conecta-invites',
 };
 
-export const MATRIX_COMPANY_PARTNER_ID = "65454ba15cf3e3ecf534b308";
+export const MATRIX_COMPANY_PARTNER_ID = '65454ba15cf3e3ecf534b308';
 
 export const CONECTA_AMPERE_CRM_USER_DATA = {
-	id: "67a375703ec9a5ae502480e1",
-	nome: "Conecta Ampère",
+	id: '67a375703ec9a5ae502480e1',
+	nome: 'Conecta Ampère',
 	avatar_url:
-		"https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FConecta%20Amp%C3%A8re?alt=media&token=e67bcf9e-3b2a-4868-a889-8dce6a1a060b",
+		'https://firebasestorage.googleapis.com/v0/b/sistemaampere.appspot.com/o/saas-crm%2Fusuarios%2FConecta%20Amp%C3%A8re?alt=media&token=e67bcf9e-3b2a-4868-a889-8dce6a1a060b',
 };
