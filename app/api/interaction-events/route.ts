@@ -24,6 +24,9 @@ async function handleCreateInteractionEvent(req: NextRequest) {
 
 	const interactionEventToInsert: TInteractionEvent = {
 		tipo: event.tipo,
+		vendedor: event.vendedor,
+		promotor: event.promotor,
+
 		localizacao: {
 			cidade: city || null,
 			uf: region || null,
