@@ -125,6 +125,8 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 	const invitesCollection = crmDb.collection<TInvite>(DATABASE_COLLECTION_NAMES.INVITES);
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
+	const interactionEventsCollection = crmDb.collection<TInteractionEvent>(DATABASE_COLLECTION_NAMES.INTERACTION_EVENTS);
+
 	let clientId: string | null = null;
 	let clientName: string | null = null;
 	let clientPhone: string | null = null;
@@ -300,6 +302,18 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 					},
 				}
 			);
+		// Creating interaction event for subscription
+		await interactionEventsCollection.insertOne({
+			tipo: 'INSCRIÇÃO',
+			usuario: {
+				id: clientId,
+				nome: name,
+				avatar_url: undefined,
+			},
+			localizacao: {},
+			data: new Date().toISOString(),
+		});
+
 		// In case the opportunity creation succedded, redirecting the user
 		const sessionToken = await generateSessionToken();
 		const session = await createSession({
@@ -357,6 +371,7 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 	const opportunitiesCollection = crmDb.collection<TOpportunity>(DATABASE_COLLECTION_NAMES.OPPORTUNITIES);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
 	const funnelReferencesCollection = crmDb.collection<TFunnelReference>(DATABASE_COLLECTION_NAMES.FUNNEL_REFERENCES);
+	const interactionEventsCollection = crmDb.collection<TInteractionEvent>(DATABASE_COLLECTION_NAMES.INTERACTION_EVENTS);
 
 	const promoter = await clientsCollection.findOne({ _id: new ObjectId(invitesPromoterId) });
 	if (!promoter)
@@ -534,6 +549,19 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 				},
 			},
 		});
+
+		// Creating interaction event for subscription
+		await interactionEventsCollection.insertOne({
+			tipo: 'INSCRIÇÃO',
+			promotor: {
+				id: promoter._id.toString(),
+				nome: promoter.nome,
+				avatar_url: promoter.conecta?.avatar_url,
+			},
+			localizacao: {},
+			data: new Date().toISOString(),
+		});
+
 		// Finally, updating the indication with its respective opportunity
 		await indicationsCollection.updateOne(
 			{ _id: new ObjectId(indicationId) },

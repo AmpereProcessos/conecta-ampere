@@ -1,20 +1,19 @@
-import { DATABASE_COLLECTION_NAMES } from "@/configs/app-definitions";
-import { EmailTemplate, sendEmailWithResend } from "@/lib/email";
-import connectToCRMDatabase from "@/lib/services/mongodb/crm-db-connection";
-import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
-import type { TClient } from "@/schemas/client.schema";
-import dayjs from "dayjs";
-import { ObjectId } from "mongodb";
-import type { NextRequest } from "next/server";
-import { randomBytes } from "node:crypto";
-import { z } from "zod";
+import { randomBytes } from 'node:crypto';
+import dayjs from 'dayjs';
+import { ObjectId } from 'mongodb';
+import type { NextRequest } from 'next/server';
+import { DATABASE_COLLECTION_NAMES } from '@/configs/app-definitions';
+import { EmailTemplate, sendEmailWithResend } from '@/lib/email';
+import connectToCRMDatabase from '@/lib/services/mongodb/crm-db-connection';
+import type { TAuthVerificationToken } from '@/schemas/auth-verification-token.schema';
+import type { TClient } from '@/schemas/client.schema';
 
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
-	const userId = searchParams.get("userId");
+	const userId = searchParams.get('userId');
 
-	if (!userId || typeof userId !== "string") {
-		const error = "Parâmetros inválidos.";
+	if (!userId || typeof userId !== 'string') {
+		const error = 'Parâmetros inválidos.';
 		return new Response(null, {
 			status: 400,
 			headers: {
@@ -29,8 +28,8 @@ export async function GET(request: NextRequest) {
 
 	const client = await clientsCollection.findOne({ _id: new ObjectId(userId) });
 
-	if (!client || !client.conecta?.email) {
-		const error = "Parâmetros inválidos.";
+	if (!client?.conecta?.email) {
+		const error = 'Parâmetros inválidos.';
 		return new Response(null, {
 			status: 400,
 			headers: {
@@ -39,8 +38,8 @@ export async function GET(request: NextRequest) {
 		});
 	}
 
-	const verificationToken = randomBytes(32).toString("hex");
-	const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
+	const verificationToken = randomBytes(32).toString('hex');
+	const verificationCode = Math.floor(100_000 + Math.random() * 900_000).toString(); // Gera código de 6 dígitos
 
 	const verificationTokenExpiresInMinutes = 30;
 	const newVerificationToken: TAuthVerificationToken = {
@@ -48,13 +47,13 @@ export async function GET(request: NextRequest) {
 		codigo: verificationCode,
 		usuarioId: client._id.toString(),
 		usuarioEmail: client.conecta.email,
-		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, "minute").toISOString(),
+		dataExpiracao: dayjs().add(verificationTokenExpiresInMinutes, 'minute').toISOString(),
 		dataInsercao: new Date().toISOString(),
 	};
 	const insertAuthVerificationTokenResponse = await authVerificationTokensCollection.insertOne(newVerificationToken);
 
 	if (!insertAuthVerificationTokenResponse.acknowledged) {
-		const error = "Oops, um erro desconhecido ocorreu, tente novamente.";
+		const error = 'Oops, um erro desconhecido ocorreu, tente novamente.';
 		return new Response(null, {
 			status: 400,
 			headers: { Location: `/login?error=${encodeURIComponent(error)}` },
@@ -70,13 +69,13 @@ export async function GET(request: NextRequest) {
 
 	await sendEmailWithResend(client.conecta?.email, EmailTemplate.AuthMagicLink, {
 		magicLink: `${process.env.NEXT_PUBLIC_URL}/magic-link/verify/callback?token=${verificationToken}`,
-		verificationCode: verificationCode,
+		verificationCode,
 		expiresInMinutes: verificationTokenExpiresInMinutes,
 	});
 
 	const deleteAuthVerificationTokensCount = deleteAuthVerificationTokensResponse.deletedCount;
-	const detailsMsg = deleteAuthVerificationTokensCount > 0 ? "Um novo link de acesso foi enviado !" : null;
-	const redirectUrl = `${process.env.NEXT_PUBLIC_URL}/magic-link/verify?id=${insertedAuthVerificationTokenId}${detailsMsg ? `&details=${encodeURIComponent(detailsMsg)}` : ""}`;
+	const detailsMsg = deleteAuthVerificationTokensCount > 0 ? 'Um novo link de acesso foi enviado !' : null;
+	const redirectUrl = `${process.env.NEXT_PUBLIC_URL}/magic-link/verify?id=${insertedAuthVerificationTokenId}${detailsMsg ? `&details=${encodeURIComponent(detailsMsg)}` : ''}`;
 	return new Response(null, {
 		status: 302,
 		headers: {
