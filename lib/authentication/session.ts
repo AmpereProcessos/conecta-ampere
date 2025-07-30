@@ -15,7 +15,7 @@ import type { TAuthSession } from './types';
 export async function generateSessionToken(): Promise<string> {
 	const tokenBytes = new Uint8Array(20);
 	crypto.getRandomValues(tokenBytes);
-	const token = encodeBase32LowerCaseNoPadding(tokenBytes).toLowerCase();
+	const token = await encodeBase32LowerCaseNoPadding(tokenBytes).toLowerCase();
 	return token;
 }
 
@@ -34,7 +34,7 @@ export async function createSession({ token, userId }: CreateSessionParams) {
 		};
 
 		const crmDb = await connectToCRMDatabase();
-		const insertResult = await crmDb.collection<TSession>('conecta-sessions').insertOne(session);
+		await crmDb.collection<TSession>('conecta-sessions').insertOne(session);
 		return session;
 	} catch (error) {
 		console.log('Error running createSession', error);
@@ -73,6 +73,7 @@ export async function validateSession(token: string) {
 		user: {
 			id: session.usuarioId,
 			nome: user.nome,
+			telefone: user.telefonePrimario,
 			cpfCnpj: user.cpfCnpj,
 			avatar_url: user.conecta?.avatar_url,
 			email: user.conecta?.email,
@@ -139,7 +140,7 @@ type SetSessionCookieParams = {
 export async function setSetSessionCookie({ token, expiresAt }: SetSessionCookieParams) {
 	try {
 		const cookiesStore = await cookies();
-		const resp = cookiesStore.set(SESSION_COOKIE_NAME, token, {
+		cookiesStore.set(SESSION_COOKIE_NAME, token, {
 			httpOnly: true,
 			path: '/',
 			secure: process.env.NODE_ENV === 'production',

@@ -7,6 +7,7 @@ import { ReferEarnOptions } from '@/configs/constants';
 import type { TAuthSession } from '@/lib/authentication/types';
 import type { TSaleCategoryEnum } from '@/schemas/enums.schema';
 import NewIndication from '../indications/modals/NewIndication';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 
 type NewIndicationMenuState = {
 	isOpen: boolean;
@@ -47,28 +48,43 @@ function ReferEarn({ sessionUser, initialIndicationSellerCode }: ReferEarnProps)
 					</span>
 				</p>
 			</div>
-			<div className="grid w-full grow grid-cols-2 items-center justify-center gap-1.5 px-0 py-3 lg:flex lg:flex-wrap lg:px-6">
-				{ReferEarnOptions.map((option) => (
-					<button
-						className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 sm:aspect-auto lg:p-8"
-						key={`${option.id}-${option.projectTypeId}`}
-						onClick={() =>
-							setNewIndicationMenu({
-								isOpen: true,
-								projectType: {
-									id: option.projectTypeId,
-									title: option.projectType,
-									saleCategory: option.projectTypeSaleCategory,
-								},
-							})
-						}
-						type="button"
-					>
-						<FaSolarPanel className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:w-12" />
-						<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.referEarnCall}</h1>
-					</button>
-				))}
+			<div className="flex w-full flex-col px-4">
+				<Carousel
+					opts={{
+						align: 'start',
+						loop: false,
+						dragFree: true,
+						containScroll: 'trimSnaps',
+					}}
+				>
+					<CarouselContent className="-ml-2 p-3">
+						{ReferEarnOptions.map((option) => (
+							<CarouselItem className="basis-[calc(33.333%-0.5rem)] pl-2 sm:basis-[calc(30%-0.5rem)]" key={option.id}>
+								<button
+									className="flex h-[150px] w-full flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 lg:h-[250px] lg:p-8"
+									onClick={() =>
+										setNewIndicationMenu({
+											isOpen: true,
+											projectType: {
+												id: option.projectTypeId,
+												title: option.projectType,
+												saleCategory: option.projectTypeSaleCategory,
+											},
+										})
+									}
+									type="button"
+								>
+									<FaSolarPanel className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:w-12" />
+									<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.referEarnCall}</h1>
+								</button>
+							</CarouselItem>
+						))}
+					</CarouselContent>
+					<CarouselPrevious className="left-0" />
+					<CarouselNext className="right-0" />
+				</Carousel>
 			</div>
+
 			{newIndicationMenu.isOpen && newIndicationMenu.projectType ? (
 				<NewIndication
 					callbacks={{

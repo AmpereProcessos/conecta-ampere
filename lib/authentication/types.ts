@@ -1,9 +1,10 @@
-import type { TSession } from "@/schemas/session.schema";
-import { z } from "zod";
+import { z } from 'zod';
+import type { TSession } from '@/schemas/session.schema';
 
 export type TSessionUser = {
 	id: string;
 	nome: string;
+	telefone: string;
 	cpfCnpj?: string | null;
 	email?: string | null;
 	avatar_url?: string | null;
@@ -17,45 +18,45 @@ export type TAuthSession = {
 
 export const LoginSchema = z.object({
 	username: z.string({
-		required_error: "Usuário não informado.",
-		invalid_type_error: "Tipo não válido para o usuário.",
+		required_error: 'Usuário não informado.',
+		invalid_type_error: 'Tipo não válido para o usuário.',
 	}),
 });
 export type TLoginSchema = z.infer<typeof LoginSchema>;
 
 export const SignUpSchema = z.object({
 	name: z.string({
-		required_error: "Nome não informado.",
-		invalid_type_error: "Tipo não válido para nome.",
+		required_error: 'Nome não informado.',
+		invalid_type_error: 'Tipo não válido para nome.',
 	}),
 	email: z
 		.string({
-			required_error: "Email não fornecido.",
-			invalid_type_error: "Tipo não válido para email.",
+			required_error: 'Email não fornecido.',
+			invalid_type_error: 'Tipo não válido para email.',
 		})
-		.email({ message: "Formato inválido para email." }),
+		.email({ message: 'Formato inválido para email.' }),
 	phone: z.string({
-		required_error: "Telefone não informado.",
-		invalid_type_error: "Tipo não válido para telefone.",
+		required_error: 'Telefone não informado.',
+		invalid_type_error: 'Tipo não válido para telefone.',
 	}),
 	uf: z.string({
-		required_error: "Estado não informado.",
-		invalid_type_error: "Tipo não válido para estado.",
+		required_error: 'Estado não informado.',
+		invalid_type_error: 'Tipo não válido para estado.',
 	}),
 	city: z.string({
-		required_error: "Cidade não informada.",
-		invalid_type_error: "Tipo não válido para cidade.",
+		required_error: 'Cidade não informada.',
+		invalid_type_error: 'Tipo não válido para cidade.',
 	}),
 	inviteId: z
 		.string({
-			invalid_type_error: "Tipo não válido para referência do convite.",
+			invalid_type_error: 'Tipo não válido para referência do convite.',
 		})
 		.optional()
 		.nullable(),
 	termsAndPrivacyPolicyAcceptanceDate: z
 		.string({
-			required_error: "Data de aceitação dos termos de uso e política de privacidade não informada.",
-			invalid_type_error: "Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
+			required_error: 'Data de aceitação dos termos de uso e política de privacidade não informada.',
+			invalid_type_error: 'Tipo não válido para a data de aceitação dos termos de uso e política de privacidade',
 		})
 		.optional()
 		.nullable(),
@@ -64,34 +65,34 @@ export type TSignUpSchema = z.infer<typeof SignUpSchema>;
 
 export const SignUpViaPromoterSchema = z.object({
 	name: z.string({
-		required_error: "Nome não informado.",
-		invalid_type_error: "Tipo não válido para nome.",
+		required_error: 'Nome não informado.',
+		invalid_type_error: 'Tipo não válido para nome.',
 	}),
 	email: z
 		.string({
-			required_error: "Email não fornecido.",
-			invalid_type_error: "Tipo não válido para email.",
+			required_error: 'Email não fornecido.',
+			invalid_type_error: 'Tipo não válido para email.',
 		})
-		.email({ message: "Formato inválido para email." }),
+		.email({ message: 'Formato inválido para email.' }),
 	phone: z.string({
-		required_error: "Telefone não informado.",
-		invalid_type_error: "Tipo não válido para telefone.",
+		required_error: 'Telefone não informado.',
+		invalid_type_error: 'Tipo não válido para telefone.',
 	}),
 	uf: z.string({
-		required_error: "Estado não informado.",
-		invalid_type_error: "Tipo não válido para estado.",
+		required_error: 'Estado não informado.',
+		invalid_type_error: 'Tipo não válido para estado.',
 	}),
 	city: z.string({
-		required_error: "Cidade não informada.",
-		invalid_type_error: "Tipo não válido para cidade.",
+		required_error: 'Cidade não informada.',
+		invalid_type_error: 'Tipo não válido para cidade.',
 	}),
 	invitesPromoterId: z.string({
-		invalid_type_error: "Tipo não válido para referência do promotor do convite.",
+		invalid_type_error: 'Tipo não válido para referência do promotor do convite.',
 	}),
 	termsAndPrivacyPolicyAcceptanceDate: z
 		.string({
-			required_error: "Data de aceitação dos termos de uso e política de privacidade não informada.",
-			invalid_type_error: "Tipo não válido para a data de aceitação dos termos de uso e política de privacidade",
+			required_error: 'Data de aceitação dos termos de uso e política de privacidade não informada.',
+			invalid_type_error: 'Tipo não válido para a data de aceitação dos termos de uso e política de privacidade',
 		})
 		.optional()
 		.nullable(),
@@ -100,25 +101,25 @@ export type TSignUpViaPromoterSchema = z.infer<typeof SignUpViaPromoterSchema>;
 
 export const SignUpViaSellerInviteSchema = SignUpSchema.extend({
 	invitesSellerId: z.string({
-		required_error: "Código de vendedor não informado.",
-		invalid_type_error: "Tipo não válido para código de vendedor.",
+		required_error: 'Código de vendedor não informado.',
+		invalid_type_error: 'Tipo não válido para código de vendedor.',
 	}),
 });
 export type TSignUpViaSellerInviteSchema = z.infer<typeof SignUpViaSellerInviteSchema>;
 
 export const ResendVerificationTokenSchema = z.object({
 	userId: z.string({
-		required_error: "Referência do usuário não informada.",
-		invalid_type_error: "Tipo não válido para referência do usuário.",
+		required_error: 'Referência do usuário não informada.',
+		invalid_type_error: 'Tipo não válido para referência do usuário.',
 	}),
 });
 export type TResendVerificationTokenSchema = z.infer<typeof ResendVerificationTokenSchema>;
 
 export const VerifyMagicLinkCodeSchema = z.object({
-	code: z.string().length(6, "Código deve ter exatamente 6 dígitos").regex(/^\d+$/, "Código deve conter apenas números"),
+	code: z.string().length(6, 'Código deve ter exatamente 6 dígitos').regex(/^\d+$/, 'Código deve conter apenas números'),
 	verificationTokenId: z.string({
-		required_error: "Referência do token de verificação não informada.",
-		invalid_type_error: "Tipo não válido para referência do token de verificação.",
+		required_error: 'Referência do token de verificação não informada.',
+		invalid_type_error: 'Tipo não válido para referência do token de verificação.',
 	}),
 });
 export type TVerifyMagicLinkCodeSchema = z.infer<typeof VerifyMagicLinkCodeSchema>;
