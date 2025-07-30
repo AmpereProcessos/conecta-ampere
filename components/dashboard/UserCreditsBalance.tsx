@@ -52,7 +52,16 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 					<FaBolt size={22} />
 				</div>
 			</div>
-			<div className="flex w-full flex-col px-4">
+			<div className="w-full">
+				<p className="text-[0.625rem] lg:text-sm">
+					<span className="font-normal">Escolha uma recompensa e resgate seus</span>
+					<span className="inline-flex items-center gap-0.5 font-bold text-[#FB2E9F]">
+						<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
+						CRÉDITOS
+					</span>
+				</p>
+			</div>
+			<div className="flex w-full flex-col gap-2 px-4">
 				<Carousel
 					opts={{
 						align: 'start',

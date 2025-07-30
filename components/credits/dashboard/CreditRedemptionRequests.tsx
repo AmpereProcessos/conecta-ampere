@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { BsCalendarPlus } from 'react-icons/bs';
 import { FaBolt } from 'react-icons/fa';
 import ErrorComponent from '@/components/layout/ErrorComponent';
-import { EarnRewardsOptions } from '@/configs/constants';
 import type { TAuthSession } from '@/lib/authentication/types';
 import { getErrorMessage } from '@/lib/methods/errors';
 import { formatDateAsLocale } from '@/lib/methods/formatting';
@@ -42,75 +41,33 @@ function CreditRedemptionRequests({ sessionUser }: CreditRedemptionRequestsProps
 			queryKey: ['credit-redemption-requests'],
 		});
 	return (
-		<div className="flex w-full flex-col items-center gap-1.5">
-			<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
-				<div className="flex w-full items-center justify-between gap-1.5">
-					<div className="flex items-center gap-1.5">
-						<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
-						<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">RESGATE SEUS CRÉDITOS</h1>
-					</div>
-				</div>
-				<div className="w-full">
-					<p className="text-[0.625rem] lg:text-sm">
-						<span className="font-normal">Escolha uma recompensa e resgate seus créditos.</span>
-						<span className="inline-flex items-center gap-0.5 font-bold text-[#FB2E9F]">
-							<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
-							CRÉDITOS
-						</span>
-					</p>
-				</div>
-				<div className="grid w-full grow grid-cols-2 items-center justify-center gap-1.5 px-0 py-3 lg:flex lg:flex-wrap lg:px-6">
-					{EarnRewardsOptions.map((option) => (
-						<button
-							className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg bg-[#FB2E9F]/20 p-2 text-[#FB2E9F] duration-300 ease-in-out hover:bg-[#FB2E9F]/30 sm:aspect-auto lg:p-8"
-							key={`${option.id}-${option.label}`}
-							onClick={() =>
-								setNewRequestMenu({
-									isOpen: true,
-									reward: {
-										id: option.id,
-										label: option.label,
-										requiredCredits: option.requiredCredits,
-									},
-								})
-							}
-							type="button"
-						>
-							<TicketCheck className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:w-12" />
-							<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.redeemCall}</h1>
-						</button>
-					))}
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5">
+				<div className="flex items-center gap-1.5">
+					<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+					<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">MEUS RESGATES</h1>
 				</div>
 			</div>
-
-			<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
-				<div className="flex w-full items-center justify-between gap-1.5">
-					<div className="flex items-center gap-1.5">
-						<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
-						<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">MEUS RESGATES</h1>
-					</div>
-				</div>
-				<div className="flex w-full grow flex-col items-center justify-center gap-1.5 px-0 py-3 lg:px-6">
-					{isLoading ? <h3 className="animate-pulse font-semibold text-xs tracking-tight lg:text-base">Buscando resgates...</h3> : null}
-					{isError ? <ErrorComponent msg={getErrorMessage(error)} /> : null}
-					{isSuccess ? (
-						requests.length > 0 ? (
-							requests.map((request) => <CreditRedemptionRequestCard key={request._id} request={request} />)
-						) : (
-							<>
-								<h3 className="font-semibold text-xs tracking-tight lg:text-base">Você ainda não possui nenhum resgate :(</h3>
-								<button
-									className="flex w-fit items-center justify-center gap-1 rounded-lg bg-[#FB2E9F]/20 px-2 py-2 text-[#FB2E9F] duration-300 ease-in-out hover:bg-[#FB2E9F]/30"
-									onClick={() => setNewRequestMenu((prev) => ({ ...prev, isOpen: !prev.isOpen }))}
-									type="button"
-								>
-									<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
-									<p className="font-extrabold text-[0.5rem] lg:text-sm">NOVO RESGATE</p>
-								</button>
-							</>
-						)
-					) : null}
-				</div>
+			<div className="flex w-full grow flex-col items-center justify-center gap-1.5 px-0 py-3 lg:px-6">
+				{isLoading ? <h3 className="animate-pulse font-semibold text-xs tracking-tight lg:text-base">Buscando resgates...</h3> : null}
+				{isError ? <ErrorComponent msg={getErrorMessage(error)} /> : null}
+				{isSuccess ? (
+					requests.length > 0 ? (
+						requests.map((request) => <CreditRedemptionRequestCard key={request._id} request={request} />)
+					) : (
+						<>
+							<h3 className="font-semibold text-xs tracking-tight lg:text-base">Você ainda não possui nenhum resgate :(</h3>
+							<button
+								className="flex w-fit items-center justify-center gap-1 rounded-lg bg-[#FB2E9F]/20 px-2 py-2 text-[#FB2E9F] duration-300 ease-in-out hover:bg-[#FB2E9F]/30"
+								onClick={() => setNewRequestMenu((prev) => ({ ...prev, isOpen: !prev.isOpen }))}
+								type="button"
+							>
+								<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+								<p className="font-extrabold text-[0.5rem] lg:text-sm">NOVO RESGATE</p>
+							</button>
+						</>
+					)
+				) : null}
 			</div>
 			{newRequestMenu.isOpen ? (
 				<NewCreditRedemptionRequest
