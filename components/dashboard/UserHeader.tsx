@@ -48,19 +48,25 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 						<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">{sessionUser.nome}</h1>
 					</div>
 				</div>
-				<div className="flex w-full items-center justify-center gap-1.5">
-					<div className="flex items-center gap-1">
-						<IdCard className="h-5 min-h-6 w-5 min-w-6 lg:h-6 lg:w-6" />
-						<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.cpfCnpj || 'N/A'}</h1>
-					</div>
-					<div className="flex items-center gap-1">
-						<Phone className="h-5 min-h-6 w-5 min-w-6 lg:h-6 lg:w-6" />
-						<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.telefone || 'N/A'}</h1>
-					</div>
-					<div className="flex items-center gap-1">
-						<Mail className="h-5 min-h-6 w-5 min-w-6 lg:h-6 lg:w-6" />
-						<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.email || 'N/A'}</h1>
-					</div>
+				<div className="flex w-full flex-wrap items-center justify-center gap-1.5 gap-y-0.5">
+					{sessionUser.cpfCnpj ? (
+						<div className="flex items-center gap-1">
+							<IdCard className="h-4 min-h-4 w-4 min-w-46 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
+							<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.cpfCnpj || 'N/A'}</h1>
+						</div>
+					) : null}
+					{sessionUser.telefone ? (
+						<div className="flex items-center gap-1">
+							<Phone className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
+							<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.telefone || 'N/A'}</h1>
+						</div>
+					) : null}
+					{sessionUser.email ? (
+						<div className="flex items-center gap-1">
+							<Mail className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
+							<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.email || 'N/A'}</h1>
+						</div>
+					) : null}
 				</div>
 				<HeaderIndicationBlock sessionUserId={sessionUser.id} />
 			</div>
