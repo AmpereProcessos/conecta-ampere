@@ -81,7 +81,8 @@ async function getIndicationsRanking() {
 			},
 			{
 				$sort: {
-					totalIndicationsWon: -1,
+					totalIndications: -1,
+					_id: 1,
 				},
 			},
 		])
@@ -136,7 +137,7 @@ async function getIndicationsRanking() {
 	return NextResponse.json(
 		{
 			data: {
-				ranking: totalIndicationsByAuthorWithStandings.slice(0, 10), // Top 10
+				ranking: totalIndicationsByAuthorWithStandings.slice(0, 10), // Top
 				userRanking: userRanking || null,
 			},
 		},

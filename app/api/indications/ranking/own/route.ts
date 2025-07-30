@@ -76,7 +76,8 @@ async function getOwnIndicationsRanking() {
 			},
 			{
 				$sort: {
-					totalIndicationsWon: -1,
+					totalIndications: -1,
+					_id: 1,
 				},
 			},
 		])
