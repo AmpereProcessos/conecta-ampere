@@ -85,6 +85,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 						'conecta.email': existingUser.conecta?.email || googleUser.email,
 						'conecta.googleId': existingUser.conecta?.googleId || googleUser.sub,
 						'conecta.googleRefreshToken': existingUser.conecta?.googleRefreshToken || refreshToken,
+						'conecta.dataInscricao': existingUser.conecta?.dataInscricao || new Date().toISOString(),
 					},
 				}
 			);
@@ -105,6 +106,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 					senha: '',
 					googleId: googleUser.sub,
 					googleRefreshToken: tokens.refreshToken(),
+					dataInscricao: new Date().toISOString(),
 				},
 				autor: CONECTA_AMPERE_CRM_USER_DATA,
 				dataInsercao: new Date().toISOString(),

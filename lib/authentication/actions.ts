@@ -149,6 +149,13 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 			{ _id: new ObjectId(existingClientInDb._id) },
 			{
 				$set: {
+					nome: name,
+					email,
+					uf,
+					cidade: city,
+					'conecta.usuario': email,
+					'conecta.email': email,
+					'conecta.dataInscricao': new Date().toISOString(),
 					'conecta.codigoIndicacaoVendedor': invitePromoterSellerCode,
 				},
 			}
@@ -179,6 +186,7 @@ export async function signUp(_: TSignResult, data: TSignUpSchema): Promise<TSign
 				conviteId: inviteId,
 				conviteDataAceite: invite ? new Date().toISOString() : null,
 				codigoIndicacaoVendedor: invitePromoterSellerCode,
+				dataInscricao: new Date().toISOString(),
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),
@@ -424,6 +432,20 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 		clientEmail = existingClientInDb.email;
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
+		await clientsCollection.updateOne(
+			{ _id: new ObjectId(existingClientInDb._id) },
+			{
+				$set: {
+					nome: name,
+					email,
+					uf,
+					cidade: city,
+					'conecta.usuario': email,
+					'conecta.email': email,
+					'conecta.dataInscricao': new Date().toISOString(),
+				},
+			}
+		);
 	} else {
 		console.log('CLIENT NOT FOUND, CREATING CLIENT');
 		// In case there is no existing client in db
@@ -445,6 +467,7 @@ export async function signUpViaPromoter(_: TSignResult, data: TSignUpViaPromoter
 				usuario: phone,
 				email,
 				senha: '',
+				dataInscricao: new Date().toISOString(),
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),
@@ -684,6 +707,21 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 		clientEmail = existingClientInDb.email;
 		clientCpfCnpj = existingClientInDb.cpfCnpj || null;
 		clientAcquisitionChannel = existingClientInDb.canalAquisicao;
+		await clientsCollection.updateOne(
+			{ _id: new ObjectId(existingClientInDb._id) },
+			{
+				$set: {
+					nome: name,
+					email,
+					uf,
+					cidade: city,
+					'conecta.usuario': email,
+					'conecta.email': email,
+					'conecta.dataInscricao': new Date().toISOString(),
+					'conecta.codigoIndicacaoVendedor': seller.codigoIndicacaoConecta,
+				},
+			}
+		);
 	} else {
 		console.log('CLIENT NOT FOUND, CREATING CLIENT');
 		// In case there is no existing client in db
@@ -701,6 +739,8 @@ export async function signUpViaSellerInvite(_: TSignUpViaSellerInviteResult, dat
 				usuario: phone,
 				email,
 				senha: '',
+				codigoIndicacaoVendedor: seller.codigoIndicacaoConecta,
+				dataInscricao: new Date().toISOString(),
 			},
 			autor: CONECTA_AMPERE_CRM_USER_DATA,
 			dataInsercao: new Date().toISOString(),

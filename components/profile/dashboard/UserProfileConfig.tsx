@@ -1,64 +1,60 @@
-"use client";
-import ErrorComponent from "@/components/layout/ErrorComponent";
-import LoadingComponent from "@/components/layout/LoadingComponent";
-import type { TAuthSession } from "@/lib/authentication/types";
-import { getErrorMessage } from "@/lib/methods/errors";
-import { useUserProfile } from "@/lib/queries/profile";
-import { useQueryClient } from "@tanstack/react-query";
-import { Settings, UserRound } from "lucide-react";
-import UserAvatarConfig from "./UserAvatarConfig";
-import UserGeneralInfoConfig from "./UserGeneralInfoConfig";
-import UserLocationInfoConfig from "./UserLocationInfoConfig";
+'use client';
+import { useQueryClient } from '@tanstack/react-query';
+import { UserRound } from 'lucide-react';
+import ErrorComponent from '@/components/layout/ErrorComponent';
+import LoadingComponent from '@/components/layout/LoadingComponent';
+import { getErrorMessage } from '@/lib/methods/errors';
+import { useUserProfile } from '@/lib/queries/profile';
+import UserAvatarConfig from './UserAvatarConfig';
+import UserGeneralInfoConfig from './UserGeneralInfoConfig';
+import UserLocationInfoConfig from './UserLocationInfoConfig';
 
-type UserProfileConfigProps = {
-	sessionUser: TAuthSession["user"];
-};
-function UserProfileConfig({ sessionUser }: UserProfileConfigProps) {
+function UserProfileConfig() {
 	const queryClient = useQueryClient();
 
 	const { data: profile, isLoading, isError, isSuccess, error } = useUserProfile();
 
 	const handleOnMutate = async () =>
 		await queryClient.cancelQueries({
-			queryKey: ["profile"],
+			queryKey: ['profile'],
 		});
 	const handleOnSettled = async () =>
 		await queryClient.invalidateQueries({
-			queryKey: ["profile"],
+			queryKey: ['profile'],
 		});
 	return (
-		<div className="bg-[#fff] dark:bg-[#121212] w-full flex p-3.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-lg">
-			<div className="w-full flex items-center justify-between gap-1.5">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
-					<UserRound className="w-4 h-4 lg:w-6 lg:h-6 min-w-4 min-h-4" />
-					<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight">MEU PERFIL</h1>
+					<UserRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+					<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">MEU PERFIL</h1>
 				</div>
 			</div>
-			<div className="w-full flex flex-col items-center justify-center grow py-3 px-0 lg:px-6 gap-1.5">
+			<div className="flex w-full grow flex-col items-center justify-center gap-1.5 px-0 py-3 lg:px-6">
 				{isLoading ? <LoadingComponent /> : null}
 				{isError ? <ErrorComponent msg={getErrorMessage(error)} /> : null}
 				{isSuccess ? (
 					<>
 						<UserAvatarConfig
-							profile={profile}
 							callbacks={{
 								onMutate: handleOnMutate,
 								onSettled: handleOnSettled,
 							}}
+							profile={profile}
 						/>
 						<UserGeneralInfoConfig
-							profile={profile}
 							callbacks={{
 								onMutate: handleOnMutate,
 								onSettled: handleOnSettled,
 							}}
+							profile={profile}
 						/>
 						<UserLocationInfoConfig
-							profile={profile}
 							callbacks={{
 								onMutate: handleOnMutate,
 								onSettled: handleOnSettled,
 							}}
+							profile={profile}
 						/>
 					</>
 				) : null}

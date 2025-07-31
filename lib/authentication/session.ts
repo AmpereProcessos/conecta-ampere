@@ -72,6 +72,7 @@ export async function validateSession(token: string) {
 		},
 		user: {
 			id: session.usuarioId,
+			admin: user.conecta?.admin ?? false,
 			nome: user.nome,
 			telefone: user.telefonePrimario,
 			cpfCnpj: user.cpfCnpj,

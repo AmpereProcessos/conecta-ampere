@@ -3,6 +3,7 @@ import type { TSession } from '@/schemas/session.schema';
 
 export type TSessionUser = {
 	id: string;
+	admin: boolean;
 	nome: string;
 	telefone: string;
 	cpfCnpj?: string | null;

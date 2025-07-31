@@ -1,0 +1,159 @@
+'use client';
+import { ChartArea, Code, Share2, Trophy, UserRound } from 'lucide-react';
+import { FaSolarPanel } from 'react-icons/fa';
+import { useProgramStatsQuery } from '@/lib/queries/admin/stats';
+import { cn } from '@/lib/utils';
+
+export default function AdminProgramStats() {
+	const { data } = useProgramStatsQuery({});
+
+	console.log(data);
+	return (
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5">
+				<div className="flex items-center gap-1.5">
+					<ChartArea className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+					<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">ESTÁTISTICAS DO PROGRAMA</h1>
+				</div>
+			</div>
+			<div className="flex w-full grow flex-col items-center justify-center gap-3 px-0 py-3 lg:px-6">
+				<div className="flex w-full flex-col gap-3">
+					<div className="flex w-full flex-col gap-1">
+						<h1 className="font-bold text-xs leading-none tracking-tight lg:text-sm">DADOS GERAIS DO PROGRAMA</h1>
+						<p className="text-[0.625rem] lg:text-xs">Aqui você pode ver as estatísticas gerais do programa, como o total de participantes e o total de indicações.</p>
+					</div>
+					<div className="flex w-full flex-col items-center gap-1.5 lg:flex-row">
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-primary bg-primary/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<UserRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalParticipants || 0} PARTICIPANTES</h1>
+						</div>
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-blue-600 bg-blue-600/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<Share2 className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndications || 0} INDICAÇÕES</h1>
+						</div>
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-green-500 bg-green-500/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<Trophy className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsWon || 0} INDICAÇÕES GANHAS</h1>
+						</div>
+					</div>
+				</div>
+				<div className="flex w-full flex-col gap-3">
+					<div className="flex w-full flex-col gap-1">
+						<h1 className="font-bold text-xs leading-none tracking-tight lg:text-sm">DADOS NO PERÍODO</h1>
+						<p className="text-[0.625rem] lg:text-xs">Aqui você pode ver as estatísticas do programa no período selecionado.</p>
+					</div>
+					<div className="flex w-full flex-col items-center gap-1.5 lg:flex-row">
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-primary bg-primary/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<UserRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalParticipantsInPeriod || 0} PARTICIPANTES</h1>
+						</div>
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-blue-600 bg-blue-600/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<Share2 className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsInPeriod || 0} INDICAÇÕES</h1>
+						</div>
+						<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-green-500 bg-green-500/30 px-2 py-1.5 lg:w-1/3')}>
+							<div className="flex w-full items-center justify-center">
+								<Trophy className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+							</div>
+							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsWonInPeriod || 0} INDICAÇÕES GANHAS</h1>
+						</div>
+					</div>
+				</div>
+				<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
+					<div className="flex w-full items-center gap-1.5">
+						<FaSolarPanel className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+						<h1 className="text-center text-[0.6rem] lg:text-base">INDICAÇÕES POR TIPO DE OPORTUNIDADE</h1>
+					</div>
+					<div className="flex w-full flex-col gap-1.5">
+						{data?.totalIndicationsByTypeInPeriod.map((item, index) => (
+							<div className="flex w-full items-center justify-between gap-1.5" key={item.type}>
+								<div className="flex items-center gap-1.5">
+									<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-[0.55rem] text-primary-foreground ring-primary-foreground">
+										#{index + 1}
+									</div>
+									<h1 className="text-center text-[0.6rem] lg:text-base">{item.type}</h1>
+								</div>
+								<div className="flex items-center gap-1.5">
+									<div className="flex items-center gap-1.5">
+										<Share2 className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndications}</h1>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<Trophy className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndicationsWon}</h1>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+				<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
+					<div className="flex w-full items-center gap-1.5">
+						<Code className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+						<h1 className="text-center text-[0.6rem] lg:text-base">INDICAÇÕES POR CÓDIGO DE VENDEDOR</h1>
+					</div>
+					<div className="flex w-full flex-col gap-1.5">
+						{data?.totalIndicationsBySellerCodeInPeriod.map((item, index) => (
+							<div className="flex w-full items-center justify-between gap-1.5" key={item.code}>
+								<div className="flex items-center gap-1.5">
+									<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-[0.55rem] text-primary-foreground ring-primary-foreground">
+										#{index + 1}
+									</div>
+									<h1 className="text-center text-[0.6rem] lg:text-base">{item.code}</h1>
+								</div>
+								<div className="flex items-center gap-1.5">
+									<div className="flex items-center gap-1.5">
+										<Share2 className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndications}</h1>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<Trophy className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndicationsWon}</h1>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+				<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
+					<div className="flex w-full items-center gap-1.5">
+						<UserRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+						<h1 className="text-center text-[0.6rem] lg:text-base">TOP 10 INDICADORES</h1>
+					</div>
+					<div className="flex w-full flex-col gap-1.5">
+						{data?.totalIndicationsByAuthorInPeriod.map((item, index) => (
+							<div className="flex w-full items-center justify-between gap-1.5" key={item.author?._id.toString() || index}>
+								<div className="flex items-center gap-1.5">
+									<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-[0.55rem] text-primary-foreground ring-primary-foreground">
+										#{index + 1}
+									</div>
+									<h1 className="text-center text-[0.6rem] uppercase lg:text-base">{item.author?.nome || 'N/A'}</h1>
+								</div>
+								<div className="flex items-center gap-1.5">
+									<div className="flex items-center gap-1.5">
+										<Share2 className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndications || 0}</h1>
+									</div>
+									<div className="flex items-center gap-1.5">
+										<Trophy className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalIndicationsWon || 0}</h1>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}

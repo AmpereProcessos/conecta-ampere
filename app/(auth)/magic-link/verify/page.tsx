@@ -1,12 +1,11 @@
-import ErrorComponent from "@/components/layout/ErrorComponent";
-import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getVerificationTokenById } from "@/lib/authentication/verification-tokens";
-import dayjs from "dayjs";
-import Link from "next/link";
-import React from "react";
-import VerifyWaitingPageForm from "./verify-form";
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import ErrorComponent from '@/components/layout/ErrorComponent';
+import FullScreenWrapper from '@/components/layout/FullScreenWrapper';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { getVerificationTokenById } from '@/lib/authentication/verification-tokens';
+import VerifyWaitingPageForm from './verify-form';
 
 async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string; error?: string; details?: string } }) {
 	const searchParamsValues = await searchParams;
@@ -20,33 +19,33 @@ async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string;
 	const token = await getVerificationTokenById(id);
 	if (!token) return <ErrorComponent msg="Oops, código não encontrado ou expirado." />;
 
-	const expiresInMinutes = dayjs(token.dataExpiracao).diff(dayjs(), "minutes");
+	const expiresInMinutes = dayjs(token.dataExpiracao).diff(dayjs(), 'minutes');
 
 	return (
 		<FullScreenWrapper>
-			<div className="w-full flex items-center justify-center h-full">
+			<div className="flex h-full w-full items-center justify-center">
 				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
 						<CardTitle>Acesso ao Conecta Ampère</CardTitle>
 						<CardDescription>Email de acesso enviado !</CardDescription>
 					</CardHeader>
-					<CardContent className="gap-4 flex flex-col">
-						{searchParamsValues.details ? <p className="w-full text-sm tracking-tight text-blue-800 text-center font-bold">{searchParamsValues.details}</p> : null}
-						<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">
+					<CardContent className="flex flex-col gap-4">
+						{searchParamsValues.details ? <p className="w-full text-center font-bold text-blue-800 text-sm tracking-tight">{searchParamsValues.details}</p> : null}
+						<p className="w-full text-center font-medium text-primary/80 text-sm tracking-tight">
 							Clique no link de acesso enviado para o email: <strong>{token?.usuarioEmail}</strong>
 						</p>
 						<div className="my-4 flex items-center">
-							<div className="flex-grow border-t border-muted" />
+							<div className="flex-grow border-muted border-t" />
 							<div className="mx-2 text-muted-foreground">ou</div>
-							<div className="flex-grow border-t border-muted" />
+							<div className="flex-grow border-muted border-t" />
 						</div>
 						<VerifyWaitingPageForm verificationTokenId={token.id} />
-						<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">
+						<p className="w-full text-center font-medium text-primary/80 text-sm tracking-tight">
 							O link expira em: <strong>{expiresInMinutes.toFixed(0)} minutos.</strong>
 						</p>
 					</CardContent>
 					<CardFooter>
-						<Button variant={"link"} size={"sm"} className="p-0" asChild>
+						<Button asChild className="p-0" size={'sm'} variant={'link'}>
 							<Link href={`/magic-link/send?userId=${token.usuarioId}`} prefetch={false}>
 								Não recebeu, ou o código expirou ? Clique aqui.
 							</Link>

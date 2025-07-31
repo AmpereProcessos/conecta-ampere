@@ -1,32 +1,31 @@
-"use client";
-import type { TGetValidInviteById } from "@/lib/authentication/invites";
-import React, { useActionState, useState } from "react";
-import FullScreenWrapper from "../layout/FullScreenWrapper";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import Link from "next/link";
-import { FaGoogle } from "react-icons/fa";
-import { signUp } from "@/lib/authentication/actions";
-import type { TSignUpSchema } from "@/lib/authentication/types";
-import TextInput from "../inputs/TextInput";
-import { formatNameAsInitials, formatToPhone } from "@/lib/methods/formatting";
-import SelectInput from "../inputs/SelectInput";
-import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/states_cities";
-import { Checkbox } from "../ui/checkbox";
-import { SubmitButton } from "../buttons/submit-button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import Image from "next/image";
-import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useActionState, useState } from 'react';
+import ConectaAmpereLogo from '@/assets/svgs/ampere-blue-logo-icon.svg';
+import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from '@/configs/states_cities';
+import { signUp } from '@/lib/authentication/actions';
+import type { TGetValidInviteById } from '@/lib/authentication/invites';
+import type { TSignUpSchema } from '@/lib/authentication/types';
+import { formatNameAsInitials, formatToPhone } from '@/lib/methods/formatting';
+import { SubmitButton } from '../buttons/submit-button';
+import SelectInput from '../inputs/SelectInput';
+import TextInput from '../inputs/TextInput';
+import FullScreenWrapper from '../layout/FullScreenWrapper';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+
 type AcceptInviteFormPageProps = {
 	inviteById: TGetValidInviteById;
 };
 function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
-		name: "",
-		email: "",
-		city: "",
-		uf: "",
-		phone: "",
+		name: '',
+		email: '',
+		city: '',
+		uf: '',
+		phone: '',
 		termsAndPrivacyPolicyAcceptanceDate: null,
 		inviteId: inviteById.id,
 	});
@@ -34,11 +33,11 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 
 	return (
 		<FullScreenWrapper>
-			<div className="w-full flex items-center justify-center h-full">
+			<div className="flex h-full w-full items-center justify-center">
 				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
 						<CardTitle className="flex items-center justify-center gap-2">
-							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							<Image alt="Conecta Ampère Logo" className="h-8 w-8" src={ConectaAmpereLogo} />
 							Bem vindo ao Conecta Ampère !
 						</CardTitle>
 						<CardDescription>Você recebeu um convite para nossa plataforma.</CardDescription>
@@ -57,53 +56,49 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 							<div className="mx-2 text-muted-foreground">ou</div>
 							<div className="flex-grow border-t border-muted" />
 						</div> */}
-						<div className="w-full flex items-center gap-2 flex-col mb-4">
-							<p className="w-full text-sm tracking-tight text-primary/80 text-center font-bold">Você recebeu um convite de: </p>
-							<div className="w-full flex items-center justify-center gap-1">
-								<Avatar className="w-6 h-6">
-									<AvatarImage src={inviteById?.promotor?.avatar_url || undefined} alt="Logo" />
+						<div className="mb-4 flex w-full flex-col items-center gap-2">
+							<p className="w-full text-center font-bold text-primary/80 text-sm tracking-tight">Você recebeu um convite de: </p>
+							<div className="flex w-full items-center justify-center gap-1">
+								<Avatar className="h-6 w-6">
+									<AvatarImage alt="Logo" src={inviteById?.promotor?.avatar_url || undefined} />
 									<AvatarFallback>{formatNameAsInitials(inviteById?.promotor.nome)}</AvatarFallback>
 								</Avatar>
-								<p className="text-sm tracking-tight text-primary/80 text-center font-bold">{inviteById.promotor.nome}</p>
+								<p className="text-center font-bold text-primary/80 text-sm tracking-tight">{inviteById.promotor.nome}</p>
 							</div>
 						</div>
-						<div className="flex flex-col my-2">
-							<p className="w-full text-sm font-medium tracking-tight text-primary/80 text-center">Estamos muitos felizes de receber você.</p>
-							<p className="w-full  text-sm font-medium tracking-tight text-primary/80 text-center">Preencha as informações abaixo para efetivar seu acesso.</p>
+						<div className="my-2 flex flex-col">
+							<p className="w-full text-center font-medium text-primary/80 text-sm tracking-tight">Estamos muitos felizes de receber você.</p>
+							<p className="w-full text-center font-medium text-primary/80 text-sm tracking-tight">Preencha as informações abaixo para efetivar seu acesso.</p>
 						</div>
 
 						<form action={async () => await actionMethod(signUpHolder)} className="grid gap-4">
 							<TextInput
+								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
 								identifier="name"
 								labelText="Nome"
 								placeholderText="Preencha aqui seu nome..."
 								value={signUpHolder.name}
-								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
 							/>
 							<TextInput
-								identifier="phone"
-								labelText="Telefone"
-								placeholderText="Preencha aqui seu telefone..."
-								value={signUpHolder.phone}
 								handleChange={(value) =>
 									setSignUpHolder((prev) => ({
 										...prev,
 										phone: formatToPhone(value),
 									}))
 								}
+								identifier="phone"
+								labelText="Telefone"
+								placeholderText="Preencha aqui seu telefone..."
+								value={signUpHolder.phone}
 							/>
 							<TextInput
+								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, email: value }))}
 								labelText="Email"
 								placeholderText="Preencha aqui seu melhor email..."
 								value={signUpHolder.email}
-								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, email: value }))}
 							/>
 
 							<SelectInput
-								labelText="Estado (UF)"
-								placeholderText="Preencha aqui o seu estado federativo..."
-								value={signUpHolder.uf}
-								options={BrazilianStatesOptions}
 								handleChange={(value) =>
 									setSignUpHolder((prev) => ({
 										...prev,
@@ -114,22 +109,26 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 								handleReset={() =>
 									setSignUpHolder((prev) => ({
 										...prev,
-										uf: "MG",
-										cidade: "ITUIUTABA",
+										uf: 'MG',
+										cidade: 'ITUIUTABA',
 									}))
 								}
+								labelText="Estado (UF)"
+								options={BrazilianStatesOptions}
+								placeholderText="Preencha aqui o seu estado federativo..."
 								resetOptionText="NÃO DEFINIDO"
+								value={signUpHolder.uf}
 							/>
 							<SelectInput
-								labelText="Cidade"
-								placeholderText="Preencha aqui a sua cidade..."
-								value={signUpHolder.city}
-								options={BrazilianCitiesOptionsFromUF(signUpHolder.uf)}
 								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, city: value }))}
-								handleReset={() => setSignUpHolder((prev) => ({ ...prev, city: "ITUIUTABA" }))}
+								handleReset={() => setSignUpHolder((prev) => ({ ...prev, city: 'ITUIUTABA' }))}
+								labelText="Cidade"
+								options={BrazilianCitiesOptionsFromUF(signUpHolder.uf)}
+								placeholderText="Preencha aqui a sua cidade..."
 								resetOptionText="NÃO DEFINIDO"
+								value={signUpHolder.city}
 							/>
-							<div className="w-full flex items-center gap-1.5">
+							<div className="flex w-full items-center gap-1.5">
 								<Checkbox
 									checked={!!signUpHolder.termsAndPrivacyPolicyAcceptanceDate}
 									onCheckedChange={(v) =>
@@ -139,25 +138,24 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 										}))
 									}
 								/>
-								<p className="text-xs font-medium text-primary w-full">
-									Li e concordo com os{" "}
-									<Link href={"/legal"} className="underline-offset-4 hover:underline">
+								<p className="w-full font-medium text-primary text-xs">
+									Li e concordo com os{' '}
+									<Link className="underline-offset-4 hover:underline" href={'/legal'}>
 										termos e política de privacidade.
 									</Link>
 								</p>
 							</div>
 							{actionResult?.fieldError ? (
-								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 font-medium text-[0.8rem] text-destructive">
 									{Object.values(actionResult.fieldError).map((err) => (
 										<li className="ml-4" key={err}>
 											{err}
 										</li>
 									))}
 								</ul>
-							) : actionResult?.formError ? (
-								<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">{actionResult?.formError}</p>
 							) : null}
-							<SubmitButton className="w-full" aria-label="submit-btn">
+							{actionResult?.formError ? <p className="rounded-lg border bg-destructive/10 p-2 font-medium text-[0.8rem] text-destructive">{actionResult?.formError}</p> : null}
+							<SubmitButton aria-label="submit-btn" className="w-full">
 								EFETIVAR ACESSO
 							</SubmitButton>
 						</form>

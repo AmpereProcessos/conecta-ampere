@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
-import { SubmitButton } from "@/components/buttons/submit-button";
-import FullScreenWrapper from "@/components/layout/FullScreenWrapper";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ConectaAmpereLogo from "@/assets/svgs/ampere-blue-logo-icon.svg";
-import Image from "next/image";
-import { login, signUp } from "@/lib/authentication/actions";
-import Link from "next/link";
-import React, { useActionState, useState } from "react";
-import { FaGoogle } from "react-icons/fa";
-import type { TSignUpSchema } from "@/lib/authentication/types";
-
-import { formatToPhone } from "@/lib/methods/formatting";
-import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from "@/configs/states_cities";
-
-import TextInput from "@/components/inputs/TextInput";
-import SelectInput from "@/components/inputs/SelectInput";
-import { Checkbox } from "@/components/ui/checkbox";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useActionState, useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+import ConectaAmpereLogo from '@/assets/svgs/ampere-blue-logo-icon.svg';
+import { SubmitButton } from '@/components/buttons/submit-button';
+import SelectInput from '@/components/inputs/SelectInput';
+import TextInput from '@/components/inputs/TextInput';
+import FullScreenWrapper from '@/components/layout/FullScreenWrapper';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { BrazilianCitiesOptionsFromUF, BrazilianStatesOptions } from '@/configs/states_cities';
+import { signUp } from '@/lib/authentication/actions';
+import type { TSignUpSchema } from '@/lib/authentication/types';
+import { formatToPhone } from '@/lib/methods/formatting';
 
 function SignUp() {
 	const [signUpHolder, setSignUpHolder] = useState<TSignUpSchema>({
-		name: "",
-		email: "",
-		city: "",
-		uf: "",
-		phone: "",
+		name: '',
+		email: '',
+		city: '',
+		uf: '',
+		phone: '',
 		termsAndPrivacyPolicyAcceptanceDate: null,
 	});
 
@@ -33,18 +31,18 @@ function SignUp() {
 
 	return (
 		<FullScreenWrapper>
-			<div className="w-full flex items-center justify-center h-full">
+			<div className="flex h-full w-full items-center justify-center">
 				<Card className="w-full max-w-md border-none lg:border-solid">
 					<CardHeader className="text-center">
 						<CardTitle className="flex items-center justify-center gap-2">
-							<Image src={ConectaAmpereLogo} alt="Conecta Ampère Logo" className="w-8 h-8" />
+							<Image alt="Conecta Ampère Logo" className="h-8 w-8" src={ConectaAmpereLogo} />
 							Cadastro ao Conecta Ampère
 						</CardTitle>
 						<CardDescription>Crie já sua conta Conecta Ampère</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="flex w-full flex-col gap-2">
-							<Button variant="outline" className="w-full" asChild>
+							<Button asChild className="w-full" variant="outline">
 								<Link href="/google" prefetch={false}>
 									<FaGoogle className="mr-2 h-5 w-5" />
 									Acesso com Google
@@ -52,42 +50,38 @@ function SignUp() {
 							</Button>
 						</div>
 						<div className="my-2 flex items-center">
-							<div className="flex-grow border-t border-muted" />
+							<div className="flex-grow border-muted border-t" />
 							<div className="mx-2 text-muted-foreground">ou</div>
-							<div className="flex-grow border-t border-muted" />
+							<div className="flex-grow border-muted border-t" />
 						</div>
 						<form action={async () => await actionMethod(signUpHolder)} className="grid gap-4">
 							<TextInput
+								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
 								identifier="name"
 								labelText="Nome"
 								placeholderText="Preencha aqui seu nome..."
 								value={signUpHolder.name}
-								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, name: value }))}
 							/>
 							<TextInput
-								identifier="phone"
-								labelText="Telefone"
-								placeholderText="Preencha aqui seu telefone..."
-								value={signUpHolder.phone}
 								handleChange={(value) =>
 									setSignUpHolder((prev) => ({
 										...prev,
 										phone: formatToPhone(value),
 									}))
 								}
+								identifier="phone"
+								labelText="Telefone"
+								placeholderText="Preencha aqui seu telefone..."
+								value={signUpHolder.phone}
 							/>
 							<TextInput
+								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, email: value }))}
 								labelText="Email"
 								placeholderText="Preencha aqui seu melhor email..."
 								value={signUpHolder.email}
-								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, email: value }))}
 							/>
 
 							<SelectInput
-								labelText="Estado (UF)"
-								placeholderText="Preencha aqui o seu estado federativo..."
-								value={signUpHolder.uf}
-								options={BrazilianStatesOptions}
 								handleChange={(value) =>
 									setSignUpHolder((prev) => ({
 										...prev,
@@ -98,22 +92,26 @@ function SignUp() {
 								handleReset={() =>
 									setSignUpHolder((prev) => ({
 										...prev,
-										uf: "MG",
-										cidade: "ITUIUTABA",
+										uf: 'MG',
+										cidade: 'ITUIUTABA',
 									}))
 								}
+								labelText="Estado (UF)"
+								options={BrazilianStatesOptions}
+								placeholderText="Preencha aqui o seu estado federativo..."
 								resetOptionText="NÃO DEFINIDO"
+								value={signUpHolder.uf}
 							/>
 							<SelectInput
-								labelText="Cidade"
-								placeholderText="Preencha aqui a sua cidade..."
-								value={signUpHolder.city}
-								options={BrazilianCitiesOptionsFromUF(signUpHolder.uf)}
 								handleChange={(value) => setSignUpHolder((prev) => ({ ...prev, city: value }))}
-								handleReset={() => setSignUpHolder((prev) => ({ ...prev, city: "ITUIUTABA" }))}
+								handleReset={() => setSignUpHolder((prev) => ({ ...prev, city: 'ITUIUTABA' }))}
+								labelText="Cidade"
+								options={BrazilianCitiesOptionsFromUF(signUpHolder.uf)}
+								placeholderText="Preencha aqui a sua cidade..."
 								resetOptionText="NÃO DEFINIDO"
+								value={signUpHolder.city}
 							/>
-							<div className="w-full flex items-center gap-1.5">
+							<div className="flex w-full items-center gap-1.5">
 								<Checkbox
 									checked={!!signUpHolder.termsAndPrivacyPolicyAcceptanceDate}
 									onCheckedChange={(v) =>
@@ -123,35 +121,34 @@ function SignUp() {
 										}))
 									}
 								/>
-								<p className="text-xs font-medium text-primary w-full">
-									Li e concordo com os{" "}
-									<Link href={"/legal"} className="underline-offset-4 hover:underline">
+								<p className="w-full font-medium text-primary text-xs">
+									Li e concordo com os{' '}
+									<Link className="underline-offset-4 hover:underline" href={'/legal'}>
 										termos e política de privacidade.
 									</Link>
 								</p>
 							</div>
 
 							<div className="flex flex-wrap justify-between">
-								<Button variant={"link"} size={"sm"} className="p-0" asChild>
-									<Link href={"/login"}>Já possui uma conta, clique aqui para acessar.</Link>
+								<Button asChild className="p-0" size={'sm'} variant={'link'}>
+									<Link href={'/login'}>Já possui uma conta, clique aqui para acessar.</Link>
 								</Button>
 							</div>
 
 							{actionResult?.fieldError ? (
-								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+								<ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 font-medium text-[0.8rem] text-destructive">
 									{Object.values(actionResult.fieldError).map((err) => (
 										<li className="ml-4" key={err}>
 											{err}
 										</li>
 									))}
 								</ul>
-							) : actionResult?.formError ? (
-								<p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">{actionResult?.formError}</p>
 							) : null}
-							<SubmitButton className="w-full" aria-label="submit-btn">
+							{actionResult?.formError ? <p className="rounded-lg border bg-destructive/10 p-2 font-medium text-[0.8rem] text-destructive">{actionResult?.formError}</p> : null}
+							<SubmitButton aria-label="submit-btn" className="w-full">
 								Acessar
 							</SubmitButton>
-							<Button variant="outline" className="w-full" asChild>
+							<Button asChild className="w-full" variant="outline">
 								<Link href="/">Cancelar</Link>
 							</Button>
 						</form>
