@@ -1,13 +1,17 @@
 'use client';
 import { ChartArea, Code, Share2, Trophy, UserRound } from 'lucide-react';
 import { FaSolarPanel } from 'react-icons/fa';
+import { Area, Bar, CartesianGrid, ComposedChart, XAxis, YAxis } from 'recharts';
+import type { TGetProgramStatsRouteOutput } from '@/app/api/admin/stats/route';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { formatDateForInput, formatDateInputChange } from '@/lib/methods/formatting';
 import { useProgramStatsQuery } from '@/lib/queries/admin/stats';
 import { cn } from '@/lib/utils';
+import DateInput from '../inputs/DateInput';
 
 export default function AdminProgramStats() {
-	const { data } = useProgramStatsQuery({});
+	const { data, queryParams, updateQueryParams } = useProgramStatsQuery({});
 
-	console.log(data);
 	return (
 		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
@@ -41,6 +45,22 @@ export default function AdminProgramStats() {
 							</div>
 							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsWon || 0} INDICAÇÕES GANHAS</h1>
 						</div>
+					</div>
+				</div>
+				<div className="flex w-full items-center justify-center gap-1.5">
+					<div className="w-full lg:w-1/2">
+						<DateInput
+							handleChange={(v) => updateQueryParams({ after: formatDateInputChange(v, 'string', 'start') as string })}
+							labelText="DATA DE INÍCIO"
+							value={formatDateForInput(queryParams.after)}
+						/>
+					</div>
+					<div className="w-full lg:w-1/2">
+						<DateInput
+							handleChange={(v) => updateQueryParams({ before: formatDateInputChange(v, 'string', 'end') as string })}
+							labelText="DATA DE FIM"
+							value={formatDateForInput(queryParams.before)}
+						/>
 					</div>
 				</div>
 				<div className="flex w-full flex-col gap-3">
@@ -153,6 +173,95 @@ export default function AdminProgramStats() {
 						))}
 					</div>
 				</div>
+				<AdminProgramStatsGraph graphData={data?.indicationsGraphData || []} />
+			</div>
+		</div>
+	);
+}
+
+type AdminProgramStatsGraphProps = {
+	graphData: TGetProgramStatsRouteOutput['data']['indicationsGraphData'];
+};
+function AdminProgramStatsGraph({ graphData }: AdminProgramStatsGraphProps) {
+	const chartConfig = {
+		key: {
+			label: 'Data',
+		},
+
+		indications: {
+			label: 'Quantidade de Indicações',
+			color: '#2563eb', // blue hex =
+		},
+		indicationsWon: {
+			label: 'Quantidade de Indicações Ganhas',
+			color: '#22c55e',
+		},
+	};
+	return (
+		<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
+			<div className="flex w-full items-center gap-1.5">
+				<Share2 className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+				<h1 className="text-center text-[0.6rem] lg:text-base">GRÁFICO DE INDICAÇÕES</h1>
+			</div>
+			<div className="flex max-h-[300px] min-h-[300px] w-full items-center justify-center lg:max-h-[250px] lg:min-h-[250px]">
+				<ChartContainer className="aspect-auto h-[250px] w-full lg:h-[250px]" config={chartConfig}>
+					<ComposedChart
+						data={graphData || []}
+						margin={{
+							top: 5,
+							bottom: 5,
+							right: 5,
+							left: 5,
+						}}
+					>
+						<defs>
+							<linearGradient id="fillSecondSoldValue" x1="0" x2="0" y1="0" y2="1">
+								<stop offset="30%" stopColor={chartConfig.indications.color} stopOpacity={0.7} />
+								<stop offset="70%" stopColor={chartConfig.indications.color} stopOpacity={0.1} />
+							</linearGradient>
+						</defs>
+						<CartesianGrid vertical={false} />
+						<XAxis
+							angle={-15}
+							axisLine={false}
+							dataKey="key"
+							interval="preserveStartEnd"
+							minTickGap={32}
+							textAnchor="end"
+							// tickFormatter={(value) => formatDateAsLocale(value) || ''} // Mostra primeiro e último valor
+							tickLine={false} // Rotaciona os labels para melhor legibilidade
+							tickMargin={8} // Alinhamento do texto
+						/>
+						{/* YAxis para valor vendido (área) */}
+						<YAxis orientation="left" stroke={chartConfig.indications.color} />
+
+						{/* YAxis para quantidade de vendas (barras) */}
+
+						<ChartTooltip
+							content={
+								<ChartTooltipContent
+									indicator="dot"
+									labelFormatter={(value) => {
+										return value;
+									}}
+								/>
+							}
+							cursor={false}
+						/>
+
+						<Bar barSize={20} dataKey="indicationsWon" fill={chartConfig.indicationsWon.color} name={chartConfig.indicationsWon.label} radius={4} />
+
+						<Area
+							dataKey="indications" // Alterado para left
+							fill="url(#fillSecondSoldValue)"
+							stackId="a"
+							stroke={chartConfig.indications.color}
+							type="monotone"
+						/>
+
+						<ChartLegend content={<ChartLegendContent />} />
+					</ComposedChart>
+				</ChartContainer>
 			</div>
 		</div>
 	);
