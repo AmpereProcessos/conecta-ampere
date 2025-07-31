@@ -290,3 +290,13 @@ export function getDateBuckets(dates: Date[]) {
 
 	return buckets;
 }
+
+export function getPeriodDateBuckets(startDate: Date, endDate: Date) {
+	const { points, groupingFormat } = getBestNumberOfPointsBetweenDates({ startDate, endDate });
+
+	const dateStrings = getEvenlySpacedDates({ startDate, endDate, points });
+
+	const buckets = getDateBuckets(dateStrings);
+
+	return { buckets, dateStrings, groupingFormat };
+}

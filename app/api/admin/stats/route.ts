@@ -6,9 +6,10 @@ import { z } from 'zod';
 import { CONECTA_AMPERE_CRM_USER_DATA, DATABASE_COLLECTION_NAMES } from '@/configs/app-definitions';
 import { apiHandler, type UnwrapNextResponse } from '@/lib/api/handler';
 import { getValidCurrentSessionUncached } from '@/lib/authentication/session';
-import { getBestNumberOfPointsBetweenDates, getDateBuckets, getEvenlySpacedDates } from '@/lib/methods/dates';
+import { getPeriodDateBuckets } from '@/lib/methods/dates';
 import connectToCRMDatabase from '@/lib/services/mongodb/crm-db-connection';
 import type { TClient } from '@/schemas/client.schema';
+import type { TCreditRedemptionRequest } from '@/schemas/credit-redemption-request.schema';
 import type { TIndication } from '@/schemas/indication.schema';
 
 const GetProgramStatsRouteInput = z.object({
@@ -42,6 +43,7 @@ async function getProgramStats(req: NextRequest) {
 	const crmDb = await connectToCRMDatabase();
 	const clientsCollection = crmDb.collection<TClient>(DATABASE_COLLECTION_NAMES.CLIENTS);
 	const indicationsCollection = crmDb.collection<TIndication>(DATABASE_COLLECTION_NAMES.INDICATIONS);
+	const creditRedemptionRequestsCollection = crmDb.collection<TCreditRedemptionRequest>(DATABASE_COLLECTION_NAMES.CREDIT_REDEMPTION_REQUESTS);
 
 	const totalParticipants = await clientsCollection.countDocuments({ 'conecta.dataInscricao': { $ne: null } });
 	const totalIndications = await indicationsCollection.countDocuments({});
@@ -279,19 +281,9 @@ async function getProgramStats(req: NextRequest) {
 		};
 	});
 
-	// Getting the graph data for indications
-	const { points: bestNumberOfPointsForPeriodsDates, groupingFormat } = getBestNumberOfPointsBetweenDates({
-		startDate: new Date(after),
-		endDate: new Date(before),
-	});
-	const periodDatesStrings = getEvenlySpacedDates({
-		startDate: new Date(after),
-		endDate: new Date(before),
-		points: bestNumberOfPointsForPeriodsDates,
-	});
-	const currentPeriodDateBuckets = getDateBuckets(periodDatesStrings);
+	const { buckets: currentPeriodDateBuckets, dateStrings: currentPeriodDateStrings, groupingFormat } = getPeriodDateBuckets(new Date(after), new Date(before));
 
-	const initialIndicationsGraphData = Object.fromEntries(periodDatesStrings.map((date) => [dayjs(date).format(groupingFormat), { indications: 0, indicationsWon: 0 }]));
+	const initialIndicationsGraphData = Object.fromEntries(currentPeriodDateStrings.map((date) => [dayjs(date).format(groupingFormat), { indications: 0, indicationsWon: 0 }]));
 	const indidications = (await indicationsCollection
 		.find(
 			{
@@ -343,6 +335,42 @@ async function getProgramStats(req: NextRequest) {
 		indications: value.indications,
 		indicationsWon: value.indicationsWon,
 	}));
+
+	const creditRedemptionRequestsInPeriodByTypeAggregated = (await creditRedemptionRequestsCollection
+		.aggregate([
+			{
+				$group: {
+					_id: '$recompensaResgatada.nome',
+					totalCreditRedemptionRequests: {
+						$sum: {
+							$cond: [
+								{
+									$and: [
+										{
+											$gte: ['$dataInsercao', after],
+										},
+										{
+											$lte: ['$dataInsercao', before],
+										},
+									],
+								},
+								1,
+								0,
+							],
+						},
+					},
+				},
+			},
+		])
+		.toArray()) as { _id: string; totalCreditRedemptionRequests: number }[];
+
+	const creditRedemptionRequestsInPeriodByType = creditRedemptionRequestsInPeriodByTypeAggregated.map((item) => ({
+		type: item._id,
+		totalCreditRedemptionRequests: item.totalCreditRedemptionRequests,
+	}));
+
+	const totalCreditRedemptionRequestsInPeriod = creditRedemptionRequestsInPeriodByTypeAggregated.reduce((acc, curr) => acc + curr.totalCreditRedemptionRequests, 0);
+
 	return NextResponse.json({
 		data: {
 			totalParticipants,
@@ -355,6 +383,8 @@ async function getProgramStats(req: NextRequest) {
 			totalIndicationsBySellerCodeInPeriod,
 			totalIndicationsByAuthorInPeriod,
 			indicationsGraphData,
+			totalCreditRedemptionRequestsInPeriod,
+			creditRedemptionRequestsInPeriodByType,
 		},
 	});
 }

@@ -1,5 +1,5 @@
 'use client';
-import { ChartArea, Code, Share2, Trophy, UserRound } from 'lucide-react';
+import { ChartArea, Code, Share2, TicketCheck, Trophy, UserRound } from 'lucide-react';
 import { FaSolarPanel } from 'react-icons/fa';
 import { Area, Bar, CartesianGrid, ComposedChart, XAxis, YAxis } from 'recharts';
 import type { TGetProgramStatsRouteOutput } from '@/app/api/admin/stats/route';
@@ -88,7 +88,15 @@ export default function AdminProgramStats() {
 							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsWonInPeriod || 0} INDICAÇÕES GANHAS</h1>
 						</div>
 					</div>
+					<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-[#FB2E9F] bg-[#FB2E9F]/20 px-2 py-1.5 text-[#FB2E9F]')}>
+						<div className="flex w-full items-center justify-center">
+							<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+						</div>
+						<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalCreditRedemptionRequestsInPeriod || 0} RESGATES</h1>
+					</div>
 				</div>
+				<AdminProgramStatsGraph graphData={data?.indicationsGraphData || []} />
+
 				<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
 					<div className="flex w-full items-center gap-1.5">
 						<FaSolarPanel className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
@@ -173,7 +181,30 @@ export default function AdminProgramStats() {
 						))}
 					</div>
 				</div>
-				<AdminProgramStatsGraph graphData={data?.indicationsGraphData || []} />
+				<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-secondary bg-secondary px-2 py-1.5')}>
+					<div className="flex w-full items-center gap-1.5">
+						<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
+						<h1 className="text-center text-[0.6rem] lg:text-base">RESGATES POR TIPO DE RECOMPENSA</h1>
+					</div>
+					<div className="flex w-full flex-col gap-1.5">
+						{data?.creditRedemptionRequestsInPeriodByType.map((item, index) => (
+							<div className="flex w-full items-center justify-between gap-1.5" key={item.type}>
+								<div className="flex items-center gap-1.5">
+									<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-[0.55rem] text-primary-foreground ring-primary-foreground">
+										#{index + 1}
+									</div>
+									<h1 className="text-center text-[0.6rem] uppercase lg:text-base">{item.type}</h1>
+								</div>
+								<div className="flex items-center gap-1.5">
+									<div className="flex items-center gap-1.5">
+										<TicketCheck className="h-4 min-h-4 w-4 min-w-4" />
+										<h1 className="text-center text-[0.6rem] lg:text-base">{item.totalCreditRedemptionRequests || 0}</h1>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
 			</div>
 		</div>
 	);
