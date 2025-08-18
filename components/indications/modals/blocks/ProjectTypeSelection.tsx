@@ -1,21 +1,19 @@
-import { ReferEarnOptions } from "@/configs/constants";
-import type { TIndication } from "@/schemas/indication.schema";
-import React from "react";
-import { FaSolarPanel } from "react-icons/fa";
+import { FaSolarPanel } from 'react-icons/fa';
+import { ReferEarnOptions } from '@/configs/constants';
+import type { TIndication } from '@/schemas/indication.schema';
 
 type ProjectTypeSelectionProps = {
 	updateInfoHolder: (changes: Partial<TIndication>) => void;
 };
 function ProjectTypeSelection({ updateInfoHolder }: ProjectTypeSelectionProps) {
 	return (
-		<div className="h-full w-full flex flex-col gap-1.5 py-4 overflow-y-auto overscroll-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300">
-			<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight w-full text-center">
-				SELECIONE O TIPO DE INDICAÇÃO
-			</h1>
-			<div className="w-full grid grid-cols-2 items-center py-3 px-6 gap-1.5">
+		<div className="scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30 flex h-full w-full flex-col gap-1.5 overflow-y-auto overscroll-y-auto py-4">
+			<h1 className="w-full text-center font-bold text-sm leading-none tracking-tight lg:text-lg">SELECIONE O TIPO DE INDICAÇÃO</h1>
+			<div className="grid w-full grid-cols-2 items-center gap-1.5 px-6 py-3">
 				{ReferEarnOptions.map((option) => (
 					<button
-						type="button"
+						className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 sm:aspect-auto lg:p-8"
+						key={`${option.id}-${option.projectTypeId}`}
 						onClick={() =>
 							updateInfoHolder({
 								tipo: {
@@ -25,13 +23,10 @@ function ProjectTypeSelection({ updateInfoHolder }: ProjectTypeSelectionProps) {
 								},
 							})
 						}
-						key={`${option.id}-${option.projectTypeId}`}
-						className="flex hover:bg-blue-200 duration-300 ease-in-out flex-col items-center justify-center gap-1 p-2 lg:p-8 bg-blue-100 text-[#15599a] rounded-lg aspect-video sm:aspect-auto"
+						type="button"
 					>
-						<FaSolarPanel className="w-6 h-6 lg:w-12 lg:h-12 min-w-4 min-h-4" />
-						<h1 className="font-bold text-[0.55rem] lg:text-lg tracking-tight text-center uppercase break-words">
-							{option.referEarnCall}
-						</h1>
+						<FaSolarPanel className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:w-12" />
+						<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.referEarnCall}</h1>
 					</button>
 				))}
 			</div>

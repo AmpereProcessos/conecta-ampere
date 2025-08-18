@@ -65,7 +65,7 @@ function MultiSelectInput({
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="p-0 w-[--radix-popover-trigger-width]">
+				<PopoverContent className="p-0 w-(--radix-popover-trigger-width)">
 					<OptionsList
 						value={value}
 						selectedOptions={selectedOptions}

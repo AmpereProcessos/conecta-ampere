@@ -41,7 +41,7 @@ function CreditRedemptionRequests({ sessionUser }: CreditRedemptionRequestsProps
 			queryKey: ['credit-redemption-requests'],
 		});
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-white p-3.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
@@ -108,7 +108,7 @@ function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardPro
 		return <h1 className="rounded-full bg-[#F97316] p-1 font-extrabold text-[0.5rem] text-white">PENDENTE</h1>;
 	}
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-[#fff] p-2.5 shadow-sm dark:bg-[#121212]">
+		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<h1 className="font-semibold text-[0.625rem] leading-none tracking-tight lg:text-xs">{request.recompensaResgatada.nome}</h1>

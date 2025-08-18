@@ -19,7 +19,7 @@ function IndicationDataSeller({ infoHolder, updateInfoHolder }: IndicationDataSe
 				value={infoHolder.codigoIndicacaoVendedor || ""}
 				placeholder="Preencha aqui o código de indicação do vendedor..."
 				onChange={(e) => updateInfoHolder({ codigoIndicacaoVendedor: e.target.value })}
-				className="w-full rounded-md border border-primary/20 p-1 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary"
+				className="w-full rounded-md border border-primary/20 p-1 text-sm shadow-xs outline-hidden duration-500 ease-in-out placeholder:italic focus:border-primary"
 			/>
 			<p className="w-full text-center text-sm font-medium tracking-tight text-primary/80">Defina, se desejar, um vendedor específico para receber essa indicação.</p>
 			{infoHolder.codigoIndicacaoVendedor ? (

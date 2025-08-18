@@ -78,13 +78,13 @@ function DateIntervalInput({
 				<PopoverTrigger asChild>
 					<Button
 						className={cn(
-							'w-full justify-start rounded-md border border-primary/20 bg-background p-3 text-left font-normal text-sm shadow-sm outline-none duration-500 ease-in-out focus:border-primary',
+							'w-full justify-start rounded-md border border-primary/20 bg-background p-3 text-left font-normal text-sm shadow-xs outline-hidden duration-500 ease-in-out focus:border-primary',
 							!(displayValue.after || displayValue.before) && 'text-muted-foreground',
 							inputClassName
 						)}
 						disabled={!editable}
 						id={inputIdentifier}
-						variant={'outline'}
+						variant={'outline-solid'}
 					>
 						<CalendarIcon className="mr-2 h-4 w-4" />
 						{displayValue?.after ? (

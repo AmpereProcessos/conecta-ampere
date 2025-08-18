@@ -13,7 +13,7 @@ function Header() {
 					COMEÇE A INDICAR
 				</Link>
 			</div>
-			<div className="w-[20rem] lg:w-[46rem] h-[15rem] lg:h-[34rem] relative">
+			<div className="w-[20rem] lg:w-184 h-60 lg:h-136 relative">
 				<Image src={IndicationProgram} alt="Programa de Indicações" fill={true} />
 			</div>
 		</div>

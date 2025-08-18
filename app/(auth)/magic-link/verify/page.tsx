@@ -35,9 +35,9 @@ async function VerifyWaitingPage({ searchParams }: { searchParams: { id: string;
 							Clique no link de acesso enviado para o email: <strong>{token?.usuarioEmail}</strong>
 						</p>
 						<div className="my-4 flex items-center">
-							<div className="flex-grow border-muted border-t" />
+							<div className="grow border-muted border-t" />
 							<div className="mx-2 text-muted-foreground">ou</div>
-							<div className="flex-grow border-muted border-t" />
+							<div className="grow border-muted border-t" />
 						</div>
 						<VerifyWaitingPageForm verificationTokenId={token.id} />
 						<p className="w-full text-center font-medium text-primary/80 text-sm tracking-tight">

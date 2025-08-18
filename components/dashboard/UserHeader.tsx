@@ -17,7 +17,7 @@ type UserHeaderProps = {
 function UserHeader({ sessionUser }: UserHeaderProps) {
 	return (
 		<>
-			<div className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-primary/20 bg-[#fff] bg-background p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-primary/20 bg-white bg-background p-3.5 shadow-xs dark:bg-[#121212]">
 				<div className="flex items-center gap-1.5">
 					<div className="relative h-8 min-h-8 w-8 min-w-8 lg:h-8 lg:w-8">
 						<Image alt="Logo Ampère Energias" fill={true} src={Logo} />
@@ -40,7 +40,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 					</Button>
 				</div>
 			</div>
-			<div className="flex w-full flex-col gap-3 rounded-lg border border-primary/20 bg-[#fff] bg-background p-3.5 shadow-sm dark:bg-[#121212]">
+			<div className="flex w-full flex-col gap-3 rounded-lg border border-primary/20 bg-white bg-background p-3.5 shadow-xs dark:bg-[#121212]">
 				<div className="flex w-full flex-col items-center justify-center gap-1.5">
 					<div className="flex flex-col items-center gap-1.5 lg:flex-row">
 						<div className="relative">

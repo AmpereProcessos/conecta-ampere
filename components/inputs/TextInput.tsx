@@ -21,7 +21,7 @@ function TextInput({ identifier, labelText, placeholderText, value, handleChange
 			</Label>
 			<Input
 				className={cn(
-					'w-full rounded-md border border-primary/20 bg-background p-3 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary focus:bg-accent',
+					'w-full rounded-md border border-primary/20 bg-background p-3 text-sm shadow-xs outline-hidden duration-500 ease-in-out placeholder:italic focus:border-primary focus:bg-accent',
 					inputClassName
 				)}
 				id={inputIdentifier}

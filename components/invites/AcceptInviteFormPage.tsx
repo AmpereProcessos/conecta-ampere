@@ -52,9 +52,9 @@ function AcceptInviteFormPage({ inviteById }: AcceptInviteFormPageProps) {
 							</Button>
 						</div> */}
 						{/* <div className="my-2 flex items-center">
-							<div className="flex-grow border-t border-muted" />
+							<div className="grow border-t border-muted" />
 							<div className="mx-2 text-muted-foreground">ou</div>
-							<div className="flex-grow border-t border-muted" />
+							<div className="grow border-t border-muted" />
 						</div> */}
 						<div className="mb-4 flex w-full flex-col items-center gap-2">
 							<p className="w-full text-center font-bold text-primary/80 text-sm tracking-tight">Você recebeu um convite de: </p>

@@ -67,7 +67,7 @@ function OurServices() {
 					{services.map((service) => (
 						<div
 							key={service.id}
-							className={`group flex flex-col relative overflow-hidden rounded-2xl bg-gradient-to-br ${service.color} p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 min-h-[22rem]`}
+							className={`group flex flex-col relative overflow-hidden rounded-2xl bg-linear-to-br ${service.color} p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 min-h-88`}
 						>
 							<div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
 							<div className="relative z-10 flex flex-col grow h-full">

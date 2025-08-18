@@ -11,7 +11,7 @@ function UserIndications() {
 	const { data: indications, isLoading, isError, isSuccess, error } = useIndicationsQuery();
 
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-white p-3.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<UsersRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
@@ -52,7 +52,7 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 		return <h1 className="rounded-full bg-[#F97316] p-1 font-extrabold text-[0.5rem] text-white">PENDENTE</h1>;
 	}
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-[#fff] p-2.5 shadow-sm dark:bg-[#121212]">
+		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<h1 className="rounded-xs bg-[#15599a] p-1 font-bold text-[0.5rem] text-white leading-none tracking-tight lg:text-[0.625rem]">{indication.oportunidade.identificador}</h1>

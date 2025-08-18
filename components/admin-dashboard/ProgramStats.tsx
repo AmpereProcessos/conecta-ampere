@@ -13,7 +13,7 @@ export default function AdminProgramStats() {
 	const { data, queryParams, updateQueryParams } = useProgramStatsQuery({});
 
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-card p-3.5 shadow-sm">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-card p-3.5 shadow-xs">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<ChartArea className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />

@@ -3,7 +3,7 @@ import React from "react";
 
 function WhyParticipate() {
 	return (
-		<section id="por-que-participar" className="relative w-full bg-gradient-to-br from-[#1e6bb8] via-[#2575c7] to-[#15599a] py-20 overflow-hidden">
+		<section id="por-que-participar" className="relative w-full bg-linear-to-br from-[#1e6bb8] via-[#2575c7] to-[#15599a] py-20 overflow-hidden">
 			{/* Elementos de fundo */}
 			<div className="absolute top-0 left-0 w-72 h-72 bg-[#fead41]/10 rounded-full -translate-y-32 -translate-x-32" />
 			<div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-y-32 translate-x-32" />
@@ -22,17 +22,17 @@ function WhyParticipate() {
 				</p>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6 max-w-4xl w-full">
-					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-sm shadow-lg">
+					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-xs shadow-lg">
 						<Users className="w-10 h-10 text-[#fead41] mb-3" />
 						<span className="text-lg font-semibold text-white">+3.000 clientes atendidos</span>
 						<p className="text-white/80 text-sm mt-2">Rede sólida e serviço comprovado no mercado.</p>
 					</div>
-					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-sm shadow-lg">
+					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-xs shadow-lg">
 						<Star className="w-10 h-10 text-[#fead41] mb-3" />
 						<span className="text-lg font-semibold text-white">Quase 10 anos de experiência</span>
 						<p className="text-white/80 text-sm mt-2">Confiança de quem entende do setor de energia solar.</p>
 					</div>
-					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-sm shadow-lg">
+					<div className="flex flex-col items-center text-center bg-white/10 rounded-2xl p-6 backdrop-blur-xs shadow-lg">
 						<CheckCircle className="w-10 h-10 text-[#fead41] mb-3" />
 						<span className="text-lg font-semibold text-white">Ganhos e impacto positivo</span>
 						<p className="text-white/80 text-sm mt-2">Receba por cada indicação convertida e ajude a expandir a energia limpa no Brasil.</p>

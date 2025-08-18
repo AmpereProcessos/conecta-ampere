@@ -21,7 +21,7 @@ function TextareaInput({ identifier, labelText, placeholderText, value, handleCh
 			</Label>
 			<Textarea
 				className={cn(
-					'field-sizing-content min-h-[80px] w-full max-w-full resize-none rounded-md border border-primary/20 bg-[#fff] p-3 text-center font-medium text-primary text-xs outline-none lg:min-h-[65px] dark:bg-[#121212]',
+					'field-sizing-content min-h-[80px] w-full max-w-full resize-none rounded-md border border-primary/20 bg-white p-3 text-center font-medium text-primary text-xs outline-hidden lg:min-h-[65px] dark:bg-[#121212]',
 					inputClassName
 				)}
 				id={inputIdentifier}

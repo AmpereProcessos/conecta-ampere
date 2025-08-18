@@ -75,7 +75,7 @@ const steps: HowItWorksStepProps[] = [
 
 function HowItWorksStep({ icon, title, subtitle, description, badge, bgClass, textClass, subtitleClass }: HowItWorksStepProps) {
 	return (
-		<div className={`group flex flex-col relative overflow-hidden rounded-2xl bg-gradient-to-br ${bgClass} p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`}>
+		<div className={`group flex flex-col relative overflow-hidden rounded-2xl bg-linear-to-br ${bgClass} p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`}>
 			<div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16" />
 			<div className="relative z-10 flex flex-col grow">
 				<div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">{icon}</div>

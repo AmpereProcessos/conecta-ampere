@@ -4,7 +4,7 @@ import { MuxAssetsConfig } from '@/configs/services/mux';
 
 function Hero() {
 	return (
-		<section className="relative flex min-h-[80vh] w-full overflow-hidden bg-gradient-to-br from-[#15599a] via-[#1e6bb8] to-[#2575c7]" id="main">
+		<section className="relative flex min-h-[80vh] w-full overflow-hidden bg-linear-to-br from-[#15599a] via-[#1e6bb8] to-[#2575c7]" id="main">
 			{/* Background Elements */}
 			<div className="absolute inset-0">
 				<div className="-translate-y-48 absolute top-0 right-0 h-96 w-96 translate-x-48 rounded-full bg-[#fead41]/10" />
@@ -50,7 +50,7 @@ function Hero() {
 					<div className="relative">
 						<div className="relative overflow-hidden rounded-2xl bg-gray-900 shadow-2xl">
 							{/* Video Container */}
-							<div className="flex aspect-video items-center justify-center bg-gradient-to-br from-orange-300 to-[#fead41]">
+							<div className="flex aspect-video items-center justify-center bg-linear-to-br from-orange-300 to-[#fead41]">
 								<MuxPlayer
 									metadata={{
 										video_id: MuxAssetsConfig.CONECTA_PROGRAM_PRESENTATION.videoId,

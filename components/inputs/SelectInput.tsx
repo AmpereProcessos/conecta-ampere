@@ -58,7 +58,7 @@ function SelectInput({
 						<ChevronsUpDown className="opacity-50" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+				<PopoverContent className="w-(--radix-popover-trigger-width) p-0">
 					<OptionsList
 						closeMenu={() => setIsOpen(false)}
 						handleChange={handleChange}

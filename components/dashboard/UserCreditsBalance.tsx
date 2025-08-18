@@ -41,7 +41,7 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 			queryKey: ['credits-balance'],
 		});
 	return (
-		<div className="flex w-full flex-col rounded-lg border border-[#FB2E9F] bg-[#FB2E9F]/20 p-3.5 shadow-sm">
+		<div className="flex w-full flex-col rounded-lg border border-[#FB2E9F] bg-[#FB2E9F]/20 p-3.5 shadow-xs">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<h1 className="font-bold text-[#FB2E9F] text-sm leading-none tracking-tight lg:text-lg">MEUS CRÉDITOS AMPÈRE</h1>

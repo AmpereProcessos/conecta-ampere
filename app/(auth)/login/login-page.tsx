@@ -40,9 +40,9 @@ function Login() {
 							</Button>
 						</div>
 						<div className="my-2 flex items-center">
-							<div className="flex-grow border-muted border-t" />
+							<div className="grow border-muted border-t" />
 							<div className="mx-2 text-muted-foreground">ou</div>
-							<div className="flex-grow border-muted border-t" />
+							<div className="grow border-muted border-t" />
 						</div>
 						<form action={async () => await actionMethod(loginHolder)} className="grid gap-4">
 							<TextInput

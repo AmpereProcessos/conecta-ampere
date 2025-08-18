@@ -23,7 +23,7 @@ function UserProfileConfig() {
 			queryKey: ['profile'],
 		});
 	return (
-		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-[#fff] p-3.5 shadow-sm dark:bg-[#121212]">
+		<div className="flex w-full flex-col gap-1.5 rounded-lg border border-primary/20 bg-white p-3.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<UserRound className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />

@@ -37,7 +37,7 @@ function IndicationsDatabase({ sessionUser }: IndicationsDatabaseProps) {
 	const indicationsMatched = dashboardIndications?.indicationsMatched || 0;
 	const totalPages = dashboardIndications?.totalPages;
 	return (
-		<div className="bg-[#fff] dark:bg-[#121212] w-full flex p-3.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-lg">
+		<div className="bg-white dark:bg-[#121212] w-full flex p-3.5 flex-col gap-1.5 shadow-xs border border-primary/20 rounded-lg">
 			<div className="w-full flex items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<UsersRound className="w-4 h-4 lg:w-6 lg:h-6 min-w-4 min-h-4" />
@@ -101,7 +101,7 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 		return <h1 className="rounded-full bg-[#F97316] text-white font-extrabold text-[0.45rem] lg:text-[0.5rem] p-1 text-center">PENDENTE</h1>;
 	}
 	return (
-		<div className="bg-[#fff] dark:bg-[#121212] w-full flex p-2.5 flex-col gap-1.5 shadow-sm border border-primary/20 rounded-md">
+		<div className="bg-white dark:bg-[#121212] w-full flex p-2.5 flex-col gap-1.5 shadow-xs border border-primary/20 rounded-md">
 			<div className="w-full flex items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<h1 className="p-1 font-bold leading-none tracking-tight text-[0.5rem] lg:text-[0.625rem] bg-[#15599a] text-white rounded-xs">{indication.oportunidade.identificador}</h1>
