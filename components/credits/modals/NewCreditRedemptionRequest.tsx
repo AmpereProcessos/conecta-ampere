@@ -134,7 +134,7 @@ function CreditRedemptionRequestData({ infoHolder, updateInfoHolder }: CreditRed
 							Resgatando a recompensa: <br /> <strong>{infoHolder.recompensaResgatada.nome}</strong>
 						</h1>
 						<button
-							className="rounded-lg px-2 py-1 font-medium text-[0.65rem] text-primary/80 tracking-tight duration-300 ease-in-out hover:bg-primary/10 hover:text-primary"
+							className="cursor-pointer rounded-lg px-2 py-1 font-medium text-[0.65rem] text-primary/80 tracking-tight duration-300 ease-in-out hover:bg-primary/10 hover:text-primary"
 							onClick={() => {
 								updateInfoHolder({
 									recompensaResgatada: { id: '', nome: '', creditosNecessarios: 0 },

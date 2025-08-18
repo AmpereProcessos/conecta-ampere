@@ -12,7 +12,7 @@ function ProjectTypeSelection({ updateInfoHolder }: ProjectTypeSelectionProps) {
 			<div className="grid w-full grid-cols-2 items-center gap-1.5 px-6 py-3">
 				{ReferEarnOptions.map((option) => (
 					<button
-						className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 sm:aspect-auto lg:p-8"
+						className="flex aspect-video cursor-pointer flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 sm:aspect-auto lg:p-8"
 						key={`${option.id}-${option.projectTypeId}`}
 						onClick={() =>
 							updateInfoHolder({

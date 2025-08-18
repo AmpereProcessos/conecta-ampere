@@ -59,7 +59,7 @@ function UserAvatarConfig({ profile, callbacks }: UserAvatarConfigProps) {
 				<AvatarFallback className="text-xs">{formatNameAsInitials(profile.nome)}</AvatarFallback>
 			</Avatar>
 			<button
-				className="flex items-center gap-1 rounded-lg bg-primary/10 px-1.5 py-1 text-primary/80 transition-colors hover:bg-primary/20"
+				className="flex cursor-pointer items-center gap-1 rounded-lg bg-primary/10 px-1.5 py-1 text-primary/80 transition-colors hover:bg-primary/20"
 				disabled={isPending}
 				onClick={handleInputButtonClick}
 				type="button"

@@ -69,12 +69,13 @@ function ImageContent({
 }
 
 function ImagePreview({ imageUrl, imageHolder }: { imageUrl: TRewardOption['imagemCapaUrl']; imageHolder: TSimpleAttachment }) {
-	if (imageUrl) {
-		return <Image alt="Imagem principal do item." fill={true} objectFit="cover" src={imageUrl} />;
-	}
 	if (imageHolder.previewUrl) {
 		return <Image alt="Imagem principal do item." fill={true} objectFit="cover" src={imageHolder.previewUrl} />;
 	}
+	if (imageUrl) {
+		return <Image alt="Imagem principal do item." fill={true} objectFit="cover" src={imageUrl} />;
+	}
+
 	return (
 		<div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-primary/20">
 			<MdAttachFile className="h-6 w-6" />

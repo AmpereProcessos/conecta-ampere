@@ -42,7 +42,7 @@ function ReferEarn({ sessionUser, initialIndicationSellerCode }: ReferEarnProps)
 			<div className="w-full">
 				<p className="text-[0.625rem] lg:text-sm">
 					<span className="font-normal">Indique nossos produtos para familiares, amigos ou conhecidos e GANHE </span>
-					<span className="inline-flex items-center gap-0.5 font-bold text-[#FB2E9F]">
+					<span className="inline-flex items-center gap-0.5 font-bold text-cyan-500">
 						<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
 						CRÉDITOS AMPÈRE
 					</span>
@@ -61,7 +61,7 @@ function ReferEarn({ sessionUser, initialIndicationSellerCode }: ReferEarnProps)
 						{ReferEarnOptions.map((option) => (
 							<CarouselItem className="basis-[calc(33.333%-0.5rem)] pl-2 sm:basis-[calc(30%-0.5rem)]" key={option.id}>
 								<button
-									className="flex h-[150px] w-full flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 lg:h-[250px] lg:p-8"
+									className="flex h-[150px] w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg bg-blue-100 p-2 text-[#15599a] duration-300 ease-in-out hover:bg-blue-200 lg:h-[250px] lg:p-8"
 									onClick={() =>
 										setNewIndicationMenu({
 											isOpen: true,

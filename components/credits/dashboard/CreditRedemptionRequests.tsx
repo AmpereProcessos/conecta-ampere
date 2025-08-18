@@ -58,7 +58,7 @@ function CreditRedemptionRequests({ sessionUser }: CreditRedemptionRequestsProps
 						<>
 							<h3 className="font-semibold text-xs tracking-tight lg:text-base">Você ainda não possui nenhum resgate :(</h3>
 							<button
-								className="flex w-fit items-center justify-center gap-1 rounded-lg bg-[#FB2E9F]/20 px-2 py-2 text-[#FB2E9F] duration-300 ease-in-out hover:bg-[#FB2E9F]/30"
+								className="flex w-fit cursor-pointer items-center justify-center gap-1 rounded-lg bg-cyan-500/20 px-2 py-2 text-cyan-500 duration-300 ease-in-out hover:bg-cyan-500/30"
 								onClick={() => setNewRequestMenu((prev) => ({ ...prev, isOpen: !prev.isOpen }))}
 								type="button"
 							>
@@ -114,7 +114,7 @@ function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardPro
 					<h1 className="font-semibold text-[0.625rem] leading-none tracking-tight lg:text-xs">{request.recompensaResgatada.nome}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<div className="flex items-center gap-1 rounded-full bg-[#FB2E9F]/30 p-1 px-2 font-extrabold text-[#FB2E9F] text-[0.5rem]">
+					<div className="flex items-center gap-1 rounded-full bg-cyan-500/30 p-1 px-2 font-extrabold text-[0.5rem] text-cyan-500">
 						<FaBolt className="h-2.5 min-h-2 w-2.5 min-w-2 lg:h-2.5 lg:w-2.5" />
 						<p className="text-[0.5rem]">-{request.creditosResgatados} CRÉDITOS</p>
 					</div>

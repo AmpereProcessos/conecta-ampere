@@ -16,7 +16,7 @@ function HeaderIndicationBlock({ sessionUserId }: HeaderIndicationBlockProps) {
 				</Link>
 			</div>
 			<button
-				className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary"
+				className="flex cursor-pointer items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary"
 				onClick={async () => await copyToClipboard(`${process.env.NEXT_PUBLIC_URL}/invites/promoter/${sessionUserId}`)}
 				type="button"
 			>

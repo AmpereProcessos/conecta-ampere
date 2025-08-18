@@ -158,7 +158,7 @@ type NewIndicationProps = {
 function NewIndicationButton({ openNewIndicationMenu }: NewIndicationProps) {
 	return (
 		<button
-			className="flex aspect-square w-12 flex-col items-center justify-center gap-1 rounded-full bg-blue-600 text-white transition-all hover:scale-105 hover:bg-[#15599a] lg:w-16"
+			className="flex aspect-square w-12 cursor-pointer flex-col items-center justify-center gap-1 rounded-full bg-blue-600 text-white transition-all hover:scale-105 hover:bg-[#15599a] lg:w-16"
 			onClick={() => openNewIndicationMenu()}
 			type="button"
 		>
