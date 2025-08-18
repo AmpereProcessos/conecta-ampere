@@ -16,6 +16,14 @@ export function formatDateAsLocale(date?: string | Date | null, showHours = fals
 	if (showHours) return dayjs(date).format('DD/MM/YYYY HH:mm');
 	return dayjs(date).add(3, 'hour').format('DD/MM/YYYY');
 }
+export function formatAsSlug(string: string) {
+	return string
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.replace(/ /g, '-')
+		.replace(/[^\w-]+/g, '');
+}
 export function formatDateInputChange<T extends 'date' | 'string' | undefined>(
 	value: any,
 	returnType?: T,

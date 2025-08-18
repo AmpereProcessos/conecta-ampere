@@ -1,45 +1,48 @@
-import { EarnRewardsOptions } from "@/configs/constants";
-import { cn } from "@/lib/utils";
-import type { TCreditRedemptionRequest } from "@/schemas/credit-redemption-request.schema";
-import { TicketCheck } from "lucide-react";
-import React from "react";
-import { FaBolt } from "react-icons/fa";
+import { TicketCheck } from 'lucide-react';
+import Image from 'next/image';
+import { useRewardOptionsQuery } from '@/lib/queries/reward-options';
+import type { TCreditRedemptionRequest } from '@/schemas/credit-redemption-request.schema';
 
 type RewardSelectionProps = {
 	infoHolder: TCreditRedemptionRequest;
 	updateInfoHolder: (changes: Partial<TCreditRedemptionRequest>) => void;
 };
-function RewardSelection({ infoHolder, updateInfoHolder }: RewardSelectionProps) {
+function RewardSelection({ updateInfoHolder }: RewardSelectionProps) {
+	const { data: rewardOptions } = useRewardOptionsQuery();
 	return (
-		<div className="w-full flex flex-col gap-1.5 py-4">
-			<h1 className="text-sm lg:text-lg font-bold leading-none tracking-tight w-full text-center">SELECIONE A RECOMPENSA</h1>
-			<div className="w-full flex-col flex items-center py-3 px-6 gap-1.5">
-				{EarnRewardsOptions.map((option) => (
+		<div className="flex w-full flex-col gap-1.5 py-4">
+			<h1 className="w-full text-center font-bold text-sm leading-none tracking-tight lg:text-lg">SELECIONE A RECOMPENSA</h1>
+			<div className="flex w-full flex-col items-center gap-1.5 px-6 py-3">
+				{rewardOptions?.map((option) => (
 					<button
-						type="button"
+						className="relative flex h-[150px] w-full flex-col items-center justify-center gap-1 rounded-lg border-2 border-transparent p-2 transition-all duration-300 ease-in-out hover:border-primary lg:h-[250px] lg:p-8"
+						key={option._id}
 						onClick={() =>
 							updateInfoHolder({
 								recompensaResgatada: {
-									id: option.id,
-									nome: option.label,
-									creditosNecessarios: option.requiredCredits,
+									id: option._id,
+									nome: option.titulo,
+									creditosNecessarios: option.creditosNecessarios,
 								},
 							})
 						}
-						key={`${option.id}`}
-						className={cn(
-							"flex duration-300 ease-in-out flex-col items-center justify-center border-2 border-transparent gap-1 p-2 lg:p-8 bg-[#FB2E9F]/20 text-[#FB2E9F] rounded-lg aspect-auto w-full hover:bg-[#FB2E9F]/30",
-							{
-								"bg-[#FB2E9F]/40 border-[#FB2E9F]": infoHolder.recompensaResgatada.id === option.value,
-							},
-						)}
+						type="button"
 					>
-						<TicketCheck className="w-6 h-6 lg:w-12 lg:h-12 min-w-4 min-h-4" />
-						<h1 className="font-bold text-sm lg:text-lg tracking-tight text-center uppercase break-words">{option.label}</h1>
-						<h1 className="text-[0.55rem]">POR</h1>
-						<div className="w-full flex items-center justify-center gap-1 text-primary">
-							<FaBolt />
-							<p className="font-bold text-[0.6rem] lg:text-sm tracking-tight text-center uppercase break-words">{option.requiredCredits} CRÉDITOS</p>
+						{option.imagemCapaUrl && (
+							<>
+								<Image
+									alt={`Imagem de capa da recompensa: ${option.titulo}`}
+									className="absolute inset-0 rounded-lg object-cover"
+									fill
+									sizes="(max-width: 768px) 33.333vw, 30vw"
+									src={option.imagemCapaUrl}
+								/>
+								<div className="absolute inset-0 rounded-lg bg-black/40" />
+							</>
+						)}
+						<div className="relative z-10 flex flex-col items-center gap-1">
+							<TicketCheck className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:min-h-12 lg:w-12 lg:min-w-12" />
+							<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.chamada}</h1>
 						</div>
 					</button>
 				))}

@@ -1,8 +1,6 @@
-import type React from "react";
-import { Label } from "../ui/label";
-import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { cn } from '@/lib/utils';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 type TextareaInputProps = {
 	identifier?: string;
@@ -14,43 +12,22 @@ type TextareaInputProps = {
 	labelClassName?: string;
 	inputClassName?: string;
 };
-function TextareaInput({
-	identifier,
-	labelText,
-	placeholderText,
-	value,
-	handleChange,
-	wrapperClassName,
-	labelClassName,
-	inputClassName,
-}: TextareaInputProps) {
-	const inputIdentifier =
-		identifier || labelText.toLowerCase().replaceAll(" ", "_");
+function TextareaInput({ identifier, labelText, placeholderText, value, handleChange, wrapperClassName, labelClassName, inputClassName }: TextareaInputProps) {
+	const inputIdentifier = identifier || labelText.toLowerCase().replaceAll(' ', '_');
 	return (
-		<div
-			className={cn(
-				"flex w-full flex-col rounded-md border border-primary/20 shadow-sm",
-				wrapperClassName,
-			)}
-		>
-			<Label
-				htmlFor={inputIdentifier}
-				className={cn(
-					"w-full rounded-tl-md rounded-tr-md bg-primary p-1 text-center text-xs font-bold text-primary-foreground",
-					labelClassName,
-				)}
-			>
+		<div className={cn('flex w-full flex-col gap-1', wrapperClassName)}>
+			<Label className={cn('font-medium text-primary/80 text-sm tracking-tight', labelClassName)} htmlFor={inputIdentifier}>
 				{labelText}
 			</Label>
 			<Textarea
+				className={cn(
+					'field-sizing-content min-h-[80px] w-full max-w-full resize-none rounded-md border border-primary/20 bg-[#fff] p-3 text-center font-medium text-primary text-xs outline-none lg:min-h-[65px] dark:bg-[#121212]',
+					inputClassName
+				)}
 				id={inputIdentifier}
-				value={value}
 				onChange={(e) => handleChange(e.target.value)}
 				placeholder={placeholderText}
-				className={cn(
-					"min-h-[80px] w-full resize-none rounded-bl-md rounded-br-md bg-[#fff] p-3 text-center text-xs font-medium text-primary outline-none dark:bg-[#121212] lg:min-h-[65px]",
-					inputClassName,
-				)}
+				value={value}
 			/>
 		</div>
 	);

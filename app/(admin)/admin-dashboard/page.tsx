@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import AdminProgramRewardOptions from '@/components/admin-dashboard/ProgramRewardOptions';
 import AdminProgramStats from '@/components/admin-dashboard/ProgramStats';
 import AdminUserHeader from '@/components/admin-dashboard/UserHeader';
 import FullScreenWrapper from '@/components/layout/FullScreenWrapper';
@@ -15,6 +16,7 @@ export default async function AdminDashboard() {
 				<div className="container flex flex-col gap-4">
 					<AdminUserHeader sessionUser={user} />
 					<AdminProgramStats />
+					<AdminProgramRewardOptions sessionUser={user} />
 				</div>
 			</div>
 		</FullScreenWrapper>

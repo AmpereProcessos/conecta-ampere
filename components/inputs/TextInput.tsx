@@ -1,4 +1,3 @@
-import type React from 'react';
 import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -22,7 +21,7 @@ function TextInput({ identifier, labelText, placeholderText, value, handleChange
 			</Label>
 			<Input
 				className={cn(
-					'w-full rounded-md border border-primary/20 bg-background p-3 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary',
+					'w-full rounded-md border border-primary/20 bg-background p-3 text-sm shadow-sm outline-none duration-500 ease-in-out placeholder:italic focus:border-primary focus:bg-accent',
 					inputClassName
 				)}
 				id={inputIdentifier}

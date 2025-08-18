@@ -1,18 +1,17 @@
-import { LoadingButton } from "@/components/buttons/loading-button";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import type { TSessionUser } from "@/lib/authentication/types";
-import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { getErrorMessage } from "@/lib/methods/errors";
-import { createCreditRedemptionRequest } from "@/lib/mutations/credits";
-import type { TCreditRedemptionRequest } from "@/schemas/credit-redemption-request.schema";
-import { useMutation } from "@tanstack/react-query";
-import React, { useState } from "react";
-import { toast } from "sonner";
-import RewardSelection from "./blocks/RewardSelection";
-import TextareaInput from "@/components/inputs/TextareaInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { LoadingButton } from '@/components/buttons/loading-button';
+import TextareaInput from '@/components/inputs/TextareaInput';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import type { TSessionUser } from '@/lib/authentication/types';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { getErrorMessage } from '@/lib/methods/errors';
+import { createCreditRedemptionRequest } from '@/lib/mutations/credits';
+import type { TCreditRedemptionRequest } from '@/schemas/credit-redemption-request.schema';
+import RewardSelection from './blocks/RewardSelection';
 
 type NewCreditRedemptionRequestProps = {
 	initialState?: Partial<TCreditRedemptionRequest>;
@@ -25,13 +24,13 @@ type NewCreditRedemptionRequestProps = {
 	};
 };
 function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, callbacks }: NewCreditRedemptionRequestProps) {
-	const isDesktop = useMediaQuery("(min-width: 768px)");
+	const isDesktop = useMediaQuery('(min-width: 768px)');
 
 	const initialHolderState: TCreditRedemptionRequest = {
 		creditosResgatados: initialState?.creditosResgatados || 0,
 		recompensaResgatada: {
-			id: initialState?.recompensaResgatada?.id || "",
-			nome: initialState?.recompensaResgatada?.nome || "",
+			id: initialState?.recompensaResgatada?.id || '',
+			nome: initialState?.recompensaResgatada?.nome || '',
 			creditosNecessarios: initialState?.recompensaResgatada?.creditosNecessarios || 0,
 		},
 		requerente: {
@@ -41,7 +40,7 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 		},
 		analista: {},
 		pagamento: {
-			observacoes: initialState?.pagamento?.observacoes || "",
+			observacoes: initialState?.pagamento?.observacoes || '',
 		},
 		dataInsercao: new Date().toISOString(),
 	};
@@ -51,7 +50,7 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 	}
 
 	const { mutate: mutateCreateCreditRedemptionRequest, isPending } = useMutation({
-		mutationKey: ["create-indication"],
+		mutationKey: ['create-indication'],
 		mutationFn: createCreditRedemptionRequest,
 		onMutate: () => {
 			if (callbacks?.onMutate) callbacks.onMutate();
@@ -65,29 +64,20 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 			if (callbacks?.onSettled) callbacks.onSettled();
 		},
 		onError: (error) => {
-			console.log("FRONTEND ERROR", error);
+			console.log('FRONTEND ERROR', error);
 			const msg = getErrorMessage(error);
 			toast.error(msg);
 		},
 	});
 	return isDesktop ? (
-		<Dialog open onOpenChange={closeModal}>
-			<DialogContent className="flex flex-col h-fit min-h-[60vh] max-h-[80vh]">
+		<Dialog onOpenChange={closeModal} open>
+			<DialogContent className="flex h-fit max-h-[80vh] min-h-[60vh] flex-col">
 				<DialogHeader>
 					<DialogTitle>NOVO RESGATE</DialogTitle>
 					<DialogDescription>Preencha alguns dados para retirada de créditos.</DialogDescription>
 				</DialogHeader>
-				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
-					<div className="w-full h-full flex flex-col gap-6 px-2">
-						<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
-						<TextareaInput
-							labelText="INFORMAÇÕES AUXILIARES"
-							placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
-							value={infoHolder.pagamento.observacoes}
-							handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
-							inputClassName="lg:min-h-[80px]"
-						/>
-					</div>
+				<div className="scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30 flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2">
+					<CreditRedemptionRequestData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</div>
 
 				<DialogFooter>
@@ -95,7 +85,7 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 						<Button variant="outline">FECHAR</Button>
 					</DialogClose>
 					{infoHolder.recompensaResgatada.id ? (
-						<LoadingButton onClick={() => mutateCreateCreditRedemptionRequest(infoHolder)} loading={isPending}>
+						<LoadingButton loading={isPending} onClick={() => mutateCreateCreditRedemptionRequest(infoHolder)}>
 							RESGATAR
 						</LoadingButton>
 					) : null}
@@ -103,28 +93,19 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 			</DialogContent>
 		</Dialog>
 	) : (
-		<Drawer open onOpenChange={closeModal}>
-			<DrawerContent className="max-h-[85vh] flex flex-col">
+		<Drawer onOpenChange={closeModal} open>
+			<DrawerContent className="flex max-h-[85vh] flex-col">
 				<DrawerHeader className="text-left">
 					<DrawerTitle>NOVO RESGATE</DrawerTitle>
 					<DrawerDescription>Preencha alguns dados para retirada de créditos.</DrawerDescription>
 				</DrawerHeader>
-				<div className="flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2 scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30">
-					<div className="w-full h-full flex flex-col gap-6 px-2">
-						<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
-						<TextareaInput
-							labelText="INFORMAÇÕES AUXILIARES"
-							placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
-							value={infoHolder.pagamento.observacoes}
-							handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
-							inputClassName="lg:min-h-[100px]"
-						/>
-					</div>
+				<div className="scrollbar-thin scrollbar-track-primary/10 scrollbar-thumb-primary/30 flex-1 overflow-auto overflow-y-auto overscroll-y-auto p-2">
+					<CreditRedemptionRequestData infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
 				</div>
 
 				<DrawerFooter className="pt-2">
 					{infoHolder.recompensaResgatada?.id ? (
-						<LoadingButton onClick={() => mutateCreateCreditRedemptionRequest(infoHolder)} loading={isPending}>
+						<LoadingButton loading={isPending} onClick={() => mutateCreateCreditRedemptionRequest(infoHolder)}>
 							RESGATAR
 						</LoadingButton>
 					) : null}
@@ -138,3 +119,43 @@ function NewCreditRedemptionRequest({ initialState, sessionUser, closeModal, cal
 }
 
 export default NewCreditRedemptionRequest;
+
+type CreditRedemptionRequestDataProps = {
+	infoHolder: TCreditRedemptionRequest;
+	updateInfoHolder: (changes: Partial<TCreditRedemptionRequest>) => void;
+};
+function CreditRedemptionRequestData({ infoHolder, updateInfoHolder }: CreditRedemptionRequestDataProps) {
+	return (
+		<div className="flex h-full w-full flex-col gap-3 px-4">
+			{infoHolder.recompensaResgatada.id ? (
+				<>
+					<div className="flex w-full flex-col items-center justify-center gap-1 py-2">
+						<h1 className="w-full text-center text-sm leading-none tracking-tight lg:text-lg">
+							Resgatando a recompensa: <br /> <strong>{infoHolder.recompensaResgatada.nome}</strong>
+						</h1>
+						<button
+							className="rounded-lg px-2 py-1 font-medium text-[0.65rem] text-primary/80 tracking-tight duration-300 ease-in-out hover:bg-primary/10 hover:text-primary"
+							onClick={() => {
+								updateInfoHolder({
+									recompensaResgatada: { id: '', nome: '', creditosNecessarios: 0 },
+								});
+							}}
+							type="button"
+						>
+							Clique aqui para escolher outra recompensa
+						</button>
+					</div>
+					<TextareaInput
+						handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
+						inputClassName="lg:min-h-[100px]"
+						labelText="INFORMAÇÕES AUXILIARES"
+						placeholderText="Preencha aqui detalhes relevantes para esse resgate, como sua chave PIX, comentários e outros detalhes que possam ser relevantes..."
+						value={infoHolder.pagamento.observacoes}
+					/>
+				</>
+			) : (
+				<RewardSelection infoHolder={infoHolder} updateInfoHolder={updateInfoHolder} />
+			)}
+		</div>
+	);
+}

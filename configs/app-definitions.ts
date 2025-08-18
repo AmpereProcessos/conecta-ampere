@@ -11,6 +11,7 @@ export const DATABASE_COLLECTION_NAMES = {
 	INTERACTION_EVENTS: 'conecta-interaction-events',
 	CREDIT_REDEMPTION_REQUESTS: 'conecta-credit-redemption-requests',
 	INVITES: 'conecta-invites',
+	REWARDS_OPTIONS: 'conecta-rewards-options',
 };
 
 export const MATRIX_COMPANY_PARTNER_ID = '65454ba15cf3e3ecf534b308';
