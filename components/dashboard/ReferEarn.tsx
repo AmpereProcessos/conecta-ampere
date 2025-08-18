@@ -42,7 +42,7 @@ function ReferEarn({ sessionUser, initialIndicationSellerCode }: ReferEarnProps)
 			<div className="w-full">
 				<p className="text-[0.625rem] lg:text-sm">
 					<span className="font-normal">Indique nossos produtos para familiares, amigos ou conhecidos e GANHE </span>
-					<span className="inline-flex items-center gap-0.5 font-bold text-cyan-500">
+					<span className="inline-flex items-center gap-0.5 font-bold text-amber-500">
 						<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
 						CRÉDITOS AMPÈRE
 					</span>

@@ -88,7 +88,7 @@ export default function AdminProgramStats() {
 							<h1 className="w-full text-center text-[0.6rem] lg:text-base">{data?.totalIndicationsWonInPeriod || 0} INDICAÇÕES GANHAS</h1>
 						</div>
 					</div>
-					<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-cyan-500 bg-cyan-500/20 px-2 py-1.5 text-cyan-500')}>
+					<div className={cn('flex w-full flex-col gap-1.5 rounded border-2 border-amber-500 bg-amber-500/20 px-2 py-1.5 text-amber-500')}>
 						<div className="flex w-full items-center justify-center">
 							<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
 						</div>

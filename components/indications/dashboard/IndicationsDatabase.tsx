@@ -1,7 +1,7 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
 import { LayoutDashboard, UsersRound } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BsCalendarPlus } from 'react-icons/bs';
 import { FaBolt } from 'react-icons/fa';
 import type { TGetIndicationsDatabaseRouteOutput } from '@/app/api/indications/database/route';
@@ -88,7 +88,7 @@ type UserIndicationCardProps = {
 	indication: TGetIndicationsDatabaseRouteOutput['data']['indications'][number];
 };
 function UserIndicationCard({ indication }: UserIndicationCardProps) {
-	function getIndicationStatusTag(indication: TGetIndicationsDatabaseRouteOutput['data']['indications'][number]) {
+	function getIndicationStatusTag() {
 		if (indication.oportunidade.dataGanho) {
 			return <h1 className="rounded-full bg-green-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.5rem]">VENDA CONCLÚIDA</h1>;
 		}
@@ -109,7 +109,7 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 				</div>
 				<div className="flex items-center gap-1.5">
 					{indication.creditosRecebidos ? (
-						<div className="flex items-center gap-1 rounded-full bg-cyan-500/30 p-1 px-2 font-extrabold text-[0.5rem] text-cyan-500">
+						<div className="flex items-center gap-1 rounded-full bg-amber-500/30 p-1 px-2 font-extrabold text-[0.5rem] text-amber-500">
 							<FaBolt className="h-2.5 min-h-2 w-2.5 min-w-2 lg:h-2.5 lg:w-2.5" />
 							<p className="text-[0.5rem]">
 								+{indication.creditosRecebidos} <span className="hidden lg:inline">CRÉDITOS</span>
@@ -117,7 +117,7 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 						</div>
 					) : null}
 
-					{getIndicationStatusTag(indication)}
+					{getIndicationStatusTag()}
 				</div>
 			</div>
 			<div className="flex w-full items-center justify-between gap-1.5">

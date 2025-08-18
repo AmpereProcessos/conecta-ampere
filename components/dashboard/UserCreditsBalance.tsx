@@ -41,14 +41,14 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 			queryKey: ['credits-balance'],
 		});
 	return (
-		<div className="flex w-full flex-col rounded-lg border border-cyan-500 bg-cyan-500/20 p-3.5 shadow-xs">
+		<div className="flex w-full flex-col rounded-lg border border-amber-500 bg-amber-500/20 p-3.5 shadow-xs">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
-					<h1 className="font-bold text-cyan-500 text-sm leading-none tracking-tight lg:text-lg">MEUS CRÉDITOS AMPÈRE</h1>
+					<h1 className="font-bold text-amber-500 text-sm leading-none tracking-tight lg:text-lg">MEUS CRÉDITOS AMPÈRE</h1>
 				</div>
 			</div>
 			<div className="flex w-full items-end justify-between gap-1.5">
-				<div className="flex items-center gap-1.5 text-cyan-500">
+				<div className="flex items-center gap-1.5 text-amber-500">
 					<h1 className="font-black text-4xl">{data?.balance || 0}</h1>
 					<FaBolt size={22} />
 				</div>
@@ -56,7 +56,7 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 			<div className="w-full">
 				<p className="text-[0.625rem] lg:text-sm">
 					<span className="font-normal">Escolha uma recompensa e resgate seus</span>
-					<span className="inline-flex items-center gap-0.5 font-bold text-cyan-500">
+					<span className="inline-flex items-center gap-0.5 font-bold text-amber-500">
 						<FaBolt className="h-2 w-2 lg:h-4 lg:w-4" />
 						CRÉDITOS
 					</span>
