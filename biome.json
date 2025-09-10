@@ -11,7 +11,8 @@
       },
       "style": {
         "useTemplate": "warn",
-        "useBlockStatements": "off"
+        "useBlockStatements": "off",
+        "noMagicNumbers": "off"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "warn"
@@ -24,8 +25,6 @@
     "lineWidth": 180,
     "lineEnding": "lf"
   },
-  "extends": [
-    "ultracite"
-  ],
+  "extends": ["ultracite"],
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json"
 }
