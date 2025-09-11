@@ -90,28 +90,28 @@ type UserIndicationCardProps = {
 function UserIndicationCard({ indication }: UserIndicationCardProps) {
 	function getIndicationStatusTag() {
 		if (indication.oportunidade.dataGanho) {
-			return <h1 className="rounded-full bg-green-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.5rem]">VENDA CONCLÚIDA</h1>;
+			return <h1 className="rounded-full bg-green-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.55rem]">VENDA CONCLÚIDA</h1>;
 		}
 		if (indication.oportunidade.dataPerda) {
-			return <h1 className="rounded-full bg-red-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.5rem]">VENDA PERDIDA</h1>;
+			return <h1 className="rounded-full bg-red-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.55rem]">VENDA PERDIDA</h1>;
 		}
 		if (indication.oportunidade.dataInteracao) {
-			return <h1 className="rounded-full bg-blue-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.5rem]">EM ANDAMENTO</h1>;
+			return <h1 className="rounded-full bg-blue-500 p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.55rem]">EM ANDAMENTO</h1>;
 		}
-		return <h1 className="rounded-full bg-[#F97316] p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.5rem]">PENDENTE</h1>;
+		return <h1 className="rounded-full bg-[#F97316] p-1 text-center font-extrabold text-[0.45rem] text-white lg:text-[0.55rem]">PENDENTE</h1>;
 	}
 	return (
 		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
-					<h1 className="rounded-xs bg-[#15599a] p-1 font-bold text-[0.5rem] text-white leading-none tracking-tight lg:text-[0.625rem]">{indication.oportunidade.identificador}</h1>
+					<h1 className="rounded-xs bg-[#15599a] p-1 font-bold text-[0.55rem] text-white leading-none tracking-tight lg:text-[0.625rem]">{indication.oportunidade.identificador}</h1>
 					<h1 className="font-semibold text-[0.625rem] leading-none tracking-tight lg:text-xs">{indication.oportunidade.nome}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
 					{indication.creditosRecebidos ? (
-						<div className="flex items-center gap-1 rounded-full bg-amber-500/30 p-1 px-2 font-extrabold text-[0.5rem] text-amber-500">
+						<div className="flex items-center gap-1 rounded-full bg-amber-500/30 p-1 px-2 font-extrabold text-[0.55rem] text-amber-500">
 							<FaBolt className="h-2.5 min-h-2 w-2.5 min-w-2 lg:h-2.5 lg:w-2.5" />
-							<p className="text-[0.5rem]">
+							<p className="text-[0.55rem]">
 								+{indication.creditosRecebidos} <span className="hidden lg:inline">CRÉDITOS</span>
 							</p>
 						</div>
@@ -123,11 +123,11 @@ function UserIndicationCard({ indication }: UserIndicationCardProps) {
 			<div className="flex w-full items-center justify-between gap-1.5">
 				<div className="flex items-center gap-1.5">
 					<LayoutDashboard className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
-					<h1 className="font-semibold text-[0.5rem] leading-none tracking-tight">{indication.tipo.titulo}</h1>
+					<h1 className="font-semibold text-[0.6rem] leading-none tracking-tight">{indication.tipo.titulo}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
 					<BsCalendarPlus className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
-					<h1 className="font-semibold text-[0.5rem] leading-none tracking-tight">{formatDateAsLocale(indication.dataInsercao, true)}</h1>
+					<h1 className="font-semibold text-[0.6rem] leading-none tracking-tight">{formatDateAsLocale(indication.dataInsercao, true)}</h1>
 				</div>
 			</div>
 		</div>

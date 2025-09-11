@@ -17,7 +17,7 @@ type UserHeaderProps = {
 function UserHeader({ sessionUser }: UserHeaderProps) {
 	return (
 		<>
-			<div className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-primary/20 bg-white bg-background p-3.5 shadow-xs dark:bg-[#121212]">
+			<div className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-primary/20 bg-background bg-white p-3.5 shadow-xs dark:bg-[#121212]">
 				<div className="flex items-center gap-1.5">
 					<div className="relative h-8 min-h-8 w-8 min-w-8 lg:h-8 lg:w-8">
 						<Image alt="Logo Ampère Energias" fill={true} src={Logo} />
@@ -40,7 +40,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 					</Button>
 				</div>
 			</div>
-			<div className="flex w-full flex-col gap-3 rounded-lg border border-primary/20 bg-white bg-background p-3.5 shadow-xs dark:bg-[#121212]">
+			<div className="flex w-full flex-col gap-3 rounded-lg border border-primary/20 bg-background bg-white p-3.5 shadow-xs dark:bg-[#121212]">
 				<div className="flex w-full flex-col items-center justify-center gap-1.5">
 					<div className="flex flex-col items-center gap-1.5 lg:flex-row">
 						<div className="relative">
@@ -58,7 +58,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 				<div className="flex w-full flex-wrap items-center justify-center gap-1.5 gap-y-0.5">
 					{sessionUser.cpfCnpj ? (
 						<div className="flex items-center gap-1">
-							<IdCard className="h-4 min-h-4 w-4 min-w-46 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
+							<IdCard className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
 							<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.cpfCnpj || 'N/A'}</h1>
 						</div>
 					) : null}
