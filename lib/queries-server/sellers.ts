@@ -75,6 +75,7 @@ export async function getSellerPublicProfileById(id: string) {
 	const sellerUFVStats = sellerUFVStatsAggregation[0];
 	return {
 		vendedor: {
+			id: seller._id.toString(),
 			nome: seller.nome,
 			telefone: seller.telefone,
 			email: seller.email,

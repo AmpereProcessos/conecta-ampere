@@ -1,6 +1,8 @@
 'use client';
-import { BadgeCheck, CirclePlus, LayoutGrid, Mail, MapPin, Phone, Share2, UserRound, Zap } from 'lucide-react';
+import { BadgeCheck, CirclePlus, LayoutGrid, Mail, MapPin, Phone, Share2, Sparkles, UserPlus, UserRound, Zap } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 import { BsWhatsapp } from 'react-icons/bs';
 import FullScreenWrapper from '@/components/layout/FullScreenWrapper';
 import { Button } from '@/components/ui/button';
@@ -9,6 +11,8 @@ import { formatDecimalPlaces } from '@/lib/methods/formatting';
 import { copyToClipboard, getProjectTypeCollors } from '@/lib/methods/utils';
 import type { TGetSellerPublicProfileByIdOutput } from '@/lib/queries-server/sellers';
 import { cn } from '@/lib/utils';
+import NewIndicationForSeller from './components/NewIndicationForSeller';
+import OpportunityInterestButton from './components/OpportunityInterestButton';
 
 type SellerByIdPageProps = {
 	seller: TGetSellerPublicProfileByIdOutput;
@@ -32,19 +36,25 @@ export function SellerByIdPage({ seller, sessionUser }: SellerByIdPageProps) {
 					<SellerHeaderDesktop
 						sellerAvatar={sellerAvatar}
 						sellerEmail={sellerEmail}
+						sellerId={seller.vendedor.id}
 						sellerName={sellerName}
 						sellerPhone={sellerPhone}
 						sellerStats={{ projectsSold: seller?.estatisticas?.qtdeVendida ?? 0, powerSold: seller?.estatisticas?.potenciaVendida ?? 0 }}
+						sessionUser={sessionUser}
 						whatsappHref={whatsappHref || ''}
 					/>
 					<SellerHeaderMobile
 						sellerAvatar={sellerAvatar}
 						sellerEmail={sellerEmail}
+						sellerId={seller.vendedor.id}
 						sellerName={sellerName}
 						sellerPhone={sellerPhone}
 						sellerStats={{ projectsSold: seller?.estatisticas?.qtdeVendida ?? 0, powerSold: seller?.estatisticas?.potenciaVendida ?? 0 }}
+						sessionUser={sessionUser}
 						whatsappHref={whatsappHref || ''}
 					/>
+					{/* User Interaction Section */}
+					<UserInteractionSection sellerId={seller.vendedor.id} sellerName={sellerName} sellerPhone={sellerPhone} sessionUser={sessionUser} whatsappHref={whatsappHref || ''} />
 					{/* Projetos */}
 					<SellerProjects projects={seller?.projetos ?? []} />
 				</div>
@@ -122,6 +132,8 @@ function ProjectCard({ project }: ProjectCardProps) {
 }
 
 type SellerHeaderProps = {
+	sellerId: string;
+	sessionUser: TSessionUser | null;
 	sellerName: string;
 	sellerAvatar: string;
 	sellerEmail: string;
@@ -132,9 +144,9 @@ type SellerHeaderProps = {
 	};
 	whatsappHref: string;
 };
-function SellerHeaderMobile({ sellerName, sellerAvatar, sellerEmail, sellerStats, whatsappHref }: SellerHeaderProps) {
+function SellerHeaderMobile({ sellerId, sessionUser, sellerName, sellerAvatar, sellerEmail, sellerPhone, sellerStats, whatsappHref }: SellerHeaderProps) {
 	return (
-		<div className="lg:hidden">
+		<div className="flex flex-col gap-4 lg:hidden">
 			<div className="flex w-full flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
 				<div className="relative h-96 w-full overflow-hidden rounded-xl bg-accent/30">
 					{sellerAvatar ? (
@@ -181,21 +193,38 @@ function SellerHeaderMobile({ sellerName, sellerAvatar, sellerEmail, sellerStats
 							<Share2 className="h-4 w-4" />
 						</Button>
 						{whatsappHref ? (
-							<Button asChild className="bg-green-600 hover:bg-green-700" size="sm" variant="default">
-								<a href={whatsappHref} rel="noopener noreferrer" target="_blank">
-									<BsWhatsapp className="h-4 w-4" />
-									FALAR +
-								</a>
-							</Button>
+							sessionUser ? (
+								<OpportunityInterestButton
+									buttonIcon={<BsWhatsapp className="h-4 w-4" />}
+									buttonLabel="FALAR +"
+									className="bg-green-600 text-white hover:bg-green-700/90"
+									sellerId={sellerId}
+									sellerName={sellerName}
+									sellerPhone={sellerPhone}
+									sessionUser={sessionUser}
+									whatsappHref={whatsappHref}
+								/>
+							) : (
+								<Button asChild className="bg-green-600 hover:bg-green-700" size="sm" variant="default">
+									<a href={whatsappHref} rel="noopener noreferrer" target="_blank">
+										<BsWhatsapp className="h-4 w-4" />
+										FALAR +
+									</a>
+								</Button>
+							)
 						) : null}
 					</div>
 				</div>
+			</div>
+			<div className="flex w-full flex-col items-center gap-2 lg:flex-row">
+				<StatCard className="w-full lg:w-1/2" icon={<CirclePlus className="h-4 w-4" />} label="Projetos vendidos" value={sellerStats.projectsSold} />
+				<StatCard className="w-full lg:w-1/2" icon={<Zap className="h-4 w-4" />} label="Potência vendida (kWp)" value={`${formatDecimalPlaces(sellerStats.powerSold, 2)} kWp`} />
 			</div>
 		</div>
 	);
 }
 
-function SellerHeaderDesktop({ sellerName, sellerAvatar, sellerEmail, sellerPhone, sellerStats, whatsappHref }: SellerHeaderProps) {
+function SellerHeaderDesktop({ sellerId, sessionUser, sellerName, sellerAvatar, sellerEmail, sellerPhone, sellerStats, whatsappHref }: SellerHeaderProps) {
 	return (
 		<div className="hidden w-full flex-col gap-4 lg:flex">
 			<div className="flex w-full flex-col gap-3 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs lg:flex-row dark:bg-[#121212]">
@@ -232,12 +261,25 @@ function SellerHeaderDesktop({ sellerName, sellerAvatar, sellerEmail, sellerPhon
 								COMPARTILHAR
 							</Button>
 							{whatsappHref ? (
-								<Button asChild className="bg-green-600 hover:bg-green-700" size="sm" variant="default">
-									<a href={whatsappHref} rel="noopener noreferrer" target="_blank">
-										<Phone className="h-4 w-4" />
-										FALAR NO WHATSAPP
-									</a>
-								</Button>
+								sessionUser ? (
+									<OpportunityInterestButton
+										buttonIcon={<BsWhatsapp className="h-4 w-4" />}
+										buttonLabel="FALAR +"
+										className="bg-green-600 text-white hover:bg-green-700/90"
+										sellerId={sellerId}
+										sellerName={sellerName}
+										sellerPhone={sellerPhone}
+										sessionUser={sessionUser}
+										whatsappHref={whatsappHref}
+									/>
+								) : (
+									<Button asChild className="bg-green-600 hover:bg-green-700" size="sm" variant="default">
+										<a href={whatsappHref} rel="noopener noreferrer" target="_blank">
+											<Phone className="h-4 w-4" />
+											FALAR NO WHATSAPP
+										</a>
+									</Button>
+								)
 							) : null}
 						</div>
 					</div>
@@ -249,5 +291,55 @@ function SellerHeaderDesktop({ sellerName, sellerAvatar, sellerEmail, sellerPhon
 				<StatCard className="w-full lg:w-1/2" icon={<Zap className="h-4 w-4" />} label="Potência vendida (kWp)" value={`${formatDecimalPlaces(sellerStats.powerSold, 2)} kWp`} />
 			</div>
 		</div>
+	);
+}
+
+type UserInteractionSectionProps = {
+	sessionUser: TSessionUser | null;
+	sellerId: string;
+	sellerName: string;
+	sellerPhone: string;
+	whatsappHref: string;
+};
+function UserInteractionSection({ sessionUser, sellerId, sellerName, sellerPhone, whatsappHref }: UserInteractionSectionProps) {
+	const [showNewIndicationModal, setShowNewIndicationModal] = useState(false);
+
+	if (!sessionUser) {
+		return (
+			<div className="flex w-full flex-col items-center gap-3 rounded-lg border border-primary/20 bg-white p-6 shadow-xs dark:bg-[#121212]">
+				<h2 className="text-center font-bold text-base leading-none tracking-tight lg:text-lg">QUER GANHAR PRÊMIOS COM AS SUAS INDICAÇÕES?</h2>
+				<p className="text-center text-primary/70 text-sm">Participe do Conecta Ampère e ganhe créditos a cada indicação que virar projeto!</p>
+				<Button asChild className="w-full bg-[#15599a] hover:bg-[#15599a]/90 lg:w-auto dark:bg-[#fead61] dark:hover:bg-[#fead61]/90" size="lg">
+					<Link href="/signup">
+						<UserPlus className="h-5 w-5" />
+						PARTICIPAR DO CONECTA AMPÈRE
+					</Link>
+				</Button>
+			</div>
+		);
+	}
+
+	return (
+		<>
+			<div className="flex flex-col gap-2 lg:flex-row">
+				<Button className="w-full lg:w-auto" onClick={() => setShowNewIndicationModal(true)} size="default" variant="ghost">
+					<UserPlus className="h-4 w-4" />
+					INDICAR ALGUÉM
+				</Button>
+				<OpportunityInterestButton
+					buttonIcon={<Sparkles className="h-4 w-4" />}
+					buttonLabel={`CONVERSAR COM ${sellerName.toUpperCase()}`}
+					className="bg-green-600 text-white hover:bg-green-700/90"
+					sellerId={sellerId}
+					sellerName={sellerName}
+					sellerPhone={sellerPhone}
+					sessionUser={sessionUser}
+					whatsappHref={whatsappHref}
+				/>
+			</div>
+			{showNewIndicationModal ? (
+				<NewIndicationForSeller closeModal={() => setShowNewIndicationModal(false)} sellerId={sellerId} sellerName={sellerName} sessionUser={sessionUser} />
+			) : null}
+		</>
 	);
 }
