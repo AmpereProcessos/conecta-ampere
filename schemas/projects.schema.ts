@@ -609,6 +609,7 @@ const ProjectSchema = z.object({
 	}),
 	homologacao: HomologationSchema,
 	qtde: z.number(),
+	imagemCapaUrl: z.string().optional().nullable(),
 	qualDeficiencia: z.string().optional().nullable(),
 	regional: z.string().nullable(),
 	relatorios: z.object({
