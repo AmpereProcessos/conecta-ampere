@@ -1,13 +1,14 @@
 'use client';
-import { BadgeCheck, CirclePlus, LayoutGrid, Mail, MapPin, Phone, Share2, Sparkles, UserPlus, UserRound, Zap } from 'lucide-react';
+import { BadgeCheck, CirclePlus, Facebook, Globe, Instagram, LayoutGrid, Mail, MapPin, Phone, Share2, Sparkles, UserPlus, UserRound, Zap } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { BsWhatsapp } from 'react-icons/bs';
+import Logo from '@/assets/svgs/ampere-blue-logo-icon.svg';
 import FullScreenWrapper from '@/components/layout/FullScreenWrapper';
 import { Button } from '@/components/ui/button';
 import type { TSessionUser } from '@/lib/authentication/types';
-import { formatDecimalPlaces } from '@/lib/methods/formatting';
+import { formatDecimalPlaces, formatLocation } from '@/lib/methods/formatting';
 import { copyToClipboard, getProjectTypeCollors } from '@/lib/methods/utils';
 import type { TGetSellerPublicProfileByIdOutput } from '@/lib/queries-server/sellers';
 import { cn } from '@/lib/utils';
@@ -23,7 +24,7 @@ export function SellerByIdPage({ seller, sessionUser }: SellerByIdPageProps) {
 	const sellerPhone = seller?.vendedor?.telefone || '';
 	const sellerEmail = seller?.vendedor?.email || '';
 	const sellerAvatar = seller?.vendedor?.avatarUrl || '';
-
+	const sellerPartner = seller?.vendedor?.parceiro;
 	const whatsappHref = sellerPhone
 		? `https://wa.me/55${sellerPhone.replace(/\D/g, '')}?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%20no%20Conecta%20Amp%C3%A8re.`
 		: undefined;
@@ -32,6 +33,53 @@ export function SellerByIdPage({ seller, sessionUser }: SellerByIdPageProps) {
 		<FullScreenWrapper>
 			<div className="flex h-full justify-center bg-background px-6 py-6 lg:py-12">
 				<div className="container flex max-w-5xl flex-col gap-4">
+					<div className="flex w-full flex-col gap-3 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
+						<div className="flex w-full items-center justify-center gap-1.5">
+							<div className="relative h-10 min-h-10 w-10 min-w-10 lg:h-10 lg:w-10">
+								<Image alt="Logo Ampère Energias" fill={true} src={Logo} />
+							</div>
+							<h1 className="font-bold text-sm leading-none tracking-tight lg:text-lg">Ampère Energias</h1>
+						</div>
+						<div className="flex w-full flex-wrap items-center justify-center gap-1.5">
+							<div className="flex items-center gap-1.5">
+								<MapPin className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
+								<h1 className="text-primary/70 text-sm">
+									{formatLocation({
+										location: sellerPartner?.localizacao,
+										includeUf: true,
+										includeCity: true,
+									})}
+								</h1>
+							</div>
+							{sellerPartner?.midias?.instagram ? (
+								<div className="flex items-center gap-1.5">
+									<Instagram className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
+									<a className="text-primary/70 text-sm" href={`https://www.instagram.com/${sellerPartner.midias.instagram}`} rel="noopener noreferrer" target="_blank">
+										{sellerPartner?.midias?.instagram}
+									</a>
+								</div>
+							) : null}
+							{sellerPartner?.midias?.website ? (
+								<div className="flex items-center gap-1.5">
+									<Globe className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
+									<a
+										className="text-primary/70 text-sm"
+										href={sellerPartner.midias.website.includes('http') ? sellerPartner.midias.website : `https://${sellerPartner.midias.website}`}
+										rel="noopener noreferrer"
+										target="_blank"
+									>
+										{sellerPartner.midias.website}
+									</a>
+								</div>
+							) : null}
+							{sellerPartner?.midias?.facebook ? (
+								<div className="flex items-center gap-1.5">
+									<Facebook className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
+									<h1 className="text-primary/70 text-sm">{sellerPartner?.midias?.facebook}</h1>
+								</div>
+							) : null}
+						</div>
+					</div>
 					{/* Header */}
 					<SellerHeaderDesktop
 						sellerAvatar={sellerAvatar}
@@ -306,7 +354,7 @@ function UserInteractionSection({ sessionUser, sellerId, sellerName, sellerPhone
 
 	if (!sessionUser) {
 		return (
-			<div className="flex w-full flex-col items-center gap-3 rounded-lg border border-primary/20 bg-white p-6 shadow-xs dark:bg-[#121212]">
+			<>
 				<h2 className="text-center font-bold text-base leading-none tracking-tight lg:text-lg">QUER GANHAR PRÊMIOS COM AS SUAS INDICAÇÕES?</h2>
 				<p className="text-center text-primary/70 text-sm">Participe do Conecta Ampère e ganhe créditos a cada indicação que virar projeto!</p>
 				<Button asChild className="w-full bg-[#15599a] hover:bg-[#15599a]/90 lg:w-auto dark:bg-[#fead61] dark:hover:bg-[#fead61]/90" size="lg">
@@ -315,7 +363,7 @@ function UserInteractionSection({ sessionUser, sellerId, sellerName, sellerPhone
 						PARTICIPAR DO CONECTA AMPÈRE
 					</Link>
 				</Button>
-			</div>
+			</>
 		);
 	}
 

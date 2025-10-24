@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { DATABASE_COLLECTION_NAMES } from '@/configs/app-definitions';
+import type { TPartner } from '@/schemas/partners.schema';
 import type { TProject } from '@/schemas/projects.schema';
 import type { TUser } from '@/schemas/users.schema';
 import connectToCRMDatabase from '../services/mongodb/crm-db-connection';
@@ -8,7 +9,9 @@ import connectToProjectsDatabase from '../services/mongodb/projects-db-connectio
 export async function getSellerPublicProfileById(id: string) {
 	const appDb = await connectToProjectsDatabase();
 	const crmDb = await connectToCRMDatabase();
+
 	const usersCollection = crmDb.collection<TUser>(DATABASE_COLLECTION_NAMES.USERS);
+	const partnersCollection = crmDb.collection<TPartner>(DATABASE_COLLECTION_NAMES.PARTNERS);
 	const projectsCollection = appDb.collection<TProject>(DATABASE_COLLECTION_NAMES.PROJECTS);
 	const seller = await usersCollection.findOne({
 		_id: new ObjectId(id),
@@ -73,6 +76,22 @@ export async function getSellerPublicProfileById(id: string) {
 	}[];
 
 	const sellerUFVStats = sellerUFVStatsAggregation[0];
+
+	const sellerPartner = await partnersCollection.findOne(
+		{
+			_id: new ObjectId(seller.idParceiro),
+		},
+		{
+			projection: {
+				_id: 1,
+				nome: 1,
+				localizacao: 1,
+				midias: 1,
+			},
+		}
+	);
+	if (!sellerPartner) throw new Error('Parceiro não encontrado.');
+
 	return {
 		vendedor: {
 			id: seller._id.toString(),
@@ -80,6 +99,12 @@ export async function getSellerPublicProfileById(id: string) {
 			telefone: seller.telefone,
 			email: seller.email,
 			avatarUrl: seller.avatar_url,
+			parceiro: {
+				id: sellerPartner._id.toString(),
+				nome: sellerPartner.nome,
+				localizacao: sellerPartner.localizacao,
+				midias: sellerPartner.midias,
+			},
 		},
 		projetos: sellerUFVProjectsData,
 		estatisticas: {

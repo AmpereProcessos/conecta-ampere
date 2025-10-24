@@ -3,6 +3,7 @@ export const SESSION_COOKIE_NAME = 'conecta-session';
 export const DATABASE_COLLECTION_NAMES = {
 	PROJECTS: 'dados',
 	CLIENTS: 'clients',
+	PARTNERS: 'partners',
 	USERS: 'users',
 	OPPORTUNITIES: 'opportunities',
 	FUNNEL_REFERENCES: 'funnel-references',
