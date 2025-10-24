@@ -99,6 +99,7 @@ async function handleGetProjects() {
 			id: project._id.toString(),
 			status,
 			nome: project.nomeDoProjeto,
+			tipo: project.tipoDeServico,
 			potencia: project.sistema.potPico,
 			valor: getProjectContractValue({
 				projectValue: project.sistema.valorProjeto,
@@ -112,6 +113,8 @@ async function handleGetProjects() {
 				avatar_url: project.vendedor.avatar ?? undefined,
 			},
 			jornada: journey,
+			inicio: journeyStartDate ? journeyStartDate.toISOString() : null,
+			fim: journeyEndDate ? journeyEndDate.toISOString() : null,
 		};
 	});
 	return NextResponse.json({

@@ -31,13 +31,13 @@ function IndicationsRanking({ sessionUser }: IndicationsRankingProps) {
 									<div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#15599a] font-bold text-white text-xs ring-primary-foreground">#{rankingItem.posicao}</div>
 									<h2 className="font-semibold text-sm uppercase">{rankingItem.autor.nome}</h2>
 									{rankingItem.posicao === 1 ? (
-										<div className={cn('flex items-center gap-1 rounded-lg bg-green-100 px-2 py-0.5 text-center font-bold text-[0.5rem] text-green-700 italic')}>
+										<div className={cn('flex items-center gap-1 rounded-lg bg-green-100 px-2 py-0.5 text-center font-bold text-[0.55rem] text-green-700 italic')}>
 											<Trophy className={cn('h-3 min-h-3 w-3 min-w-3')} />
 											<p className={cn('font-medium text-[0.57rem]')}>TOP INDICADOR DO MÊS</p>
 										</div>
 									) : null}
 									{rankingItem.autor.id === sessionUser.id ? (
-										<div className={cn('flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-0.5 text-center font-bold text-[0.5rem] text-blue-700 italic')}>
+										<div className={cn('flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-0.5 text-center font-bold text-[0.55rem] text-blue-700 italic')}>
 											<UserRound className={cn('h-3 min-h-3 w-3 min-w-3')} />
 											<p className={cn('font-medium text-[0.57rem]')}>VOCÊ</p>
 										</div>

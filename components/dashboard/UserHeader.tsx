@@ -58,7 +58,7 @@ function UserHeader({ sessionUser }: UserHeaderProps) {
 				<div className="flex w-full flex-wrap items-center justify-center gap-1.5 gap-y-0.5">
 					{sessionUser.cpfCnpj ? (
 						<div className="flex items-center gap-1">
-							<IdCard className="h-4 min-h-4 w-4 min-w-46 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
+							<IdCard className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6 lg:min-w-6 lg:min-w-h-6" />
 							<h1 className="py-0.5 text-center font-medium text-[0.6rem] text-primary/80 italic lg:text-xs">{sessionUser.cpfCnpj || 'N/A'}</h1>
 						</div>
 					) : null}

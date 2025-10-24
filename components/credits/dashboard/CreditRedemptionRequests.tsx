@@ -63,7 +63,7 @@ function CreditRedemptionRequests({ sessionUser }: CreditRedemptionRequestsProps
 								type="button"
 							>
 								<TicketCheck className="h-4 min-h-4 w-4 min-w-4 lg:h-6 lg:w-6" />
-								<p className="font-extrabold text-[0.5rem] lg:text-sm">NOVO RESGATE</p>
+								<p className="font-extrabold text-[0.55rem] lg:text-sm">NOVO RESGATE</p>
 							</button>
 						</>
 					)
@@ -103,9 +103,9 @@ type CreditRedemptionRequestCardProps = {
 function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardProps) {
 	function getCreditRedemptionRequestStatus() {
 		if (request.dataEfetivacao) {
-			return <h1 className="rounded-full bg-green-500 p-1 font-extrabold text-[0.5rem] text-white">CONCLUÍDO</h1>;
+			return <h1 className="rounded-full bg-green-500 p-1 font-extrabold text-[0.55rem] text-white">CONCLUÍDO</h1>;
 		}
-		return <h1 className="rounded-full bg-[#F97316] p-1 font-extrabold text-[0.5rem] text-white">PENDENTE</h1>;
+		return <h1 className="rounded-full bg-[#F97316] p-1 font-extrabold text-[0.55rem] text-white">PENDENTE</h1>;
 	}
 	return (
 		<div className="flex w-full flex-col gap-1.5 rounded-md border border-primary/20 bg-white p-2.5 shadow-xs dark:bg-[#121212]">
@@ -114,9 +114,9 @@ function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardPro
 					<h1 className="font-semibold text-[0.625rem] leading-none tracking-tight lg:text-xs">{request.recompensaResgatada.nome}</h1>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<div className="flex items-center gap-1 rounded-full bg-amber-500/30 p-1 px-2 font-extrabold text-[0.5rem] text-amber-500">
+					<div className="flex items-center gap-1 rounded-full bg-amber-500/30 p-1 px-2 font-extrabold text-[0.55rem] text-amber-500">
 						<FaBolt className="h-2.5 min-h-2 w-2.5 min-w-2 lg:h-2.5 lg:w-2.5" />
-						<p className="text-[0.5rem]">-{request.creditosResgatados} CRÉDITOS</p>
+						<p className="text-[0.55rem]">-{request.creditosResgatados} CRÉDITOS</p>
 					</div>
 					{getCreditRedemptionRequestStatus()}
 				</div>
@@ -125,13 +125,13 @@ function CreditRedemptionRequestCard({ request }: CreditRedemptionRequestCardPro
 				{request.dataEfetivacao ? (
 					<div className="flex items-center gap-1.5">
 						<BsCalendarPlus className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
-						<h1 className="font-semibold text-[0.5rem] leading-none tracking-tight">{formatDateAsLocale(request.dataEfetivacao, true)}</h1>
+						<h1 className="font-semibold text-[0.55rem] leading-none tracking-tight">{formatDateAsLocale(request.dataEfetivacao, true)}</h1>
 					</div>
 				) : null}
 
 				<div className="flex items-center gap-1.5">
 					<BsCalendarPlus className="h-3 min-h-4 w-3 min-w-4 lg:h-4 lg:w-4" />
-					<h1 className="font-semibold text-[0.5rem] leading-none tracking-tight">{formatDateAsLocale(request.dataInsercao, true)}</h1>
+					<h1 className="font-semibold text-[0.55rem] leading-none tracking-tight">{formatDateAsLocale(request.dataInsercao, true)}</h1>
 				</div>
 			</div>
 		</div>

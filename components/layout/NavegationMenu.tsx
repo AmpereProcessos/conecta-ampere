@@ -78,8 +78,8 @@ function NavegationMenu({ sessionUser, initialIndicationSellerCode }: Navegation
 							>
 								<House className="h-3 w-3 lg:h-4 lg:w-4" />
 								<div className="flex flex-col items-center">
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">MENU</span>
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">PRINCIPAL</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">MENU</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">PRINCIPAL</span>
 								</div>
 							</Link>
 							<Link
@@ -91,8 +91,8 @@ function NavegationMenu({ sessionUser, initialIndicationSellerCode }: Navegation
 							>
 								<Settings className="h-3 w-3 lg:h-4 lg:w-4" />
 								<div className="flex flex-col items-center">
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">MEU</span>
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">PERFIL</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">MEU</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">PERFIL</span>
 								</div>
 							</Link>
 
@@ -108,8 +108,8 @@ function NavegationMenu({ sessionUser, initialIndicationSellerCode }: Navegation
 							>
 								<UsersRound className="h-3 w-3 lg:h-4 lg:w-4" />
 								<div className="flex flex-col items-center">
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">MINHAS</span>
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">INDICAÇÕES</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">MINHAS</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">INDICAÇÕES</span>
 								</div>
 							</Link>
 							<Link
@@ -121,8 +121,8 @@ function NavegationMenu({ sessionUser, initialIndicationSellerCode }: Navegation
 							>
 								<TicketCheck className="h-3 w-3 lg:h-4 lg:w-4" />
 								<div className="flex flex-col items-center">
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">MEUS</span>
-									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.5rem]">RESGATES</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">MEUS</span>
+									<span className="font-bold text-[0.4rem] antialiased lg:text-[0.55rem]">RESGATES</span>
 								</div>
 							</Link>
 
