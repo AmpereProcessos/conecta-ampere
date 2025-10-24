@@ -116,6 +116,7 @@ function UserCreditsBalance({ sessionUser }: UserCreditsBalanceProps) {
 											<div className="relative z-10 flex flex-col items-center gap-1 text-white">
 												<TicketCheck className="h-6 min-h-4 w-6 min-w-4 lg:h-12 lg:min-h-12 lg:w-12 lg:min-w-12" />
 												<h1 className="break-words text-center font-bold text-[0.55rem] uppercase tracking-tight lg:text-lg">{option.chamada}</h1>
+												<p className="text-center text-[0.5rem] lg:text-sm">{option.creditosNecessarios} CRÉDITOS</p>
 											</div>
 										</button>
 									</CarouselItem>

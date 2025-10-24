@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import { FaBolt } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/buttons/loading-button';
 import TextareaInput from '@/components/inputs/TextareaInput';
@@ -144,6 +145,11 @@ function CreditRedemptionRequestData({ infoHolder, updateInfoHolder }: CreditRed
 						>
 							Clique aqui para escolher outra recompensa
 						</button>
+					</div>
+					<div className="flex w-full items-center justify-center">
+						<div className="flex items-center gap-1 rounded-lg bg-amber-500/20 px-2 py-1 text-amber-500">
+							<FaBolt className="h-4 w-4" /> <p className="font-bold text-[0.625rem] lg:text-sm">{infoHolder.recompensaResgatada.creditosNecessarios} CRÉDITOS</p>
+						</div>
 					</div>
 					<TextareaInput
 						handleChange={(value) => updateInfoHolder({ pagamento: { ...infoHolder.pagamento, observacoes: value } })}
