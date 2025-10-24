@@ -1,8 +1,8 @@
-"use server";
-import type { TAuthVerificationToken } from "@/schemas/auth-verification-token.schema";
-import connectToCRMDatabase from "../services/mongodb/crm-db-connection";
-import { DATABASE_COLLECTION_NAMES } from "@/configs/app-definitions";
-import { ObjectId } from "mongodb";
+'use server';
+import { ObjectId } from 'mongodb';
+import { DATABASE_COLLECTION_NAMES } from '@/configs/app-definitions';
+import type { TAuthVerificationToken } from '@/schemas/auth-verification-token.schema';
+import connectToCRMDatabase from '../services/mongodb/crm-db-connection';
 
 export async function getVerificationTokenById(id: string) {
 	try {
@@ -25,7 +25,7 @@ export async function getVerificationTokenById(id: string) {
 			dataExpiracao: verificationToken.dataExpiracao,
 		};
 	} catch (error) {
-		console.log("Error getting the verification token by id", error);
+		console.log('Error getting the verification token by id', error);
 		throw error;
 	}
 }
